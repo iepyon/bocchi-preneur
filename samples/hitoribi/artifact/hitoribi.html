@@ -1,0 +1,814 @@
+<title>ひとりび</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@600&display=swap">
+<style>
+/* 一本の縦長カラム。上にみんなの行動ログ、下に自分の一手を固定、さらに下にタブ。色は「灯」の橙を合図の色にだけ使う */
+:root {
+  --bg: #f6f4f0;
+  --surface: #fffdfa;
+  --line: #e4ded4;
+  --ink: #23201b;
+  --ink-2: #5f584d;
+  --ink-3: #8f877a;
+  --ember: #c4581a;
+  --ember-soft: #fbeadc;
+  --ok: #3f7a52;
+  --ok-soft: #e3f0e6;
+  --danger: #b2433a;
+  --display: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --body: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151310; --surface: #1e1b17; --line: #34302a; --ink: #eee8de; --ink-2: #bdb4a6; --ink-3: #8a8274;
+    --ember: #f08a4b; --ember-soft: #3a2415; --ok: #7cc293; --ok-soft: #1d3325; --danger: #ef8a80; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151310; --surface: #1e1b17; --line: #34302a; --ink: #eee8de; --ink-2: #bdb4a6; --ink-3: #8a8274;
+  --ember: #f08a4b; --ember-soft: #3a2415; --ok: #7cc293; --ok-soft: #1d3325; --danger: #ef8a80; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 200px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.wrap { max-width: 560px; margin: 0 auto; }
+
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-block: 12px 8px; }
+.brand { font-family: var(--display); font-size: 20px; letter-spacing: .14em; display: flex; align-items: center; gap: 10px; }
+.flame { width: 10px; height: 10px; border-radius: 50%; background: var(--ember); box-shadow: 0 0 0 4px var(--ember-soft); flex: none; }
+.who { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); min-width: 0; }
+.who img { width: 24px; height: 24px; border-radius: 50%; }
+.linkbtn { background: none; border: 0; color: var(--ink-2); text-decoration: underline; font-size: 13px; padding: 4px; }
+
+h1, h2 { font-family: var(--display); font-weight: 600; letter-spacing: .04em; text-wrap: balance; }
+h1 { font-size: 22px; margin: 6px 0 2px; }
+h2 { font-size: 16px; margin: 22px 0 8px; }
+.lead { color: var(--ink-2); margin: 0 0 12px; font-size: 14px; }
+.muted { color: var(--ink-3); font-size: 13px; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; align-items: center; gap: 10px; }
+.row.wrap-row { flex-wrap: wrap; }
+.grow { flex: 1; min-width: 0; }
+
+.pulse { display: flex; align-items: baseline; gap: 6px; margin: 8px 0 14px; font-family: var(--display); color: var(--ink-2); }
+.pulse b { font-size: 34px; color: var(--ember); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.log { display: flex; gap: 12px; align-items: flex-start; }
+.log img { width: 32px; height: 32px; border-radius: 50%; flex: none; margin-top: 2px; }
+.log .goal { font-weight: 500; overflow-wrap: anywhere; }
+.log.done .goal { color: var(--ink-3); }
+.meta { font-size: 12px; color: var(--ink-3); }
+.chip { display: inline-block; font-size: 11px; line-height: 1.6; padding: 0 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2); white-space: nowrap; }
+.chip.ember { border-color: var(--ember); color: var(--ember); }
+.chip.ok { border-color: var(--ok); color: var(--ok); background: var(--ok-soft); }
+
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 14px; min-height: 38px; white-space: nowrap; font-size: 14px; }
+.btn:hover { border-color: var(--ink-3); }
+.btn.primary { background: var(--ember); border-color: var(--ember); color: #fff; font-weight: 700; }
+.btn.ok { background: var(--ok); border-color: var(--ok); color: #fff; font-weight: 700; }
+.btn.ghost { background: transparent; }
+.btn.small { min-height: 32px; padding: 3px 12px; font-size: 13px; }
+.btn.block { width: 100%; }
+.btn[disabled] { opacity: .45; cursor: default; }
+.btn.on { border-color: var(--ember); color: var(--ember); }
+
+input[type=text], input[type=url], select, textarea { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
+textarea { resize: vertical; min-height: 46px; }
+label.f { display: block; font-size: 13px; color: var(--ink-2); }
+label.f > input, label.f > select, label.f > textarea { margin-top: 4px; }
+.warn { font-size: 12px; color: var(--ink-3); }
+.warn::before { content: "！ "; color: var(--ember); }
+
+.empty { text-align: center; color: var(--ink-3); padding: 28px 8px; }
+
+/* 下の固定欄：自分の一手 */
+.mybar { position: fixed; left: 0; right: 0; bottom: calc(58px + env(safe-area-inset-bottom, 0px)); z-index: 8; padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+.mybar .in { max-width: 560px; margin: 0 auto; background: var(--surface); border: 1.5px solid var(--ember); border-radius: 16px; padding: 10px 12px; box-shadow: 0 10px 30px -18px rgba(0,0,0,.45); display: flex; flex-direction: column; gap: 8px; }
+.mybar .label { font-size: 12px; color: var(--ember); font-weight: 700; }
+.mybar .goal { font-weight: 700; overflow-wrap: anywhere; }
+.mybar .ask { background: var(--ember-soft); border-radius: 10px; padding: 8px 10px; }
+
+nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); }
+.tab { background: none; border: 0; padding: 10px 0 12px; font-size: 13px; color: var(--ink-3); position: relative; }
+.tab.active { color: var(--ink); font-weight: 700; }
+.tab.active::after { content: ""; position: absolute; left: 30%; right: 30%; top: 0; height: 2px; background: var(--ember); }
+.badge { display: inline-block; min-width: 16px; height: 16px; line-height: 16px; border-radius: 8px; background: var(--ember); color: #fff; font-size: 10px; padding: 0 4px; margin-left: 4px; vertical-align: 1px; }
+
+/* 15分相談を出す：1問ずつ */
+.wizard .q { font-family: var(--display); font-size: 20px; margin: 8px 0 12px; }
+.choice { display: block; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.choice b { display: block; }
+.choice span { font-size: 13px; color: var(--ink-3); }
+.choice:hover, .choice.on { border-color: var(--ember); }
+.steps-dots { display: flex; gap: 6px; }
+.steps-dots i { width: 22px; height: 4px; border-radius: 2px; background: var(--line); }
+.steps-dots i.on { background: var(--ember); }
+
+/* 相談部屋 */
+.timer { font-family: var(--display); font-size: 22px; font-variant-numeric: tabular-nums; color: var(--ember); }
+.msgs { display: flex; flex-direction: column; gap: 8px; min-height: 120px; max-height: 46vh; overflow-y: auto; padding: 4px 2px; }
+.msg { max-width: 82%; padding: 7px 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); overflow-wrap: anywhere; }
+.msg.mine { align-self: flex-end; background: var(--ember-soft); border-color: transparent; }
+.linkbox { background: var(--ember-soft); border-radius: 12px; padding: 10px 12px; overflow-wrap: anywhere; }
+.linkbox a { color: var(--ink); font-weight: 700; }
+
+/* やめる決断の学び */
+.lesson dl { margin: 6px 0 0; }
+.lesson dt { font-size: 12px; color: var(--ink-3); margin-top: 6px; }
+.lesson dd { margin: 0; overflow-wrap: anywhere; }
+
+.toast { position: fixed; left: 50%; top: calc(56px + env(safe-area-inset-top, 0px)); transform: translate(-50%, -8px); z-index: 20; background: var(--ink); color: var(--bg); border-radius: 999px; padding: 8px 16px; font-size: 14px; opacity: 0; pointer-events: none; transition: .2s; max-width: calc(100vw - 32px); }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.err { background: var(--danger); color: #fff; }
+/* 学び */
+.learn-ctx { font-size: 13px; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; display: inline-block; margin-bottom: 12px; }
+.learn-card { background: var(--surface); border: 1.5px solid var(--ember); border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.learn-card h2 { margin: 0; font-size: 20px; }
+.learn-card .body { line-height: 1.85; } .learn-card .body p { margin: 0 0 10px; } .learn-card .body p:last-child { margin: 0; }
+.learn-links { display: flex; flex-wrap: wrap; gap: 8px; } .learn-links a { color: var(--ink); font-size: 13px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; text-decoration: none; background: var(--bg); } .learn-links a:hover { border-color: var(--ember); }
+.learn-try { background: var(--ember-soft); border-radius: 12px; padding: 10px 12px; }
+.learn-try b { display: block; font-size: 12px; color: var(--ember); }
+.learn-src { font-size: 11px; color: var(--ink-3); overflow-wrap: anywhere; }
+.learn-bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; } .learn-bar i { display: block; height: 100%; background: var(--ember); }
+.celebrate { background: var(--ok-soft); border: 1px solid var(--ok); color: var(--ink); border-radius: 14px; padding: 12px 14px; }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="flame" aria-hidden="true"></span>ひとりび</div>
+    <div class="who" id="who"></div>
+  </header>
+  <main id="view"><p class="empty">読み込んでいます……</p></main>
+</div>
+<div class="mybar" id="mybar" hidden></div>
+<nav class="tabs" aria-label="メイン"><div class="in">
+  <button class="tab" data-tab="logs">行動ログ</button>
+  <button class="tab" data-tab="ask">15分相談<span class="badge" id="b-ask" hidden></span></button>
+  <button class="tab" data-tab="notes">通知<span class="badge" id="b-notes" hidden></span></button>
+  <button class="tab" data-tab="learn">ヒント</button>
+</div></nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="lessons.js"></script>
+<script>
+(() => {
+  // ---------- 定数 ----------
+  const STEPS = ['コンセプトと課題検証', '仕様設計', '画面設計', 'プロトタイプ実装', '価値検証', '価格設計', '本番実装', 'デザイン', 'セキュリティと公開準備', 'ローンチ', '計測・運用・継続判断'];
+  const KINDS = { see: { label: '見てほしい', hint: '画面や資料を見て、ひとこと' }, listen: { label: '話を聞いてほしい', hint: '壁打ち。答えはいらない' }, touch: { label: '触ってほしい', hint: '試作品を5分触ってほしい' } };
+  const GESTURES = ['ありがとう', '助かった', 'またどこかで'];
+  const H = 3600e3, DAY = 24 * H;
+  const SECRET_NOTE = '会社名・数字・顧客名は書かないでください';
+
+  // ---------- 道具 ----------
+  const $ = (id) => document.getElementById(id);
+  function h(tag, attrs, ...kids) {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of kids.flat(Infinity)) if (c != null && c !== false) el.append(c instanceof Node ? c : String(c));
+    return el;
+  }
+  let toastT;
+  function toast(msg, err) {
+    const t = $('toast'); t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
+    clearTimeout(toastT); toastT = setTimeout(() => (t.className = 'toast'), 2600);
+  }
+  function ago(t) {
+    const m = Math.floor((Date.now() - t) / 60000);
+    if (m < 1) return 'たった今'; if (m < 60) return m + '分前';
+    const hr = Math.floor(m / 60); if (hr < 24) return hr + '時間前';
+    return Math.floor(hr / 24) + '日前';
+  }
+  const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+  const ls = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  };
+  async function act(fn, ok) {
+    try { await fn(); if (ok) toast(ok); } catch (e) {
+      const code = e && e.code;
+      if (code) console.error(e);
+      toast(code === 'quota_exceeded' ? '保存できる量の上限に達しました。運営者に知らせてください' : code === 'invalid_argument' ? 'この操作をする権限がありません' : (e && e.message && !code ? e.message : '保存できませんでした。もう一度お試しください'), true);
+    }
+    render();
+  }
+  function fail(msg) { throw new Error(msg); }
+
+  // ---------- 状態 ----------
+  const S = {
+    ready: false, db: null, user: null, me: null, isOwner: false, readOnly: false,
+    logs: new Map(), cheers: [], signs: [], lessons: [], bows: [], thanks: [], experts: new Map(),
+    myPending: [], myOutcomes: [], learnSeen: null, learnSkip: [], allPending: [], allOutcomes: [], profiles: {},
+    tab: 'logs', wizard: null, roomId: null, room: null, roomMsgs: [], roomUnsubs: [], lessonForm: false,
+    celebrate: null, editing: false, dismissAskDone: ls.get('hb.dismiss') || '',
+  };
+
+  // ---------- 起動 ----------
+  async function boot() {
+    const [db, user] = await Promise.all([window.claude?.use?.('db') ?? null, window.claude?.use?.('user') ?? null]);
+    if (!db || !user) {
+      $('view').replaceChildren(h('div', { class: 'card stack' }, h('h1', {}, 'ここでは使えません'), h('p', { class: 'lead' }, 'ひとりびは、claude.ai にサインインして、共有されたリンクから開くと使えます。')));
+      return;
+    }
+    S.db = db; S.user = user;
+    const me = await user.me();
+    if (!me.id) {
+      $('view').replaceChildren(h('div', { class: 'card stack' }, h('h1', {}, 'サインインが必要です'), h('p', { class: 'lead' }, 'claude.ai にサインインしてから開き直してください。')));
+      return;
+    }
+    S.me = me.id; S.isOwner = me.isOwner;
+    const cw = await user.can('data.write');
+    S.readOnly = cw === false;
+    $('who').replaceChildren(...[h('img', { src: me.avatarUrl, alt: '' }), h('span', {}, me.name || 'あなた'), S.isOwner ? h('button', { class: 'linkbtn', onclick: () => go('admin') }, '運営') : null].filter(Boolean));
+    subscribe();
+    const slow = setTimeout(() => { if (!S.ready) { S.ready = true; render(); toast('データにまだつながっていません。表示が古い可能性があります', true); } }, 10000);
+    S._slow = slow;
+    setInterval(() => { if (S.tab === 'room') renderTimerOnly(); }, 1000);
+    setInterval(() => { if (S.tab !== 'room' && S.tab !== 'quit' && !S.wizard && !isTyping()) render(); }, 30000);
+  }
+  const isTyping = () => document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+
+  function listen(q, fn) {
+    return q.onSnapshot((snap) => {
+      fn(snap);
+      if (!snap.metadata.fromCache && !S.ready) { S.ready = true; clearTimeout(S._slow); }
+      render();
+    }, (e) => { console.error(e); if (e.code === 'revoked') toast('このページへの権限が変わりました', true); });
+  }
+  const docs = (snap) => snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+  function subscribe() {
+    const db = S.db, me = S.me;
+    listen(db.collection('logs'), (s) => { S.logs = new Map(s.docs.map((d) => [d.id, d.data()])); });
+    listen(db.collection('cheers'), (s) => { S.cheers = docs(s); });
+    listen(db.collection('signs'), (s) => { S.signs = docs(s); });
+    listen(db.collection('lessons'), (s) => { S.lessons = docs(s); });
+    listen(db.collection('bows'), (s) => { S.bows = docs(s); });
+    listen(db.collection('thanks').where('to', '==', me), (s) => { S.thanks = docs(s); });
+    listen(db.collection('experts'), (s) => { S.experts = new Map(s.docs.map((d) => [d.id, d.data()])); });
+    listen(db.doc('pending/' + me), (d) => { S.myPending = d.exists ? d.data().items || [] : []; });
+    listen(db.doc('data/users/' + me + '/learn'), (d) => { const x = d.exists ? d.data() : {}; S.learnSeen = x.seen || Object.fromEntries((x.read || []).map((id) => [id, 1])); });
+    listen(db.doc('outcomes/' + me), (d) => { S.myOutcomes = d.exists ? d.data().items || [] : []; });
+    if (S.isOwner) {
+      listen(db.collection('pending'), (s) => { S.allPending = docs(s); });
+      listen(db.collection('outcomes'), (s) => { S.allOutcomes = docs(s); });
+    }
+  }
+
+  // ---------- 見方 ----------
+  const myLog = () => S.logs.get(S.me) || null;
+  const isLit = (l) => l && Date.now() - l.litAt < DAY;
+  const passedSteps = (uid) => (S.logs.get(uid)?.passed || []);
+  const expertSteps = (uid) => (S.experts.get(uid)?.steps || []);
+  function marks(uid, step) {
+    const out = [];
+    if (step && passedSteps(uid).includes(step)) out.push(h('span', { class: 'chip ok' }, `ステップ${step} 通過`));
+    else if (passedSteps(uid).length) out.push(h('span', { class: 'chip' }, `通過 ${passedSteps(uid).length}ステップ`));
+    if (S.experts.has(uid)) out.push(h('span', { class: 'chip ember' }, '招待した経験者'));
+    return out;
+  }
+  const name = (uid) => (S.profiles[uid]?.name) || '名前を読めない人';
+  const avatar = (uid) => S.profiles[uid]?.avatarUrl || '';
+  const fresh = (s) => s.status !== 'open' || Date.now() - s.createdAt < 2 * H; // 応じられていない相談は2時間で消える
+  const mySign = () => S.signs.find((s) => s.uid === S.me && fresh(s)) || null;
+  const myResponding = () => S.signs.filter((s) => s.responder === S.me && s.status === 'matched');
+  function pendingAskDone() {
+    // 相談を終えたあと、まだ「できた」になっていない一手（48時間以内）
+    const l = myLog();
+    return S.myOutcomes.filter((o) => !o.doneAt && Date.now() - o.closedAt < 2 * DAY && l && l.litAt === o.litAt && !l.doneAt && S.dismissAskDone !== o.signId);
+  }
+
+  // ---------- 書き込み ----------
+  async function lightFire(goal, step) {
+    goal = goal.trim();
+    if (!goal) fail('今日の一手を書いてください');
+    if (goal.length > 40) fail('今日の一手は40字までです');
+    const prev = myLog() || {};
+    const days = Array.from(new Set([...(prev.days || []), today()])).slice(-60);
+    await S.db.doc('logs/' + S.me).set({ goal, step, litAt: Date.now(), doneAt: null, passed: prev.passed || [], days });
+  }
+  async function markDone() {
+    const l = myLog(); if (!l) return;
+    const now = Date.now();
+    const passed = Array.from(new Set([...(l.passed || []), l.step])).sort((a, b) => a - b);
+    await S.db.doc('logs/' + S.me).update({ doneAt: now, passed });
+    const outs = S.myOutcomes.map((o) => (!o.doneAt && o.litAt === l.litAt && now - o.closedAt < 2 * DAY ? { ...o, doneAt: now } : o));
+    if (outs.some((o, i) => o !== S.myOutcomes[i])) await S.db.doc('outcomes/' + S.me).set({ items: outs });
+    S.celebrate = { step: l.step, afterAsk: outs.some((o, i) => o !== S.myOutcomes[i]) };
+  }
+  async function cheer(uid) {
+    const l = S.logs.get(uid); if (!l) return;
+    await S.db.doc(`cheers/${uid}~${l.litAt}~${S.me}`).set({ to: uid, litAt: l.litAt, from: S.me, at: Date.now() });
+  }
+  async function postSign(w) {
+    const l = myLog();
+    if (!isLit(l) || l.doneAt) fail('先に今日の一手を書いてください');
+    if (mySign()) fail('相談は一度に1つまでです');
+    for (const old of S.signs.filter((s) => s.uid === S.me && !fresh(s))) await S.db.doc('signs/' + old.id).delete();
+    const aff = w.aff === 'none' ? '' : (w.affText || '').trim().slice(0, 40);
+    await S.db.collection('signs').add({ uid: S.me, goal: l.goal, step: l.step, litAt: l.litAt, kind: w.kind, minutes: w.minutes, aff, affType: w.aff, status: 'open', responder: null, createdAt: Date.now() });
+  }
+  async function offer(signId) {
+    const ref = S.db.doc('signs/' + signId);
+    const lease = await ref.acquire({ holder: S.me, ttlMs: 5000 });
+    if (!lease.acquired) fail('ほかの人が応じているところです');
+    const s = await ref.get();
+    if (!s.exists || s.data().status !== 'open') fail('その相談には、もう誰かが応じました');
+    await ref.update({ status: 'offered', responder: S.me, offeredAt: Date.now() });
+  }
+  async function decline(signId) { await S.db.doc('signs/' + signId).update({ status: 'open', responder: null }); }
+  async function startRoom(sign) {
+    const now = Date.now();
+    await S.db.doc('rooms/' + sign.id).set({ asker: sign.uid, responder: sign.responder, startedAt: now, endsAt: now + sign.minutes * 60e3, link: '', step: sign.step });
+    await S.db.doc('signs/' + sign.id).update({ status: 'matched', startedAt: now });
+    go('room', sign.id);
+  }
+  async function withdraw(signId) { await S.db.doc('signs/' + signId).delete(); }
+  async function sendMsg(text) {
+    text = text.trim(); if (!text) return;
+    if (text.length > 200) fail('200字までです');
+    await S.db.collection(`rooms/${S.roomId}/msgs`).add({ uid: S.me, text, at: Date.now() });
+  }
+  async function setLink(url, confirmed) {
+    url = url.trim();
+    if (!/^https:\/\/[^\s]+$/.test(url)) fail('https:// で始まるリンクを貼ってください');
+    if (!confirmed) fail('会社名・数字・顧客名を伏せたかを確かめてください');
+    await S.db.doc('rooms/' + S.roomId).update({ link: url, linkBy: S.me });
+  }
+  async function cleanupRoom(roomId) {
+    const msgs = await S.db.collection(`rooms/${roomId}/msgs`).get();
+    for (const d of msgs.docs) await S.db.doc(`rooms/${roomId}/msgs/${d.id}`).delete();
+    await S.db.doc('rooms/' + roomId).delete();
+    await S.db.doc('signs/' + roomId).delete();
+  }
+  async function finishAsAsker(movedOn, gesture) {
+    const r = S.room; const sign = S.signs.find((s) => s.id === S.roomId);
+    const now = Date.now();
+    const items = [...S.myOutcomes.filter((o) => o.signId !== S.roomId), { signId: S.roomId, step: r.step, litAt: sign ? sign.litAt : myLog()?.litAt, movedOn, closedAt: now, doneAt: null, responder: r.responder }];
+    await S.db.doc('outcomes/' + S.me).set({ items });
+    if (gesture) await S.db.doc(`thanks/${S.roomId}~${S.me}`).set({ to: r.responder, from: S.me, g: gesture, at: now });
+    const id = S.roomId;
+    leaveRoom();
+    await cleanupRoom(id);
+    go('logs');
+  }
+  async function thankAsResponder(gesture, askerId, roomId) {
+    await S.db.doc(`thanks/${roomId}~${S.me}`).set({ to: askerId, from: S.me, g: gesture, at: Date.now() });
+  }
+  async function submitLesson(f) {
+    const L = (s) => (s || '').trim();
+    if (!L(f.learned) || !L(f.carry) || !L(f.drop)) fail('3行とも書いてください');
+    if ([f.learned, f.carry, f.drop].some((s) => L(s).length > 60)) fail('1行は60字までです');
+    const item = { id: 'l' + Date.now().toString(36), uid: S.me, step: f.step, type: f.type, learned: L(f.learned), carry: L(f.carry), drop: L(f.drop), showName: !!f.showName, status: 'pending', at: Date.now() };
+    await S.db.doc('pending/' + S.me).set({ items: [...S.myPending, item] });
+  }
+  async function deleteMyPending(id) { await S.db.doc('pending/' + S.me).set({ items: S.myPending.filter((i) => i.id !== id) }); }
+  async function bow(lesson) { await S.db.doc(`bows/${lesson.id}~${S.me}`).set({ lesson: lesson.id, to: lesson.uid, from: S.me, at: Date.now() }); }
+  // 運営者
+  async function approve(owner, item) {
+    await S.db.doc('lessons/' + item.id).set({ uid: item.uid, step: item.step, type: item.type, learned: item.learned, carry: item.carry, drop: item.drop, showName: item.showName, at: item.at, publishedAt: Date.now() });
+    const doc = S.allPending.find((p) => p.id === owner);
+    await S.db.doc('pending/' + owner).set({ items: (doc?.items || []).filter((i) => i.id !== item.id) });
+  }
+  async function sendBack(owner, item) {
+    const doc = S.allPending.find((p) => p.id === owner);
+    await S.db.doc('pending/' + owner).set({ items: (doc?.items || []).map((i) => (i.id === item.id ? { ...i, status: 'returned' } : i)) });
+  }
+  async function setExpert(uid, steps) {
+    if (!steps.length) return S.db.doc('experts/' + uid).delete();
+    await S.db.doc('experts/' + uid).set({ steps, at: Date.now() });
+  }
+
+  // ---------- 相談部屋の購読 ----------
+  function enterRoom(id) {
+    leaveRoom();
+    S.roomId = id; S.room = undefined; S.roomMsgs = [];
+    S.roomUnsubs.push(S.db.doc('rooms/' + id).onSnapshot((d) => { S.room = d.exists ? d.data() : null; render(); }, () => {}));
+    S.roomUnsubs.push(S.db.collection(`rooms/${id}/msgs`).orderBy('at').onSnapshot((s) => { S.roomMsgs = docs(s); render(); scrollMsgs(); }, () => {}));
+  }
+  function leaveRoom() { S.roomUnsubs.forEach((u) => u()); S.roomUnsubs = []; }
+  function scrollMsgs() { const m = document.querySelector('.msgs'); if (m) m.scrollTop = m.scrollHeight; }
+
+  // ---------- 画面の切り替え ----------
+  function go(tab, arg) {
+    if (tab !== 'room' && S.tab === 'room') leaveRoom();
+    S.tab = tab; S.wizard = null; S.editing = false; if (tab !== 'logs') S.quitDone = false;
+    if (tab === 'room') enterRoom(arg);
+    if (tab === 'notes') ls.set('hb.seen', String(Date.now()));
+    render(); window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));
+
+  // ---------- 描画 ----------
+  let renderSeq = 0;
+  async function render() {
+    if (!S.db) return;
+    const seq = ++renderSeq;
+    const ids = new Set([S.me]);
+    S.logs.forEach((_, k) => ids.add(k));
+    S.signs.forEach((s) => { ids.add(s.uid); if (s.responder) ids.add(s.responder); });
+    S.lessons.forEach((l) => l.showName && ids.add(l.uid));
+    S.thanks.forEach((t) => ids.add(t.from));
+    S.experts.forEach((_, k) => ids.add(k));
+    if (S.room) { ids.add(S.room.asker); ids.add(S.room.responder); }
+    S.allPending.forEach((p) => ids.add(p.id));
+    S.profiles = await S.user.profiles([...ids]);
+    if (seq !== renderSeq) return;
+    // 描き直しても、入力中の値・チェック・開いた欄を守る
+    const a = document.activeElement; const keep = a && a.id ? { id: a.id, s: a.selectionStart, e: a.selectionEnd } : null;
+    const vals = {};
+    document.querySelectorAll('#view [id], #mybar [id]').forEach((el) => {
+      if (el.tagName === 'DETAILS') vals[el.id] = { open: el.open };
+      else if (el.type === 'checkbox') vals[el.id] = { checked: el.checked };
+      else if ('value' in el && /INPUT|TEXTAREA|SELECT/.test(el.tagName)) vals[el.id] = { value: el.value };
+    });
+    document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('active', b.dataset.tab === (S.tab === 'room' ? 'ask' : S.tab === 'quit' ? 'logs' : S.tab)));
+    const view = !S.ready ? h('p', { class: 'empty' }, '読み込んでいます……')
+      : S.tab === 'ask' ? (S.wizard ? viewWizard() : viewAsk())
+      : S.tab === 'room' ? viewRoom()
+      : S.tab === 'quit' ? viewQuit()
+      : S.tab === 'learn' ? viewLearn()
+      : S.tab === 'notes' ? viewNotes()
+      : S.tab === 'admin' && S.isOwner ? viewAdmin()
+      : viewLogs();
+    $('view').replaceChildren(view);
+    renderMyBar();
+    renderBadges();
+    for (const [id, v] of Object.entries(vals)) { const el = $(id); if (!el) continue; if ('open' in v) el.open = v.open; else if ('checked' in v) el.checked = v.checked; else if (S._clear !== id) el.value = v.value; }
+    S._clear = null;
+    if (keep) { const el = $(keep.id); if (el && !el.disabled) { el.focus(); try { el.setSelectionRange(keep.s, keep.e); } catch {} } }
+  }
+
+  // 行動ログ（骨格B：みんなの行動ログが先）
+  function viewLogs() {
+    const lit = [...S.logs.entries()].filter(([, l]) => isLit(l)).sort((a, b) => b[1].litAt - a[1].litAt);
+    const working = lit.filter(([, l]) => !l.doneAt && !l.quitAt).length;
+    // みんなの行動ログに、公開された「やめる決断の学び」を混ぜて流す（R6）
+    const feed = [
+      ...lit.filter(([uid]) => uid !== S.me).map(([uid, l]) => ({ at: l.quitAt || l.litAt, el: () => logCard(uid, l) })),
+      ...S.lessons.map((x) => ({ at: x.publishedAt, el: () => lessonCard(x) })),
+    ].sort((a, b) => b.at - a.at);
+    return h('div', {},
+      h('div', { class: 'pulse' }, 'いま', h('b', {}, working), '人が一手に取り組んでいる'),
+      S.celebrate ? h('div', { class: 'celebrate' }, h('b', {}, 'できた。'), ` ステップ${S.celebrate.step}「${STEPS[S.celebrate.step - 1]}」の通過記録になりました。`, S.celebrate.afterAsk ? '相談から動き出せましたね。' : '') : null,
+      h('h2', {}, 'みんなの行動ログ'),
+      S.quitDone ? h('div', { class: 'celebrate' }, h('b', {}, 'やめる決断をしました。'), ' 学びは運営者が確かめてから、みんなの行動ログに流れます。やめた経験も、次の誰かの知恵になります。') : null,
+      feed.length ? h('div', { class: 'stack' }, feed.map((x) => x.el()))
+        : h('p', { class: 'empty' }, 'まだ誰もいません。最初の一手を書いてみましょう。'),
+    );
+  }
+  function logCard(uid, l) {
+    const n = S.cheers.filter((c) => c.to === uid && c.litAt === l.litAt).length;
+    const mine = S.cheers.some((c) => c.to === uid && c.litAt === l.litAt && c.from === S.me);
+    return h('article', { class: 'card log' + (l.doneAt || l.quitAt ? ' done' : '') },
+      h('img', { src: avatar(uid), alt: '' }),
+      h('div', { class: 'grow' },
+        h('div', { class: 'goal' }, l.goal),
+        h('div', { class: 'meta' }, `${name(uid)}・ステップ${l.step} ${STEPS[l.step - 1]}・${ago(l.litAt)}${l.doneAt ? '・できた' : l.quitAt ? '・やめた' : ''}`),
+        h('div', { class: 'row wrap-row' }, marks(uid)),
+      ),
+      h('button', { class: 'btn small' + (mine ? ' on' : ''), disabled: mine || S.readOnly || !!l.quitAt, 'aria-label': `${name(uid)}さんを応援する`, onclick: () => act(() => cheer(uid)) }, mine ? '応援した' : '応援する', n ? ` ${n}` : ''),
+    );
+  }
+
+  // 下の固定欄：自分の一手
+  function renderMyBar() {
+    const bar = $('mybar');
+    if (S.tab !== 'logs' || !S.ready) { bar.hidden = true; return; }
+    bar.hidden = false;
+    const l = myLog();
+    const pend = pendingAskDone();
+    let body;
+    if (S.readOnly) body = [h('div', { class: 'muted' }, 'このリンクでは見るだけです。書き込むには、共有した人に「使える」権限をもらってください。')];
+    else if (pend.length) {
+      body = [h('div', { class: 'ask stack' },
+        h('div', {}, h('b', {}, '止まっていた一手、できましたか？')),
+        h('div', { class: 'muted' }, l.goal),
+        h('div', { class: 'row' }, h('button', { class: 'btn ok grow', onclick: () => act(markDone) }, 'できた'), h('button', { class: 'btn ghost', onclick: () => { S.dismissAskDone = pend[0].signId; ls.set('hb.dismiss', S.dismissAskDone); render(); } }, 'まだ')))];
+    } else if (isLit(l) && !l.doneAt && !l.quitAt && !S.editing) {
+      const sign = mySign();
+      body = [h('div', { class: 'label' }, `今日の一手・ステップ${l.step} ${STEPS[l.step - 1]}`),
+        h('div', { class: 'goal' }, l.goal),
+        h('div', { class: 'row' },
+          h('button', { class: 'btn ok', onclick: () => act(markDone) }, 'できた'),
+          sign ? h('button', { class: 'btn grow', onclick: () => go('ask') }, '相談中を見る') : h('button', { class: 'btn primary grow', onclick: () => { S.tab = 'ask'; S.wizard = { n: 0, kind: null, minutes: null, aff: null, affText: '' }; render(); } }, 'この一手で15分相談')),
+        h('div', { class: 'row' },
+          h('button', { class: 'btn ghost small', onclick: () => go('quit') }, 'やめる'),
+          h('span', { class: 'grow' }),
+          h('button', { class: 'btn ghost small', onclick: () => { S.editing = true; render(); } }, '書き直す'))];
+    } else {
+      const goal = h('input', { type: 'text', id: 'goal', maxlength: 40, placeholder: isLit(l) && (l.doneAt || l.quitAt) ? '次の一手を書く（40字まで）' : '今日の一手（40字まで）', 'aria-label': '今日の一手' });
+      if (S.editing && l) goal.value = l.goal;
+      const step = h('select', { id: 'goalstep', 'aria-label': 'いまいるステップ' }, STEPS.map((s, i) => h('option', { value: i + 1, selected: (l?.step || 1) === i + 1 }, `${i + 1} ${s}`)));
+      body = [h('div', { class: 'label' }, isLit(l) && l.doneAt ? 'できた。次の一手は？' : isLit(l) && l.quitAt ? 'やめた。次の一手は？' : '今日の一手'),
+        goal, h('div', { class: 'warn' }, SECRET_NOTE),
+        h('div', { class: 'row' }, h('div', { class: 'grow' }, step), h('button', { class: 'btn primary', onclick: () => act(async () => { await lightFire(goal.value, Number(step.value)); S.editing = false; S.celebrate = null; S.quitDone = false; }, '一手を灯しました') }, '灯す'))];
+    }
+    bar.replaceChildren(h('div', { class: 'in' }, body));
+  }
+
+  // 15分相談（一覧：骨格A 新しい順に全部）
+  function viewAsk() {
+    const sign = mySign();
+    const responding = myResponding();
+    const open = S.signs.filter((s) => s.uid !== S.me && ((s.status === 'open' && fresh(s)) || (s.status === 'offered' && s.responder === S.me))).sort((a, b) => b.createdAt - a.createdAt);
+    return h('div', {},
+      h('h1', {}, '15分相談'),
+      h('p', { class: 'lead' }, '手が止まったら、同じ立場で一度通した人に15分だけ。画面や資料は、相談部屋に貼った会議やアーティファクトのリンクで見せます。'),
+      sign ? mySignCard(sign) : null,
+      responding.map((s) => h('div', { class: 'card stack' }, h('div', {}, h('b', {}, `${name(s.uid)}さんとの相談が始まっています`)), h('button', { class: 'btn primary', onclick: () => go('room', s.id) }, '相談部屋へ'))),
+      h('h2', {}, `いま出ている相談 ${open.length}`),
+      open.length ? h('div', { class: 'stack' }, open.map(signCard)) : h('p', { class: 'empty' }, 'いま出ている相談はありません。'),
+      !sign && !S.readOnly ? h('p', { class: 'muted' }, '自分が相談を出すときは、行動ログの下にある自分の一手から「この一手で15分相談」を押します。') : null,
+    );
+  }
+  function mySignCard(s) {
+    const k = KINDS[s.kind];
+    const head = h('div', {}, h('div', { class: 'meta' }, 'あなたの相談'), h('b', {}, `${k.label}・${s.minutes}分`), h('div', { class: 'muted' }, `ステップ${s.step}・${s.goal}`));
+    if (s.status === 'open') return h('div', { class: 'card stack' }, head, h('div', { class: 'muted' }, '応じてくれる人を待っています。'), h('button', { class: 'btn ghost', onclick: () => act(() => withdraw(s.id), '相談を取り下げました') }, '取り下げる'));
+    if (s.status === 'offered') return h('div', { class: 'card stack' }, head,
+      h('div', { class: 'row' }, h('img', { src: avatar(s.responder), alt: '', width: 28, height: 28 }), h('div', { class: 'grow' }, h('b', {}, `${name(s.responder)}さんが応じました`), h('div', { class: 'row wrap-row' }, marks(s.responder, s.step)))),
+      h('div', { class: 'row' }, h('button', { class: 'btn primary grow', onclick: () => act(() => startRoom(s)) }, 'この人と始める'), h('button', { class: 'btn ghost', onclick: () => act(() => decline(s.id), '見送りました') }, '見送る')));
+    return h('div', { class: 'card stack' }, head, h('button', { class: 'btn primary', onclick: () => go('room', s.id) }, '相談部屋へ'));
+  }
+  function signCard(s) {
+    const k = KINDS[s.kind];
+    const offered = s.status === 'offered';
+    return h('article', { class: 'card stack' },
+      h('div', { class: 'row' },
+        h('div', { class: 'grow' },
+          h('b', {}, `${k.label}・${s.minutes}分`),
+          h('div', { class: 'meta' }, `${name(s.uid)}${s.aff ? '・' + s.aff : ''}・ステップ${s.step} ${STEPS[s.step - 1]}・${ago(s.createdAt)}`)),
+        offered ? h('span', { class: 'chip ember' }, '返事待ち') : h('button', { class: 'btn primary small', disabled: S.readOnly, onclick: () => act(() => offer(s.id), '応じました。相手の返事を待っています') }, '応じる')),
+      h('div', { class: 'muted' }, `止まっている一手：${s.goal}`));
+  }
+
+  // 15分相談を出す（骨格B：1問ずつ）
+  function viewWizard() {
+    const w = S.wizard; const l = myLog();
+    const dots = h('div', { class: 'steps-dots', 'aria-hidden': 'true' }, [0, 1, 2, 3].map((i) => h('i', { class: i <= w.n ? 'on' : '' })));
+    const back = h('button', { class: 'linkbtn', onclick: () => { if (w.n === 0) { S.wizard = null; go('logs'); } else { w.n--; render(); } } }, '← 戻る');
+    if (!isLit(l) || l.doneAt) return h('div', { class: 'wizard' }, back, h('p', { class: 'empty' }, '先に今日の一手を書いてください。'), h('button', { class: 'btn primary block', onclick: () => go('logs') }, '行動ログへ'));
+    const head = [h('div', { class: 'row' }, back, h('span', { class: 'grow' }), dots), h('div', { class: 'muted' }, `この一手：${l.goal}`)];
+    const pick = (field, val) => () => { w[field] = val; w.n++; render(); };
+    let body;
+    if (w.n === 0) body = [h('div', { class: 'q' }, '何をしてほしいですか'), h('div', { class: 'stack' }, Object.entries(KINDS).map(([id, k]) => h('button', { class: 'choice', onclick: pick('kind', id) }, h('b', {}, k.label), h('span', {}, k.hint))))];
+    else if (w.n === 1) body = [h('div', { class: 'q' }, 'どれくらいの時間ですか'), h('div', { class: 'stack' }, [15, 30].map((m) => h('button', { class: 'choice', onclick: pick('minutes', m) }, h('b', {}, `${m}分`), h('span', {}, m === 15 ? 'ひとことで足りそう' : '少し説明が要りそう'))))];
+    else if (w.n === 2) {
+      const txt = h('input', { type: 'text', id: 'afftext', maxlength: 40, placeholder: '例：製造・3000人規模', value: w.affText || '' });
+      txt.addEventListener('input', () => (w.affText = txt.value));
+      body = [h('div', { class: 'q' }, '所属をどこまで出しますか'), h('p', { class: 'muted' }, '相談が終わると消えます。保存しません。'),
+        h('div', { class: 'stack' },
+          h('button', { class: 'choice' + (w.aff === 'company' ? ' on' : ''), onclick: () => { w.aff = 'company'; render(); } }, h('b', {}, '会社名')),
+          h('button', { class: 'choice' + (w.aff === 'industry' ? ' on' : ''), onclick: () => { w.aff = 'industry'; render(); } }, h('b', {}, '業界と規模')),
+          h('button', { class: 'choice', onclick: () => { w.aff = 'none'; w.n++; render(); } }, h('b', {}, '出さない'))),
+        w.aff && w.aff !== 'none' ? h('div', { class: 'stack' }, txt, h('button', { class: 'btn primary block', onclick: () => { if (!txt.value.trim()) return toast('書くか「出さない」を選んでください', true); w.affText = txt.value; w.n++; render(); } }, '次へ')) : null];
+    } else {
+      body = [h('div', { class: 'q' }, 'この内容で出しますか'),
+        h('div', { class: 'card stack' }, h('b', {}, `${KINDS[w.kind].label}・${w.minutes}分`), h('div', { class: 'muted' }, `ステップ${l.step} ${STEPS[l.step - 1]}`), h('div', { class: 'muted' }, `所属：${w.aff === 'none' ? '出さない' : w.affText}`)),
+        h('p', { class: 'muted' }, '応じてくれた人の名前と通過記録を見てから、始めるかを決められます。相談は2時間で消えます。'),
+        h('button', { class: 'btn primary block', onclick: () => act(async () => { await postSign(w); S.wizard = null; }, '相談を出しました') }, '相談を出す')];
+    }
+    return h('div', { class: 'wizard' }, head, body);
+  }
+
+  // 相談部屋（骨格B：文字のやりとりが主）
+  function viewRoom() {
+    const r = S.room;
+    if (r === undefined) return h('p', { class: 'empty' }, '部屋に入っています……');
+    if (r === null) {
+      // 相手が終えた（部屋は消えた）
+      const t = S.thanks.find((x) => x.id.startsWith(S.roomId + '~'));
+      return h('div', { class: 'stack' }, h('h1', {}, '相談は終わりました'), t ? h('p', { class: 'lead' }, `${name(t.from)}さんから「${t.g}」が届きました。`) : h('p', { class: 'lead' }, '部屋は閉じ、やりとりは消えました。'),
+        h('button', { class: 'btn primary', onclick: () => go('ask') }, '15分相談へ戻る'));
+    }
+    const asker = r.asker === S.me; const other = asker ? r.responder : r.asker;
+    const left = r.endsAt - Date.now();
+    const over = left <= 0;
+    const input = h('input', { type: 'text', id: 'msg', maxlength: 200, placeholder: 'ひとこと送る', disabled: over });
+    const send = () => act(async () => { await sendMsg(input.value); input.value = ''; S._clear = 'msg'; });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) send(); });
+    const url = h('input', { type: 'url', id: 'link', placeholder: 'https://（会議・アーティファクトのリンク）' });
+    const conf = h('input', { type: 'checkbox', id: 'linkok' });
+    let end;
+    if (asker) {
+      let g = null;
+      const gs = h('div', { class: 'row wrap-row' }, GESTURES.map((x) => { const b = h('button', { class: 'btn small', onclick: () => { g = g === x ? null : x; gs.querySelectorAll('button').forEach((y) => y.classList.toggle('on', y.textContent === g)); } }, x); return b; }));
+      end = h('div', { class: 'card stack' }, h('b', {}, '終えるとき'), h('div', { class: 'muted' }, 'お礼（任意）'), gs,
+        h('div', {}, '動き出せそうですか？'),
+        h('div', { class: 'row' }, h('button', { class: 'btn ok grow', onclick: () => act(() => finishAsAsker(true, g), '相談を終えました') }, '動き出せた'), h('button', { class: 'btn grow', onclick: () => act(() => finishAsAsker(false, g), '相談を終えました') }, 'まだ')),
+        h('div', { class: 'muted' }, '終えると、この部屋のやりとりとリンクは消えます。'));
+    } else {
+      end = h('div', { class: 'card stack' }, h('b', {}, '終えるとき'), h('div', { class: 'muted' }, '相談を終えるのは、相談した人です。お礼を送って抜けることもできます。'),
+        h('div', { class: 'row wrap-row' }, GESTURES.map((x) => h('button', { class: 'btn small', onclick: () => act(async () => { await thankAsResponder(x, r.asker, S.roomId); go('ask'); }, `「${x}」を送りました`) }, x))));
+    }
+    return h('div', { class: 'stack' },
+      h('div', { class: 'row' }, h('button', { class: 'linkbtn', onclick: () => go('ask') }, '←'), h('div', { class: 'grow' }, h('b', {}, `${name(other)}さんと相談中`), h('div', { class: 'row wrap-row' }, marks(other, r.step))), h('span', { class: 'timer', id: 'timer' }, fmt(left))),
+      r.link ? h('div', { class: 'linkbox' }, h('div', { class: 'meta' }, `${name(r.linkBy)}さんが貼ったリンク`), h('a', { href: r.link, target: '_blank', rel: 'noopener noreferrer' }, r.link)) : null,
+      h('div', { class: 'card' }, h('div', { class: 'msgs' }, S.roomMsgs.length ? S.roomMsgs.map((m) => h('div', { class: 'msg' + (m.uid === S.me ? ' mine' : '') }, m.text)) : h('p', { class: 'muted' }, 'まだ何も話していません。リンクを貼るか、ひとこと送ってください。'))),
+      h('div', { class: 'row' }, h('div', { class: 'grow' }, input), h('button', { class: 'btn primary', disabled: over, onclick: send }, '送る')),
+      h('div', { class: 'warn' }, SECRET_NOTE),
+      over ? h('p', { class: 'muted' }, '時間になりました。') : h('details', { id: 'linkd' }, h('summary', { class: 'muted' }, '会議・共有リンクを貼る'),
+        h('div', { class: 'stack' }, url, h('label', { class: 'row muted' }, conf, '会社名・数字・顧客名を伏せました'), h('button', { class: 'btn', onclick: () => act(() => setLink(url.value, conf.checked), 'リンクを貼りました') }, '貼る'))),
+      end,
+    );
+  }
+  const fmt = (ms) => { if (ms <= 0) return '0:00'; const s = Math.floor(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+  function renderTimerOnly() { const t = $('timer'); if (t && S.room) { const left = S.room.endsAt - Date.now(); t.textContent = fmt(left); if (left <= 0 && !t.dataset.over) { t.dataset.over = '1'; render(); } } }
+
+  // やめる（R6：行動の1つ。押すと、やめる決断の学びを3行書く）
+  function viewQuit() {
+    const l = myLog();
+    if (!isLit(l) || l.doneAt || l.quitAt) return h('div', {}, h('p', { class: 'empty' }, 'やめる一手がありません。'), h('button', { class: 'btn primary block', onclick: () => go('logs') }, '行動ログへ'));
+    return h('div', { class: 'stack' },
+      h('button', { class: 'linkbtn', onclick: () => go('logs') }, '← 戻る'),
+      h('h1', {}, 'やめる'),
+      h('p', { class: 'lead' }, 'やめることも行動の1つです。何が分かったかを3行で残してください。あとから来る人の知恵になります。'),
+      h('div', { class: 'muted' }, `いまの一手：${l.goal}`),
+      lessonForm(l.step));
+  }
+  function lessonCard(l) {
+    const n = S.bows.filter((b) => b.lesson === l.id).length;
+    const mine = S.bows.some((b) => b.lesson === l.id && b.from === S.me);
+    return h('article', { class: 'card lesson' },
+      h('div', { class: 'row wrap-row' }, h('span', { class: 'chip' }, `ステップ${l.step}で${l.type === 'pivot' ? '方向を変えた' : 'やめた'}`), h('span', { class: 'meta' }, l.showName ? name(l.uid) : '名前なし')),
+      h('dl', {}, h('dt', {}, 'わかったこと'), h('dd', {}, l.learned), h('dt', {}, '次に持っていくもの'), h('dd', {}, l.carry), h('dt', {}, '置いていくもの'), h('dd', {}, l.drop)),
+      h('div', { class: 'row' }, h('span', { class: 'meta grow' }, `頭を下げた人 ${n}`), l.uid === S.me ? h('span', { class: 'meta' }, 'あなたの学び') : h('button', { class: 'btn small' + (mine ? ' on' : ''), disabled: mine || S.readOnly, onclick: () => act(() => bow(l)) }, mine ? '下げた' : '頭を下げる')));
+  }
+  function lessonForm(curStep) {
+    const step = h('select', { id: 'lstep' }, STEPS.map((s, i) => h('option', { value: i + 1, selected: (curStep || 1) === i + 1 }, `${i + 1} ${s}`)));
+    const type = h('select', { id: 'ltype' }, h('option', { value: 'stop' }, 'やめた'), h('option', { value: 'pivot' }, '方向を変えた'));
+    const f = (id, label, ph) => { const el = h('input', { type: 'text', id, maxlength: 60, placeholder: ph }); return [el, h('label', { class: 'f' }, label, el)]; };
+    const [a, la] = f('l1', 'わかったこと', '例：部長に見せる前に、使う人に聞くべきだった');
+    const [b, lb] = f('l2', '次に持っていくもの', '例：過去の出来事を聞く質問');
+    const [c, lc] = f('l3', '置いていくもの', '例：資料の見栄えに時間をかけること');
+    const show = h('input', { type: 'checkbox', id: 'lshow' });
+    return h('div', { class: 'card stack' },
+      h('div', { class: 'row' }, h('label', { class: 'f grow' }, 'ステップ', step), h('label', { class: 'f grow' }, '決断', type)),
+      la, lb, lc,
+      h('label', { class: 'row muted' }, show, '名前を出す'),
+      h('div', { class: 'warn' }, SECRET_NOTE + '。公開前に運営者が読みます。'),
+      h('button', { class: 'btn primary block', onclick: () => act(async () => { await submitLesson({ step: Number(step.value), type: type.value, learned: a.value, carry: b.value, drop: c.value, showName: show.checked }); await S.db.doc('logs/' + S.me).update({ quitAt: Date.now() }); S.quitDone = true; go('logs'); }, 'やめる決断を記録しました') }, 'やめる決断を記録する'));
+  }
+
+  // ヒント（R7、R7-cで「学び」から改名）：いまのステップと状況に合う背景・ヒントを1枚ずつ
+  const STATE_LABEL = { none: '一手を書く前', lit: '一手に取り組み中', asking: '15分相談の最中', after: '相談のあと', done: '一手ができた', quit: 'やめる決断をした' };
+  function learnContext() {
+    const l = myLog();
+    let state = 'none';
+    if (l && isLit(l)) state = l.quitAt ? 'quit' : (mySign() || myResponding().length) ? 'asking' : pendingAskDone().length ? 'after' : l.doneAt ? 'done' : 'lit';
+    return { state, step: l ? l.step : 1, hasLog: !!l };
+  }
+  function learnQueue(ctx) {
+    const L = window.LESSONS || [];
+    const byState = L.filter((x) => x.states && x.states.includes(ctx.state) && (!x.steps || x.steps.includes(ctx.step) || ctx.state === 'none'));
+    const byStep = L.filter((x) => !x.states && x.steps && x.steps.includes(ctx.step));
+    const plugin = L.filter((x) => x.kind === 'plugin' && !x.steps);
+    const bg = L.filter((x) => x.kind === 'bg');
+    const order = ctx.state === 'none' ? [...bg, ...plugin, ...byStep] : [...byState, ...byStep, ...plugin, ...bg];
+    return [...new Map(order.map((x) => [x.id, x])).values()];
+  }
+  // 何度でも読めるように：一番読んだ回数が少ない1枚を、並び順の早いほうから出す（読み終えたら最初に戻る）
+  function pickLesson(queue) {
+    const seen = S.learnSeen || {};
+    let best = null;
+    for (const x of queue) {
+      const n = (seen[x.id] || 0) + (S.learnSkip.includes(x.id) ? 0.5 : 0);
+      if (!best || n < best.n) best = { x, n };
+    }
+    return best && best.x;
+  }
+  async function markRead(id) {
+    const seen = { ...(S.learnSeen || {}) };
+    seen[id] = (seen[id] || 0) + 1;
+    S.learnSeen = seen; S.learnSkip = S.learnSkip.filter((x) => x !== id); render();
+    await S.db.doc('data/users/' + S.me + '/learn').set({ seen, at: Date.now() });
+  }
+  const KIND_LABEL = { bg: '背景', plugin: 'プラグイン解説', tip: 'ヒント' };
+  function viewLearn() {
+    const ctx = learnContext();
+    const queue = learnQueue(ctx);
+    const seen = S.learnSeen || {};
+    const next = pickLesson(queue);
+    const times = next ? seen[next.id] || 0 : 0;
+    const round = queue.length ? Math.min(...queue.map((x) => seen[x.id] || 0)) + 1 : 1;
+    const readInRound = queue.filter((x) => (seen[x.id] || 0) >= round).length;
+    const readList = (window.LESSONS || []).filter((x) => seen[x.id]);
+    const where = ctx.hasLog ? `ステップ${ctx.step} ${STEPS[ctx.step - 1]}・${STATE_LABEL[ctx.state]}` : STATE_LABEL.none;
+    return h('div', {},
+      h('h1', {}, 'ヒント'),
+      h('p', { class: 'lead' }, 'いまやっていることに合わせて、1枚ずつ。このプロダクトが必要とされる背景、新規事業を進めるヒント、solo-preneur プラグインの使い方です。読み終えたら最初に戻るので、何度でも読めます。'),
+      h('span', { class: 'learn-ctx' }, `いま：${where}`),
+      next ? h('article', { class: 'learn-card' },
+        h('div', { class: 'row wrap-row' }, h('span', { class: 'chip' + (next.kind === 'tip' ? ' ember' : next.kind === 'plugin' ? ' ok' : '') }, KIND_LABEL[next.kind]), next.steps ? h('span', { class: 'meta' }, `ステップ${next.steps.join('・')}`) : null, h('span', { class: 'grow' }), times ? h('span', { class: 'meta' }, `${times + 1}回目`) : null),
+        h('h2', {}, next.title),
+        h('div', { class: 'body' }, [].concat(next.body).map((p) => h('p', {}, p))),
+        h('div', { class: 'learn-try' }, h('b', {}, 'やってみる'), next.try),
+        h('div', { class: 'learn-src' }, `出典：${next.src}`),
+        next.links ? h('div', { class: 'learn-links' }, next.links.map((k) => h('a', { href: k.url, target: '_blank', rel: 'noopener noreferrer' }, k.label + ' ↗'))) : null,
+        h('div', { class: 'row' },
+          h('button', { class: 'btn primary grow', disabled: S.learnSeen === null, onclick: () => act(() => markRead(next.id)) }, '読んだ、次へ'),
+          h('button', { class: 'btn ghost', onclick: () => { S.learnSkip.push(next.id); render(); } }, 'あとで'))) : null,
+      h('h2', {}, `いまの状況のヒント ${readInRound} / ${queue.length}（${round}周目）`),
+      h('div', { class: 'learn-bar' }, h('i', { style: `width:${queue.length ? Math.round((readInRound / queue.length) * 100) : 0}%` })),
+      readList.length ? h('details', { id: 'learnread', style: 'margin-top:16px' }, h('summary', { class: 'muted' }, `読んだヒント ${readList.length} / ${(window.LESSONS || []).length}`),
+        h('div', { class: 'stack', style: 'margin-top:8px' }, readList.map((x) => h('div', { class: 'card' }, h('div', { class: 'row' }, h('b', { class: 'grow' }, x.title), h('span', { class: 'meta' }, `${seen[x.id]}回`)), h('div', { class: 'muted' }, x.try))))) : null,
+    );
+  }
+
+  // 通知
+  function notifications() {
+    const out = [];
+    S.cheers.filter((c) => c.to === S.me).forEach((c) => out.push({ at: c.at, text: '誰かがあなたの一手を応援しました' }));
+    S.thanks.forEach((t) => out.push({ at: t.at, text: `${name(t.from)}さんから「${t.g}」が届きました` }));
+    S.signs.filter((s) => s.uid === S.me && s.status === 'offered').forEach((s) => out.push({ at: s.offeredAt, text: `${name(s.responder)}さんがあなたの相談に応じました`, go: 'ask' }));
+    S.signs.filter((s) => s.responder === S.me && s.status === 'matched').forEach((s) => out.push({ at: s.startedAt, text: `${name(s.uid)}さんとの相談が始まりました`, go: 'ask' }));
+    S.lessons.filter((l) => l.uid === S.me).forEach((l) => out.push({ at: l.publishedAt, text: 'あなたの学びが公開されました' }));
+    S.bows.filter((b) => b.to === S.me).forEach((b) => out.push({ at: b.at, text: '誰かがあなたの学びに頭を下げました' }));
+    return out.filter((n) => n.at).sort((a, b) => b.at - a.at);
+  }
+  function viewNotes() {
+    const list = notifications();
+    const passed = passedSteps(S.me);
+    return h('div', {},
+      h('h1', {}, '通知'),
+      h('div', { class: 'card stack' }, h('b', {}, 'あなたの通過記録'),
+        passed.length ? h('div', { class: 'row wrap-row' }, passed.map((s) => h('span', { class: 'chip ok' }, `${s} ${STEPS[s - 1]}`))) : h('div', { class: 'muted' }, 'まだありません。一手を「できた」にすると、そのステップの通過記録になります。'),
+        S.experts.has(S.me) ? h('div', {}, h('span', { class: 'chip ember' }, '招待した経験者'), ' ', h('span', { class: 'muted' }, `ステップ ${expertSteps(S.me).join('・')}`)) : null),
+      S.myPending.length ? h('div', { class: 'stack' }, h('h2', {}, 'あなたのやめる決断の学び（公開前）'), S.myPending.map((i) => h('div', { class: 'card stack' },
+        h('div', { class: 'row' }, h('span', { class: 'chip' + (i.status === 'returned' ? ' ember' : '') }, i.status === 'returned' ? '運営者が戻しました' : '運営者の確認待ち'), h('span', { class: 'grow' }), h('button', { class: 'btn ghost small', onclick: () => act(() => deleteMyPending(i.id), '消しました') }, '消す')),
+        h('div', { class: 'muted' }, i.learned)))) : null,
+      h('h2', {}, '届いたもの'),
+      list.length ? h('div', { class: 'stack' }, list.map((n) => h('div', { class: 'card row' }, h('div', { class: 'grow' }, h('div', {}, n.text), h('div', { class: 'meta' }, ago(n.at))), n.go ? h('button', { class: 'btn small', onclick: () => go(n.go) }, '開く') : null)))
+        : h('p', { class: 'empty' }, 'まだ何も届いていません。'),
+    );
+  }
+  function renderBadges() {
+    const seen = Number(ls.get('hb.seen') || 0);
+    const unread = S.tab === 'notes' ? 0 : notifications().filter((n) => n.at > seen).length;
+    $('b-notes').hidden = !unread; $('b-notes').textContent = unread;
+    const s = mySign(); const askAlert = (s && s.status === 'offered') || myResponding().length;
+    $('b-ask').hidden = !askAlert; $('b-ask').textContent = '!';
+  }
+
+  // 運営者だけの画面
+  let expertResults = [];
+  function viewAdmin() {
+    const items = S.allPending.flatMap((p) => (p.items || []).filter((i) => i.status === 'pending').map((i) => ({ owner: p.id, i })));
+    const outs = S.allOutcomes.flatMap((o) => o.items || []);
+    const moved = outs.filter((o) => o.movedOn).length;
+    const done48 = outs.filter((o) => o.doneAt && o.doneAt - o.closedAt < 2 * DAY).length;
+    const since = Date.now() - 14 * DAY;
+    const active = [...S.logs.values()].filter((l) => (l.days || []).filter((d) => new Date(d).getTime() >= since - DAY).length >= 6).length;
+    const q = h('input', { type: 'text', id: 'expq', placeholder: '名前で探す' });
+    q.addEventListener('input', async () => { expertResults = await S.user.search(q.value); drawResults(); });
+    const results = h('div', { class: 'stack' });
+    function drawResults() {
+      results.replaceChildren(...expertResults.map((p) => {
+        const cur = new Set(expertSteps(p.id));
+        const boxes = STEPS.map((s, i) => { const cb = h('input', { type: 'checkbox', value: i + 1 }); cb.checked = cur.has(i + 1); return h('label', { class: 'chip' }, cb, ` ${i + 1}`); });
+        return h('div', { class: 'card stack' }, h('b', {}, p.name), h('div', { class: 'row wrap-row' }, boxes), h('button', { class: 'btn small', onclick: () => act(() => setExpert(p.id, boxes.map((b) => b.querySelector('input')).filter((c) => c.checked).map((c) => Number(c.value))), '保存しました') }, '経験者として保存'));
+      }));
+    }
+    drawResults();
+    return h('div', {},
+      h('h1', {}, '運営'),
+      h('p', { class: 'lead' }, 'この画面は運営者（このページの持ち主）にだけ見えます。'),
+      h('h2', {}, '成功の指標（02-spec）'),
+      h('div', { class: 'card stack' },
+        h('div', {}, `相談を終えた回数：${outs.length}`),
+        h('div', {}, `「動き出せた」【発言】：${moved}`),
+        h('div', {}, h('b', {}, `48時間以内に一手をできた【行動】：${done48}`), h('span', { class: 'muted' }, '（合格基準：20人・2週間で5回）')),
+        h('div', {}, `直近2週間で週3日以上の目安（14日で6日以上）灯した人：${active}`, h('span', { class: 'muted' }, '（合格基準：20人中5人）'))),
+      h('h2', {}, `公開待ちの学び ${items.length}`),
+      items.length ? h('div', { class: 'stack' }, items.map(({ owner, i }) => h('div', { class: 'card stack' },
+        h('div', { class: 'meta' }, `${name(owner)}・ステップ${i.step}・${i.showName ? '名前を出す' : '名前なし'}`),
+        h('div', {}, i.learned), h('div', {}, i.carry), h('div', {}, i.drop),
+        h('div', { class: 'row' }, h('button', { class: 'btn primary small', onclick: () => act(() => approve(owner, i), '公開しました') }, '公開する'), h('button', { class: 'btn ghost small', onclick: () => act(() => sendBack(owner, i), '戻しました') }, '戻す'))))) : h('p', { class: 'empty' }, '公開待ちはありません。'),
+      h('h2', {}, '招待した経験者'),
+      h('div', { class: 'stack' }, [...S.experts.entries()].map(([uid, e]) => h('div', { class: 'card row' }, h('div', { class: 'grow' }, h('b', {}, name(uid)), h('div', { class: 'meta' }, `ステップ ${(e.steps || []).join('・')}`)), h('button', { class: 'btn ghost small', onclick: () => act(() => setExpert(uid, []), '外しました') }, '外す')))),
+      h('div', { class: 'card stack' }, h('div', { class: 'muted' }, '同じ組織の人を名前で探して、経験者の印と、通ったステップを付けます。'), q, results),
+    );
+  }
+
+  boot();
+})();
+</script>
