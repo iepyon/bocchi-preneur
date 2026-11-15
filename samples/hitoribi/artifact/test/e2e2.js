@@ -33,7 +33,7 @@ fs.copyFileSync('/home/user/solo-preneur/samples/hitoribi/artifact/lessons.js', 
     await B.waitForSelector('text=いま：ステップ1 コンセプトと課題検証・一手に取り組み中');
     const t1 = await B.textContent('.learn-card h2'); await shot(B, 'h-learn');
     await B.click('button:text-is("読んだ、次へ")'); await B.waitForFunction((t) => document.querySelector('.learn-card h2') && document.querySelector('.learn-card h2').textContent !== t, t1);
-    await B.reload(); await B.click('.tab[data-tab=learn]'); await B.waitForSelector('summary:has-text("読んだヒント 1 / 75")');
+    await B.reload(); await B.click('.tab[data-tab=learn]'); await B.waitForSelector('summary:has-text("読んだヒント 1 / 72")');
   });
   await step('B: 全部読むと最初に戻り、何度でも読める（2周目・2回目）', async () => {
     const n = Number((await B.textContent('h2:has-text("いまの状況のヒント")')).match(/\/ (\d+)/)[1]);
