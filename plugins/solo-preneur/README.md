@@ -1,4 +1,4 @@
-# ソロプレナー（solo-preneur）v0.7.0
+# ソロプレナー（solo-preneur）v0.8.0
 
 非エンジニアの経営者が、Claude Code と一緒にプロダクトを課題検証からローンチ・運用まで作り切るためのプラグイン。
 
@@ -6,7 +6,7 @@
 事業判断はAIが1問ずつ問い詰めて本人の言葉で決めてもらう（GrillMe式）。顧客の課題と払う意思は、チャットではなく現場の宿題（インタビュー、事前予約）で確かめる。届けることは初日から並走させる。
 
 ## 6工程・11ステップ＋並走トラック
-工程の区切りは、本人が責任を持って決める場面に置いている。
+工程の区切りは、本人が責任を持って決める場面に置いている。工程を出るときの条件（工程ゲート）は `skills/solo-preneur/references/phase-gates.md`。
 
 | 工程 | ステップ | 工程を出るときに本人が決めること |
 |---|---|---|
@@ -65,7 +65,7 @@ agents/              strict-reviewer, pentester, root-cause-analyst
 skills/
   solo-preneur/      本体
     SKILL.md         思想・絶対ルール・分岐・進め方
-    references/      ステップ別の詳細、interview-kit、track-distribution、research-basis
+    references/      ステップ別の詳細、phase-gates（工程ゲート）、interview-kit、track-distribution、research-basis
     templates/state.md
   start/ next/ status/ step/ homework/ review/ pentest/ rca/
                      / で呼び出す入口（各 SKILL.md）
@@ -74,6 +74,7 @@ skills/
 シミュレーション記録と回帰テスト用シナリオは、利用者の環境に入らないようリポジトリ直下の `simulations/` に置いている。
 
 ## 変更履歴
+- v0.8.0：工程ゲートを `phase-gates.md` に書き出した（全工程に共通する条件、工程として確かめること、工程の判断、満たせないときの戻り先）。next が工程の最後で工程ゲートを確かめ、判断を state.md の「工程の判断」に記録するようにした。status に工程ゲートの未達を表示
 - v0.7.0：11ステップを6工程（調査・企画・試作・検証・公開・保守）に束ねた。価格設計を本番実装の前に移し、番号とファイル名を振り直した（6 価格設計 `06-pricing.md`、7 本番実装 `07-build.md`）。届けるトラックのチェックポイント3は検証の終わり（ステップ6）に移動。旧い番号の state.md は、再開時に本人の確認を得て付け替える
 - v0.6.1：はじめの準備（00-setup）を現状に合わせて書き直し（インストール手順、専用フォルダ、Gitでの履歴、作られるファイル、再開と更新）。start の開始時の分岐を「自由に話す→要約→4問を1回で」に揃え、README に始め方と更新を追加
 - v0.6.0：コマンド8本（start・next・status・step・homework・review・pentest・rca）をスキルに移行。呼び出し方（`/solo-preneur:start` など）は変わらない
