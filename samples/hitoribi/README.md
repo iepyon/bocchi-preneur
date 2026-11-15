@@ -10,7 +10,7 @@
 | 進んだ工程 | 1 調査（宿題待ち）→ 2 企画 → 3 試作 → 4 検証（基準の記録まで） |
 | 進行状況 | [docs/solo/state.md](docs/solo/state.md) |
 | 意思決定ログ | [decisions/](decisions/)（4件） |
-| 試作品 | [app/](app/) |
+| 試作品 | 第2版：[artifact/hitoribi.html](artifact/hitoribi.html)（Claudeアーティファクト）／第1版：[app/](app/)（Node.js） |
 | シミュレーションで見つけたプラグインの課題 | [simulations/round4-v0.9.md](../../simulations/round4-v0.9.md) |
 
 ## 4つの仕組み
