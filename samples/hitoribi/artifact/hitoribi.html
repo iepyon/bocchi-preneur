@@ -215,7 +215,7 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
   const S = {
     ready: false, db: null, user: null, me: null, isOwner: false, readOnly: false,
     logs: new Map(), cheers: [], signs: [], lessons: [], bows: [], thanks: [], experts: new Map(),
-    myPending: [], myOutcomes: [], learnRead: null, learnSkip: [], allPending: [], allOutcomes: [], profiles: {},
+    myPending: [], myOutcomes: [], learnSeen: null, learnSkip: [], allPending: [], allOutcomes: [], profiles: {},
     tab: 'logs', wizard: null, roomId: null, room: null, roomMsgs: [], roomUnsubs: [], lessonForm: false,
     celebrate: null, editing: false, dismissAskDone: ls.get('hb.dismiss') || '',
   };
@@ -264,7 +264,7 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
     listen(db.collection('thanks').where('to', '==', me), (s) => { S.thanks = docs(s); });
     listen(db.collection('experts'), (s) => { S.experts = new Map(s.docs.map((d) => [d.id, d.data()])); });
     listen(db.doc('pending/' + me), (d) => { S.myPending = d.exists ? d.data().items || [] : []; });
-    listen(db.doc('data/users/' + me + '/learn'), (d) => { S.learnRead = d.exists ? d.data().read || [] : []; });
+    listen(db.doc('data/users/' + me + '/learn'), (d) => { const x = d.exists ? d.data() : {}; S.learnSeen = x.seen || Object.fromEntries((x.read || []).map((id) => [id, 1])); });
     listen(db.doc('outcomes/' + me), (d) => { S.myOutcomes = d.exists ? d.data().items || [] : []; });
     if (S.isOwner) {
       listen(db.collection('pending'), (s) => { S.allPending = docs(s); });
@@ -679,43 +679,56 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
   function learnQueue(ctx) {
     const L = window.LESSONS || [];
     const byState = L.filter((x) => x.states && x.states.includes(ctx.state) && (!x.steps || x.steps.includes(ctx.step) || ctx.state === 'none'));
-    const byStep = L.filter((x) => x.kind === 'tip' && !x.states && x.steps.includes(ctx.step));
+    const byStep = L.filter((x) => !x.states && x.steps && x.steps.includes(ctx.step));
+    const plugin = L.filter((x) => x.kind === 'plugin' && !x.steps);
     const bg = L.filter((x) => x.kind === 'bg');
-    const order = ctx.state === 'none' ? [...bg, ...byStep] : [...byState, ...byStep, ...bg];
+    const order = ctx.state === 'none' ? [...bg, ...plugin, ...byStep] : [...byState, ...byStep, ...plugin, ...bg];
     return [...new Map(order.map((x) => [x.id, x])).values()];
   }
-  async function markRead(id) {
-    const read = Array.from(new Set([...(S.learnRead || []), id]));
-    S.learnRead = read; render();
-    await S.db.doc('data/users/' + S.me + '/learn').set({ read, at: Date.now() });
+  // 何度でも読めるように：一番読んだ回数が少ない1枚を、並び順の早いほうから出す（読み終えたら最初に戻る）
+  function pickLesson(queue) {
+    const seen = S.learnSeen || {};
+    let best = null;
+    for (const x of queue) {
+      const n = (seen[x.id] || 0) + (S.learnSkip.includes(x.id) ? 0.5 : 0);
+      if (!best || n < best.n) best = { x, n };
+    }
+    return best && best.x;
   }
+  async function markRead(id) {
+    const seen = { ...(S.learnSeen || {}) };
+    seen[id] = (seen[id] || 0) + 1;
+    S.learnSeen = seen; S.learnSkip = S.learnSkip.filter((x) => x !== id); render();
+    await S.db.doc('data/users/' + S.me + '/learn').set({ seen, at: Date.now() });
+  }
+  const KIND_LABEL = { bg: '背景', plugin: 'プラグイン解説', tip: 'ヒント' };
   function viewLearn() {
     const ctx = learnContext();
     const queue = learnQueue(ctx);
-    const read = new Set(S.learnRead || []);
-    const next = queue.find((x) => !read.has(x.id) && !S.learnSkip.includes(x.id)) || queue.find((x) => !read.has(x.id));
-    const stepTips = (window.LESSONS || []).filter((x) => x.steps && x.steps.includes(ctx.step));
-    const doneN = stepTips.filter((x) => read.has(x.id)).length;
-    const readList = (window.LESSONS || []).filter((x) => read.has(x.id));
+    const seen = S.learnSeen || {};
+    const next = pickLesson(queue);
+    const times = next ? seen[next.id] || 0 : 0;
+    const round = queue.length ? Math.min(...queue.map((x) => seen[x.id] || 0)) + 1 : 1;
+    const readInRound = queue.filter((x) => (seen[x.id] || 0) >= round).length;
+    const readList = (window.LESSONS || []).filter((x) => seen[x.id]);
     const where = ctx.hasLog ? `ステップ${ctx.step} ${STEPS[ctx.step - 1]}・${STATE_LABEL[ctx.state]}` : STATE_LABEL.none;
     return h('div', {},
       h('h1', {}, '学び'),
-      h('p', { class: 'lead' }, 'いまやっていることに合わせて、1枚ずつ。このプロダクトが必要とされる背景と、新規事業を進めるヒントです。'),
+      h('p', { class: 'lead' }, 'いまやっていることに合わせて、1枚ずつ。このプロダクトが必要とされる背景、新規事業を進めるヒント、solo-preneur プラグインの使い方です。読み終えたら最初に戻るので、何度でも読めます。'),
       h('span', { class: 'learn-ctx' }, `いま：${where}`),
       next ? h('article', { class: 'learn-card' },
-        h('div', { class: 'row' }, h('span', { class: 'chip' + (next.kind === 'bg' ? '' : ' ember') }, next.kind === 'bg' ? '背景' : 'ヒント'), next.steps && next.kind === 'tip' ? h('span', { class: 'meta' }, `ステップ${next.steps.join('・')}`) : null),
+        h('div', { class: 'row wrap-row' }, h('span', { class: 'chip' + (next.kind === 'tip' ? ' ember' : next.kind === 'plugin' ? ' ok' : '') }, KIND_LABEL[next.kind]), next.steps ? h('span', { class: 'meta' }, `ステップ${next.steps.join('・')}`) : null, h('span', { class: 'grow' }), times ? h('span', { class: 'meta' }, `${times + 1}回目`) : null),
         h('h2', {}, next.title),
         h('div', { class: 'body' }, next.body),
         h('div', { class: 'learn-try' }, h('b', {}, 'やってみる'), next.try),
         h('div', { class: 'learn-src' }, `出典：${next.src}`),
         h('div', { class: 'row' },
-          h('button', { class: 'btn primary grow', disabled: S.learnRead === null, onclick: () => act(() => markRead(next.id)) }, '読んだ、次へ'),
-          h('button', { class: 'btn ghost', onclick: () => { S.learnSkip.push(next.id); render(); } }, 'あとで')))
-        : h('div', { class: 'card stack' }, h('b', {}, 'いまの状況に合う学びは、すべて読みました'), h('div', { class: 'muted' }, '一手を進めたり、相談したりすると、次の学びが出てきます。')),
-      h('h2', {}, `ステップ${ctx.step}の学び ${doneN} / ${stepTips.length}`),
-      h('div', { class: 'learn-bar' }, h('i', { style: `width:${stepTips.length ? Math.round((doneN / stepTips.length) * 100) : 0}%` })),
-      readList.length ? h('details', { id: 'learnread', style: 'margin-top:16px' }, h('summary', { class: 'muted' }, `読んだ学び ${readList.length}`),
-        h('div', { class: 'stack', style: 'margin-top:8px' }, readList.map((x) => h('div', { class: 'card' }, h('b', {}, x.title), h('div', { class: 'muted' }, x.try))))) : null,
+          h('button', { class: 'btn primary grow', disabled: S.learnSeen === null, onclick: () => act(() => markRead(next.id)) }, '読んだ、次へ'),
+          h('button', { class: 'btn ghost', onclick: () => { S.learnSkip.push(next.id); render(); } }, 'あとで'))) : null,
+      h('h2', {}, `いまの状況の学び ${readInRound} / ${queue.length}（${round}周目）`),
+      h('div', { class: 'learn-bar' }, h('i', { style: `width:${queue.length ? Math.round((readInRound / queue.length) * 100) : 0}%` })),
+      readList.length ? h('details', { id: 'learnread', style: 'margin-top:16px' }, h('summary', { class: 'muted' }, `読んだ学び ${readList.length} / ${(window.LESSONS || []).length}`),
+        h('div', { class: 'stack', style: 'margin-top:8px' }, readList.map((x) => h('div', { class: 'card' }, h('div', { class: 'row' }, h('b', { class: 'grow' }, x.title), h('span', { class: 'meta' }, `${seen[x.id]}回`)), h('div', { class: 'muted' }, x.try))))) : null,
     );
   }
 

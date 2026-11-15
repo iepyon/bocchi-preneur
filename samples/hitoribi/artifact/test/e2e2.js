@@ -27,7 +27,13 @@ fs.copyFileSync('/home/user/solo-preneur/samples/hitoribi/artifact/lessons.js', 
     await B.waitForSelector('text=いま：ステップ1 コンセプトと課題検証・一手に取り組み中');
     const t1 = await B.textContent('.learn-card h2'); await shot(B, 'h-learn');
     await B.click('button:text-is("読んだ、次へ")'); await B.waitForFunction((t) => document.querySelector('.learn-card h2') && document.querySelector('.learn-card h2').textContent !== t, t1);
-    await B.reload(); await B.click('.tab[data-tab=learn]'); await B.waitForSelector('summary:has-text("読んだ学び 1")');
+    await B.reload(); await B.click('.tab[data-tab=learn]'); await B.waitForSelector('summary:has-text("読んだ学び 1 / 79")');
+  });
+  await step('B: 全部読むと最初に戻り、何度でも読める（2周目・2回目）', async () => {
+    const n = Number((await B.textContent('h2:has-text("いまの状況の学び")')).match(/\/ (\d+)/)[1]);
+    for (let i = 0; i < n; i++) { const t = await B.textContent('.learn-card h2'); await B.click('button:text-is("読んだ、次へ")'); await B.waitForFunction((t) => document.querySelector('.learn-card h2').textContent !== t, t); }
+    await B.waitForSelector('h2:has-text("2周目")'); await B.waitForSelector('.learn-card .meta:text-is("2回目")'); await shot(B, 'h-learn-loop');
+    console.log('     queue length:', n);
     await B.click('.tab[data-tab=logs]');
   });
   await step('B: 15分相談を1問ずつ出す', async () => {
