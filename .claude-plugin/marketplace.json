@@ -1,0 +1,17 @@
+{
+  "name": "solo-preneur",
+  "owner": {
+    "name": "iepyon"
+  },
+  "metadata": {
+    "description": "一人で事業を立ち上げる人のためのプラグインを配布するマーケットプレイス"
+  },
+  "plugins": [
+    {
+      "name": "solo-preneur",
+      "source": "./plugins/solo-preneur",
+      "description": "一人で事業を立ち上げる人のための、6工程の進行と意思決定を支えるプラグイン",
+      "version": "0.1.0"
+    }
+  ]
+}
