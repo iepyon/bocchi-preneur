@@ -5,7 +5,7 @@
 ```
 samples/
 └── <sample-name>/
-    ├── decisions/   # 意思決定ログ（templates/decision-log.md を使う）
+    ├── decisions/   # 意思決定ログ（decision-log-template.md を使う）
     └── README.md    # 使ったプラグインの版と工程の記録
 ```
 
