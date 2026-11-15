@@ -111,6 +111,7 @@ CLI を対話で動かせない場合は、Round 1〜4 と同じく SKILL.md と
 | 保守の扱い | 「保守はいったん外す。新規事業化」 | `samples/solo-preneur/decisions/02-goal-new-business.md` |
 | 説明チェックと意思決定ログ | 「3はいれる。」 | `samples/solo-preneur/decisions/03-explain-check-and-decision-log.md` |
 | 新規事業化の意味 | 「はい」（社内で事業として認められるところ。例：事業責任者が予算をつけた、事業計画が承認された） | `02-goal-new-business.md` に追記 |
+| 重視すること | 「事業判断を重視」 | `simulations/round5/personas.md`（事業判断の6場面 J1〜J6 を採点の中心にする） |
 | 開発者への技術判断の扱い | 「技術判断は最小限で。プロトタイプは、claudeアーティファクト、かWEBアプリ。リリースは、シンプル構成」 | `samples/solo-preneur/decisions/04-minimal-tech-decisions.md` |
 
 ### 計画への反映
