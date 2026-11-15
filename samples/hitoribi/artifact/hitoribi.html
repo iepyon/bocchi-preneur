@@ -134,6 +134,8 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .toast.err { background: var(--danger); color: #fff; }
 /* 学び */
+.learn-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; } .learn-pick select { margin-top: 2px; font-size: 13px; padding: 6px 10px; } .learn-pick label { font-size: 12px; color: var(--ink-3); }
+.learn-other { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: var(--ember); margin-bottom: 12px; }
 .learn-ctx { font-size: 13px; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; display: inline-block; margin-bottom: 12px; }
 .learn-card { background: var(--surface); border: 1.5px solid var(--ember); border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
 .learn-card h2 { margin: 0; font-size: 20px; }
@@ -217,7 +219,7 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
     ready: false, db: null, user: null, me: null, isOwner: false, readOnly: false,
     logs: new Map(), cheers: [], signs: [], lessons: [], bows: [], thanks: [], experts: new Map(),
     myPending: [], myOutcomes: [], learnSeen: null, learnSkip: [], allPending: [], allOutcomes: [], profiles: {},
-    tab: 'logs', wizard: null, roomId: null, room: null, roomMsgs: [], roomUnsubs: [], lessonForm: false,
+    learnView: null, tab: 'logs', wizard: null, roomId: null, room: null, roomMsgs: [], roomUnsubs: [], lessonForm: false,
     celebrate: null, editing: false, dismissAskDone: ls.get('hb.dismiss') || '',
   };
 
@@ -677,6 +679,16 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
     if (l && isLit(l)) state = l.quitAt ? 'quit' : (mySign() || myResponding().length) ? 'asking' : pendingAskDone().length ? 'after' : l.doneAt ? 'done' : 'lit';
     return { state, step: l ? l.step : 1, hasLog: !!l };
   }
+  // 既定は「いま」に絞る。ほかのステップ・状況を選んで読むこともできる。いまの状況が変わったら「いま」に戻す
+  const ctxKey = (c) => c.step + ':' + c.state;
+  function learnViewCtx(now) {
+    const v = S.learnView;
+    if (!v || v.base !== ctxKey(now) || ctxKey(v) === ctxKey(now)) { S.learnView = null; return now; }
+    return { state: v.state, step: v.step, hasLog: true, other: true };
+  }
+  function setLearnView(now, step, state) {
+    S.learnView = { step, state, base: ctxKey(now) }; S.learnSkip = []; render();
+  }
   function learnQueue(ctx) {
     const L = window.LESSONS || [];
     const byState = L.filter((x) => x.states && x.states.includes(ctx.state) && (!x.steps || x.steps.includes(ctx.step) || ctx.state === 'none'));
@@ -704,7 +716,8 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
   }
   const KIND_LABEL = { bg: '背景', plugin: 'プラグイン解説', tip: 'ヒント' };
   function viewLearn() {
-    const ctx = learnContext();
+    const now = learnContext();
+    const ctx = learnViewCtx(now);
     const queue = learnQueue(ctx);
     const seen = S.learnSeen || {};
     const next = pickLesson(queue);
@@ -712,11 +725,15 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
     const round = queue.length ? Math.min(...queue.map((x) => seen[x.id] || 0)) + 1 : 1;
     const readInRound = queue.filter((x) => (seen[x.id] || 0) >= round).length;
     const readList = (window.LESSONS || []).filter((x) => seen[x.id]);
-    const where = ctx.hasLog ? `ステップ${ctx.step} ${STEPS[ctx.step - 1]}・${STATE_LABEL[ctx.state]}` : STATE_LABEL.none;
+    const where = now.hasLog ? `ステップ${now.step} ${STEPS[now.step - 1]}・${STATE_LABEL[now.state]}` : STATE_LABEL.none;
+    const pstep = h('select', { 'aria-label': 'ヒントを見るステップ', onchange: (e) => setLearnView(now, Number(e.target.value), ctx.state) }, STEPS.map((s, i) => h('option', { value: i + 1, selected: ctx.step === i + 1 }, `${i + 1} ${s}`)));
+    const pstate = h('select', { 'aria-label': 'ヒントを見る状況', onchange: (e) => setLearnView(now, ctx.step, e.target.value) }, Object.entries(STATE_LABEL).map(([k, v]) => h('option', { value: k, selected: ctx.state === k }, v)));
     return h('div', {},
       h('h1', {}, 'ヒント'),
-      h('p', { class: 'lead' }, 'いまやっていることに合わせて、1枚ずつ。このプロダクトが必要とされる背景、新規事業を進めるヒント、solo-preneur プラグインの使い方です。読み終えたら最初に戻るので、何度でも読めます。'),
+      h('p', { class: 'lead' }, 'いまやっていることに合わせて、1枚ずつ。ステップと状況を選び直せば、ほかの場面のヒントも読めます。このプロダクトが必要とされる背景、新規事業を進めるヒント、solo-preneur プラグインの使い方です。読み終えたら最初に戻るので、何度でも読めます。'),
       h('span', { class: 'learn-ctx' }, `いま：${where}`),
+      h('div', { class: 'learn-pick' }, h('label', {}, 'ステップを選んで読む', pstep), h('label', {}, '状況を選んで読む', pstate)),
+      ctx.other ? h('div', { class: 'learn-other' }, h('span', {}, `ほかの状況を見ています：ステップ${ctx.step} ${STEPS[ctx.step - 1]}・${STATE_LABEL[ctx.state]}`), h('button', { class: 'btn small', onclick: () => { S.learnView = null; S.learnSkip = []; render(); } }, 'いまに戻す')) : null,
       next ? h('article', { class: 'learn-card' },
         h('div', { class: 'row wrap-row' }, h('span', { class: 'chip' + (next.kind === 'tip' ? ' ember' : next.kind === 'plugin' ? ' ok' : '') }, KIND_LABEL[next.kind]), next.steps ? h('span', { class: 'meta' }, `ステップ${next.steps.join('・')}`) : null, h('span', { class: 'grow' }), times ? h('span', { class: 'meta' }, `${times + 1}回目`) : null),
         h('h2', {}, next.title),
@@ -727,7 +744,7 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
         h('div', { class: 'row' },
           h('button', { class: 'btn primary grow', disabled: S.learnSeen === null, onclick: () => act(() => markRead(next.id)) }, '読んだ、次へ'),
           h('button', { class: 'btn ghost', onclick: () => { S.learnSkip.push(next.id); render(); } }, 'あとで'))) : null,
-      h('h2', {}, `いまの状況のヒント ${readInRound} / ${queue.length}（${round}周目）`),
+      h('h2', {}, `${ctx.other ? 'この状況' : 'いまの状況'}のヒント ${readInRound} / ${queue.length}（${round}周目）`),
       h('div', { class: 'learn-bar' }, h('i', { style: `width:${queue.length ? Math.round((readInRound / queue.length) * 100) : 0}%` })),
       readList.length ? h('details', { id: 'learnread', style: 'margin-top:16px' }, h('summary', { class: 'muted' }, `読んだヒント ${readList.length} / ${(window.LESSONS || []).length}`),
         h('div', { class: 'stack', style: 'margin-top:8px' }, readList.map((x) => h('div', { class: 'card' }, h('div', { class: 'row' }, h('b', { class: 'grow' }, x.title), h('span', { class: 'meta' }, `${seen[x.id]}回`)), h('div', { class: 'muted' }, x.try))))) : null,

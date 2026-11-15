@@ -42,6 +42,16 @@ fs.copyFileSync('/home/user/solo-preneur/samples/hitoribi/artifact/lessons.js', 
     console.log('     queue length:', n);
     await B.click('.tab[data-tab=logs]');
   });
+  await step('B: 既定はいまの状況。ステップと状況を選び直して、ほかのヒントも読める→いまに戻す', async () => {
+    await B.click('.tab[data-tab=learn]'); await B.waitForSelector('h2:has-text("いまの状況のヒント")');
+    if (await B.$('.learn-other')) throw new Error('既定で「ほかの状況」になっている');
+    await B.selectOption('select[aria-label="ヒントを見るステップ"]', '7'); await B.waitForSelector('text=ほかの状況を見ています：ステップ7 本番実装・一手に取り組み中');
+    await B.waitForSelector('h2:has-text("この状況のヒント")'); await B.waitForSelector('.learn-card .meta:has-text("7")');
+    await B.selectOption('select[aria-label="ヒントを見る状況"]', 'quit'); await B.waitForSelector('.learn-card h2:text-is("やめることは、失敗ではない")'); await shot(B, 'h-learn-other');
+    await B.click('button:text-is("いまに戻す")'); await B.waitForSelector('h2:has-text("いまの状況のヒント")');
+    if (await B.inputValue('select[aria-label="ヒントを見るステップ"]') !== '1') throw new Error('ステップが戻っていない');
+    await B.click('.tab[data-tab=logs]');
+  });
   await step('B: 15分相談を1問ずつ出す', async () => {
     await B.click('button:has-text("この一手で15分相談")');
     await shot(B, 'h-wizard1');
