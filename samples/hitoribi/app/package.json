@@ -1,8 +1,0 @@
-{
-  "name": "hitoribi-prototype",
-  "version": "0.1.0",
-  "private": true,
-  "description": "ひとりび 試作品（solo-preneur プラグインのサンプル）",
-  "scripts": { "start": "node server.js", "reset": "node -e \"require('fs').rmSync('data',{recursive:true,force:true})\"" },
-  "engines": { "node": ">=18" }
-}
