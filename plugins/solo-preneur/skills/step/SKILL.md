@@ -1,6 +1,8 @@
 ---
+name: step
 description: 指定したステップ（1〜11）に移動する
-argument-hint: <ステップ番号 1-11>
+argument-hint: "<ステップ番号 1-11>"
+disable-model-invocation: true
 ---
 
 solo-preneur スキルに従って、ステップ $ARGUMENTS に移動してください。

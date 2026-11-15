@@ -1,5 +1,7 @@
 ---
+name: start
 description: ソロプレナーを始める（新規プロジェクトの初期化、またはステップ1から再開）
+disable-model-invocation: true
 ---
 
 solo-preneur スキルに従って、ソロプレナーのセッションを始めてください。
