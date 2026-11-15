@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
-const dir = __dirname;
+const dir = process.env.OUT || __dirname;
 const html = fs.readFileSync('/home/user/solo-preneur/samples/hitoribi/artifact/hitoribi.html', 'utf8');
 fs.writeFileSync(dir + '/srv/index.html', '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="mock.js"></script></head><body>' + html + '</body></html>');
 fs.copyFileSync(dir + '/mock.js', dir + '/srv/mock.js');
@@ -46,12 +46,16 @@ fs.copyFileSync(dir + '/mock.js', dir + '/srv/mock.js');
   await step('B: 開き直しても「できましたか」が出て、できたにする', async () => { await B.reload(); await B.waitForSelector('text=止まっていた一手、できましたか'); await B.click('.mybar button:text-is("できた")'); await B.waitForSelector('.celebrate'); await shot(B, 'h-done'); });
   await step('B: 通過記録になる', async () => { await B.click('.tab[data-tab=notes]'); await B.waitForSelector('.chip.ok:has-text("コンセプトと課題検証")'); await shot(B, 'h-notes'); });
   // やめる決断の学び
-  await step('B: 学びを送る→公開前は自分だけ', async () => { await B.click('.tab[data-tab=steps]'); await B.click('button:has-text("学びを残す")'); await B.fill('#l1', '部長に見せる前に使う人に聞くべきだった'); await B.fill('#l2', '過去の出来事を聞く質問'); await B.fill('#l3', '資料の見栄え'); await B.click('button:text-is("送る")'); await B.waitForSelector('text=運営者の確認待ち'); });
+  await step('B: 次の一手を灯し「やめる」→学びを書く→公開前は通知に出る', async () => {
+    await B.click('.tab[data-tab=logs]'); await B.fill('#goal', '部長向けの資料を作る'); await B.selectOption('#goalstep', '5'); await B.click('button:text-is("灯す")'); await B.waitForSelector('.mybar button:text-is("やめる")');
+    await B.click('.mybar button:text-is("やめる")'); await B.waitForSelector('h1:text-is("やめる")'); await shot(B, 'h-quit');
+    await B.fill('#l1', '部長に見せる前に使う人に聞くべきだった'); await B.fill('#l2', '過去の出来事を聞く質問'); await B.fill('#l3', '資料の見栄え');
+    await B.click('button:text-is("やめる決断を記録する")'); await B.waitForSelector('text=やめる決断をしました'); await B.waitForSelector('text=やめた。次の一手は？');
+    await B.click('.tab[data-tab=notes]'); await B.waitForSelector('text=運営者の確認待ち');
+  });
   await step('A: 運営で公開→指標が出る', async () => { await A.click('button.linkbtn:text-is("運営")'); await A.waitForSelector('text=公開待ちの学び 1'); await shot(A, 'h-admin'); await A.click('button:text-is("公開する")'); await A.waitForSelector('text=公開待ちの学び 0'); await A.waitForSelector('text=48時間以内に一手をできた【行動】：1'); });
-  await step('A: 学びに頭を下げる→Bに通知', async () => { await A.click('.tab[data-tab=steps]'); await A.click('button:text-is("頭を下げる")'); await B.click('.tab[data-tab=notes]'); await B.waitForSelector('text=頭を下げました', { timeout: 3000 }); });
+  await step('A: 行動ログに学びが混ざり、頭を下げる→Bに通知', async () => { await A.click('.tab[data-tab=logs]'); await A.waitForSelector('.lesson:has-text("部長に見せる前に")'); await shot(A, 'h-feed'); await A.click('button:text-is("頭を下げる")'); await B.click('.tab[data-tab=notes]'); await B.waitForSelector('text=頭を下げました', { timeout: 3000 }); });
   await step('A: 経験者の印を付ける', async () => { await A.click('button.linkbtn:text-is("運営")'); await A.fill('#expq', '田中'); await A.waitForSelector('text=経験者として保存'); await A.click('.card:has-text("田中") label.chip:has-text("5") input'); await A.click('button:text-is("経験者として保存")'); await A.waitForSelector('text=ステップ 5'); });
-  await shot(B, 'h-steps-final');
-  await B.click('.tab[data-tab=steps]'); await B.waitForTimeout(300); await shot(B, 'h-steps');
   console.log('errors:', errs);
   await b.close();
 })();
