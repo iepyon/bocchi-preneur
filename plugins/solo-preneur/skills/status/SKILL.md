@@ -1,5 +1,7 @@
 ---
+name: status
 description: 11ステップの進行状況と、本人がこれまでに下した重要な判断を表示する
+disable-model-invocation: true
 ---
 
 `docs/solo/state.md` を読み、次を簡潔に表示してください。問いは出さず、表示だけで止めてください。

@@ -1,4 +1,4 @@
-# ソロプレナー（solo-preneur）v0.5.1
+# ソロプレナー（solo-preneur）v0.6.0
 
 非エンジニアの経営者が、Claude Code と一緒にプロダクトを課題検証からローンチ・運用まで作り切るためのプラグイン。
 
@@ -34,8 +34,10 @@
 ```
 ローカルで試すだけなら、リポジトリのルートで `claude --plugin-dir ./plugins/solo-preneur`。
 
-## コマンド
-| コマンド | 内容 |
+## 呼び出せるスキル
+入力欄で `/` から呼び出す。AIが自動で呼ぶことはない（本体の solo-preneur スキルは話しかけるだけで動く）。
+
+| 呼び出し | 内容 |
 |---|---|
 | `/solo-preneur:start` | 始める／再開する |
 | `/solo-preneur:next` | ゲートを確認して次へ |
@@ -49,17 +51,20 @@
 ## 構成
 ```
 .claude-plugin/      plugin.json
-commands/            8本
 agents/              strict-reviewer, pentester, root-cause-analyst
-skills/solo-preneur/
-  SKILL.md           思想・絶対ルール・分岐・進め方
-  references/        ステップ別の詳細、interview-kit、track-distribution、research-basis
-  templates/state.md
+skills/
+  solo-preneur/      本体
+    SKILL.md         思想・絶対ルール・分岐・進め方
+    references/      ステップ別の詳細、interview-kit、track-distribution、research-basis
+    templates/state.md
+  start/ next/ status/ step/ homework/ review/ pentest/ rca/
+                     / で呼び出す入口（各 SKILL.md）
 ```
 
 シミュレーション記録と回帰テスト用シナリオは、利用者の環境に入らないようリポジトリ直下の `simulations/` に置いている。
 
 ## 変更履歴
+- v0.6.0：コマンド8本（start・next・status・step・homework・review・pentest・rca）をスキルに移行。呼び出し方（`/solo-preneur:start` など）は変わらない
 - v0.5.1：ステップ2（仕様設計）の見出しから人名を除去
 - v0.5：名前を solo-preneur に変更。人名・出典元の固有名を除去。実際のお金を受け取る事前予約の前に、最低限の公開準備（返金方針・特商法表記・プライバシーポリシー）を前倒しするよう修正。待機リストLPにメールの利用目的を明記。宿題待ちの再開とステップ移動時の最小限チェックを修正
 - v0.3：米中のプロの基準を取り込み、3ラウンドのシミュレーションで見つかった22件の破綻を修正

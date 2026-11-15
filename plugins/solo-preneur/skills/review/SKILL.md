@@ -1,6 +1,8 @@
 ---
+name: review
 description: 実装済みのコードを strict-reviewer エージェントに厳しくレビューさせる（codex CLIがあれば併用）
-argument-hint: [レビュー対象や気になる点（任意）]
+argument-hint: "[レビュー対象や気になる点（任意）]"
+disable-model-invocation: true
 ---
 
 1. `strict-reviewer` エージェントに、現在の実装をレビューさせてください。対象や気になる点：$ARGUMENTS

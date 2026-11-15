@@ -1,6 +1,8 @@
 ---
+name: rca
 description: 根深いバグの根本原因を root-cause-analyst エージェントに分析させる（実装はしない）
-argument-hint: <症状の説明>
+argument-hint: "<症状の説明>"
+disable-model-invocation: true
 ---
 
 `root-cause-analyst` エージェントに、次の問題の根本原因を分析させてください。まだ実装はしないでください。

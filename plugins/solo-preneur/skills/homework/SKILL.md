@@ -1,6 +1,8 @@
 ---
+name: homework
 description: 現場の宿題（顧客インタビュー・価値検証の面談）の台本を作る、または結果を報告して記録する
-argument-hint: [結果のメモを貼り付け（任意）]
+argument-hint: "[結果のメモを貼り付け（任意）]"
+disable-model-invocation: true
 ---
 
 solo-preneur スキルと `references/interview-kit.md` に従ってください。

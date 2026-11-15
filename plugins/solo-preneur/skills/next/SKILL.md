@@ -1,5 +1,7 @@
 ---
+name: next
 description: 現在のステップのゲートを確認し、満たしていれば次のステップへ進む
+disable-model-invocation: true
 ---
 
 solo-preneur スキルに従って、`docs/solo/state.md` を読み、現在のステップのゲート条件を確認してください。
