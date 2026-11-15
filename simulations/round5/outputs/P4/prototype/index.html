@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新規事業担当の相談室（仮）</title>
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --surface: #ffffff;
+    --ink: #1d1f23;
+    --ink-2: #5b606a;
+    --ink-3: #8b909a;
+    --line: #e4e2dc;
+    --accent: #1f5f4a;
+    --accent-ink: #ffffff;
+    --accent-soft: #e5efe9;
+    --warn: #b3261e;
+    --warn-soft: #fbeceb;
+    --demo: #8a5a00;
+    --demo-soft: #fbf1dc;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15171a; --surface: #1e2125; --ink: #eceae4; --ink-2: #b2b5bc; --ink-3: #868a93;
+      --line: #2e3237; --accent: #7cc4a6; --accent-ink: #0f1a15; --accent-soft: #1f2e28;
+      --warn: #f2948d; --warn-soft: #3a2220; --demo: #f0c46a; --demo-soft: #352b17;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171a; --surface: #1e2125; --ink: #eceae4; --ink-2: #b2b5bc; --ink-3: #868a93;
+    --line: #2e3237; --accent: #7cc4a6; --accent-ink: #0f1a15; --accent-soft: #1f2e28;
+    --warn: #f2948d; --warn-soft: #3a2220; --demo: #f0c46a; --demo-soft: #352b17;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+    line-height: 1.7; -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+
+  header.bar { border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 5; }
+  header.bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 12px; }
+  .logo { font-weight: 700; text-decoration: none; letter-spacing: .02em; display: flex; align-items: center; gap: 8px; }
+  .logo-mark { width: 22px; height: 22px; border-radius: 6px; background: var(--accent); display: inline-block; position: relative; }
+  .logo-mark::after { content: ""; position: absolute; left: 5px; top: 6px; width: 12px; height: 8px; border-radius: 3px; background: var(--accent-ink); }
+  .demo-badge { font-size: 12px; color: var(--demo); background: var(--demo-soft); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 999px;
+    padding: 10px 20px; font-weight: 700; cursor: pointer; text-decoration: none; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary[disabled] { opacity: .6; cursor: default; }
+  .btn-ghost { background: transparent; color: var(--ink-2); padding: 8px 4px; font-weight: 500; }
+  .btn-ghost:hover { color: var(--ink); }
+
+  .hero { padding: 48px 0 32px; }
+  .hero h1 { font-size: clamp(26px, 5.5vw, 38px); line-height: 1.35; margin: 0 0 12px; letter-spacing: .01em; }
+  .hero p.lead { font-size: 17px; color: var(--ink-2); margin: 0 0 24px; }
+  .points { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0 0 28px; padding: 0; list-style: none; }
+  .points li { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; font-size: 14px; color: var(--ink-2); }
+  .points b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 2px; }
+  @media (max-width: 600px) { .points { grid-template-columns: 1fr; } }
+
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 8px 0 12px; }
+  .section-head h2 { font-size: 18px; margin: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: 13px; cursor: pointer; color: var(--ink-2); }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+  .list { list-style: none; padding: 0; margin: 0 0 48px; display: grid; gap: 10px; }
+  .card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; text-decoration: none; transition: border-color .15s; }
+  .card:hover { border-color: var(--accent); }
+  .card h3 { font-size: 16px; margin: 0 0 6px; line-height: 1.5; }
+  .meta { font-size: 13px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+  .tag { font-size: 12px; background: var(--accent-soft); color: var(--accent); padding: 1px 8px; border-radius: 999px; }
+  .count { margin-left: auto; font-weight: 700; color: var(--ink-2); }
+  .count.zero { color: var(--demo); font-weight: 500; }
+  .empty { text-align: center; color: var(--ink-2); background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); padding: 28px 16px; }
+
+  .page { padding: 24px 0 64px; }
+  .back { margin-bottom: 12px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+  .panel h1 { font-size: 22px; line-height: 1.45; margin: 0 0 10px; }
+  .body-text { white-space: pre-wrap; margin: 14px 0 0; }
+
+  .replies { margin-top: 24px; }
+  .replies h2 { font-size: 16px; margin: 0 0 10px; }
+  .reply { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 10px; }
+  .reply.new { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .reply .who { font-size: 13px; color: var(--ink-3); margin-bottom: 4px; }
+  .reply p { margin: 0; white-space: pre-wrap; }
+  .waiting { display: flex; align-items: center; gap: 10px; color: var(--ink-2); font-size: 14px; }
+  .dots span { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-3); margin-right: 3px; animation: blink 1.2s infinite; }
+  .dots span:nth-child(2) { animation-delay: .2s; } .dots span:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
+
+  form .field { margin-bottom: 16px; }
+  label.lbl { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .hint { font-size: 13px; color: var(--ink-3); margin-top: 4px; }
+  input[type=text], textarea, select { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px 12px; }
+  textarea { min-height: 140px; resize: vertical; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .invalid { border-color: var(--warn) !important; }
+  .err { color: var(--warn); font-size: 13px; margin-top: 4px; }
+  .notice { background: var(--warn-soft); color: var(--warn); border-radius: 10px; padding: 10px 12px; font-size: 13px; margin-bottom: 16px; }
+  .actions { display: flex; gap: 12px; align-items: center; justify-content: flex-end; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0;
+    background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-size: 14px; transition: all .25s; pointer-events: none; z-index: 10; max-width: calc(100% - 32px); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  footer { color: var(--ink-3); font-size: 12px; padding: 24px 0 40px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="logo" href="#/"><span class="logo-mark" aria-hidden="true"></span>新規事業担当の相談室<span style="color:var(--ink-3);font-weight:400">（仮）</span></a>
+    <span class="demo-badge" title="表示している相談・返事はすべて架空のダミーです">デモ版・ダミーデータ</span>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<div class="wrap"><footer>これは中間報告用の試作品です。表示されている相談・返事・会社名はすべて架空のもので、入力内容はどこにも送信・保存されません（ページを再読み込みすると消えます）。</footer></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var TAGS = ["切り口・テーマ", "顧客探し", "社内調整・稟議", "報告・見せ方", "その他"];
+
+  // ---- ダミーデータ（すべて架空） ----
+  var posts = [
+    {
+      id: 1, tag: "切り口・テーマ", who: "製造業（従業員3,000人）／新規事業1年目", ago: "2時間前",
+      title: "「種を1つ形にしろ」と言われて3か月。切り口が決まらず手が止まっています",
+      body: "既存事業の技術を使って何か、という指示だけで、どこから考えればいいか分かりません。\n社内には同じ立場の人がおらず、上司に聞くと「それを考えるのが仕事」と言われてしまいます。\n皆さんは最初の切り口をどうやって決めましたか。",
+      replies: [
+        { who: "通信（従業員8,000人）／新規事業4年目", text: "私も最初は技術起点で考えて止まりました。逆に「社内で一番クレームが多い顧客」に3人会いに行ったら、そこから切り口が出ました。" },
+        { who: "商社（従業員5,000人）／新規事業2年目", text: "上司に「3案出すので1つ選んでください」と期限付きで持っていくと、意外と方向性を言ってくれますよ。" }
+      ]
+    },
+    {
+      id: 2, tag: "顧客探し", who: "金融（従業員10,000人）／新規事業2年目", ago: "昨日",
+      title: "インタビュー相手が社内のつてでは見つかりません",
+      body: "法人向けの新サービスを考えていますが、営業部門に紹介を頼むと「既存顧客に変なことを聞かれたら困る」と断られます。\n皆さんはどうやって最初の5人を見つけていますか。",
+      replies: [
+        { who: "不動産（従業員2,000人）／新規事業3年目", text: "業界の勉強会やSNSで、個人として声をかけました。会社名を出さずに「調べものをしている」と伝えると、話してくれる人が多かったです。" }
+      ]
+    },
+    {
+      id: 3, tag: "報告・見せ方", who: "食品（従業員1,500人）／新規事業1年目", ago: "3日前",
+      title: "中間報告で部長に何を見せればいいか迷っています",
+      body: "2週間後に中間報告があります。資料だけで説明するか、画面イメージまで作るか迷っています。",
+      replies: []
+    },
+    {
+      id: 4, tag: "社内調整・稟議", who: "化学（従業員6,000人）／新規事業3年目", ago: "5日前",
+      title: "既存事業とのカニバリを指摘されて、企画が止まっています",
+      body: "既存事業の部長から「うちの顧客を食う」と言われ、役員会に上げられません。",
+      replies: [
+        { who: "電機（従業員20,000人）／新規事業5年目", text: "既存事業の部長を「アドバイザー」として企画に入れてしまうと、反対から協力に変わったことがあります。" },
+        { who: "ITサービス（従業員4,000人）／新規事業2年目", text: "対象顧客の層を明確に分けた図を1枚作って、重ならないことを先に見せました。" },
+        { who: "製薬（従業員7,000人）／新規事業4年目", text: "小さく試す期間と撤退条件を先に約束したら、承認が通りました。" }
+      ]
+    }
+  ];
+  var nextId = 100;
+
+  // 投稿後に「返事が届く」様子を見せるための、架空の返事（デモ用）
+  var demoReplies = {
+    "切り口・テーマ": { who: "通信（従業員8,000人）／新規事業4年目", text: "同じところで止まっていました。切り口は机の上では決まらなかったので、まず困っていそうな人に3人会いに行くのがおすすめです。会う相手の探し方なら相談に乗れますよ。" },
+    "顧客探し":       { who: "不動産（従業員2,000人）／新規事業3年目", text: "会社名を出さずに個人として声をかけると、話してくれる人が増えました。声のかけ方の文面を共有しましょうか。" },
+    "社内調整・稟議": { who: "電機（従業員20,000人）／新規事業5年目", text: "反対している人を味方側の役割に入れてしまうのが効きました。具体的にどんな反対を受けていますか。" },
+    "報告・見せ方":   { who: "商社（従業員5,000人）／新規事業2年目", text: "うちの部長も見た目から入る人でした。画面1枚と「誰に聞いて何が分かったか」をセットにすると通りやすかったです。" },
+    "その他":         { who: "ITサービス（従業員4,000人）／新規事業2年目", text: "分かります、私も同じ状況でした。もう少し状況を教えてもらえますか。" }
+  };
+
+  var state = { filter: null, pendingReplyFor: null };
+  var app = document.getElementById("app");
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function findPost(id) { for (var i = 0; i < posts.length; i++) if (posts[i].id === id) return posts[i]; return null; }
+  function toast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg; t.classList.add("show");
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, 2800);
+  }
+
+  // ---- トップ ----
+  function renderHome() {
+    var list = state.filter ? posts.filter(function (p) { return p.tag === state.filter; }) : posts;
+    var chips = ['<button class="chip" data-tag="" aria-pressed="' + (!state.filter) + '">すべて</button>']
+      .concat(TAGS.map(function (t) {
+        return '<button class="chip" data-tag="' + esc(t) + '" aria-pressed="' + (state.filter === t) + '">' + esc(t) + "</button>";
+      })).join("");
+
+    var items = list.length ? list.map(function (p) {
+      var n = p.replies.length;
+      return '<li><a class="card" href="#/post/' + p.id + '">' +
+        "<h3>" + esc(p.title) + "</h3>" +
+        '<div class="meta"><span class="tag">' + esc(p.tag) + "</span><span>" + esc(p.who) + "</span><span>" + esc(p.ago) + "</span>" +
+        '<span class="count' + (n ? "" : " zero") + '">' + (n ? "返事 " + n + "件" : "まだ返事なし") + "</span></div>" +
+        "</a></li>";
+    }).join("") : "";
+
+    app.innerHTML =
+      '<div class="wrap">' +
+        '<section class="hero">' +
+          "<h1>社内に相談相手がいない、<br>新規事業担当へ。</h1>" +
+          '<p class="lead">他社の新規事業担当に、匿名で悩みを相談できる掲示板です。<br>「切り口が決まらない」「稟議が通らない」——同じ立場の人が返事をくれます。</p>' +
+          '<ul class="points">' +
+            "<li><b>匿名で相談</b>業種と担当年数だけ表示。会社名は出ません。</li>" +
+            "<li><b>返事は全員が新規事業担当</b>同じ立場の経験談が届きます。</li>" +
+            "<li><b>他の人の相談も読める</b>似た悩みの解決例を探せます。</li>" +
+          "</ul>" +
+          '<a class="btn btn-primary" href="#/new">悩みを相談する</a>' +
+        "</section>" +
+        '<div class="section-head"><h2>みんなの相談</h2></div>' +
+        '<div class="chips" role="group" aria-label="テーマで絞り込む">' + chips + "</div>" +
+        (list.length ? '<ul class="list">' + items + "</ul>"
+          : '<div class="empty" style="margin-bottom:48px">このテーマの相談はまだありません。<br><a href="#/new">最初に相談してみる</a></div>') +
+      "</div>";
+
+    Array.prototype.forEach.call(app.querySelectorAll(".chip"), function (b) {
+      b.addEventListener("click", function () { state.filter = b.getAttribute("data-tag") || null; renderHome(); });
+    });
+  }
+
+  // ---- 相談を書く ----
+  function renderNew() {
+    app.innerHTML =
+      '<div class="wrap page">' +
+        '<div class="back"><a class="btn btn-ghost" href="#/">← 相談の一覧へ戻る</a></div>' +
+        '<div class="panel">' +
+          "<h1>悩みを相談する</h1>" +
+          '<div class="notice">社名・製品名・数字など、社外秘の情報は書かないでください。表示されるのは業種と担当年数だけです。</div>' +
+          '<form id="f" novalidate>' +
+            '<div class="field"><label class="lbl" for="tag">テーマ</label><select id="tag">' +
+              TAGS.map(function (t) { return "<option>" + esc(t) + "</option>"; }).join("") + "</select></div>" +
+            '<div class="field"><label class="lbl" for="title">ひとことで言うと</label>' +
+              '<input id="title" type="text" maxlength="80" placeholder="例：切り口が決まらず、3か月手が止まっています">' +
+              '<div class="err" id="e-title" hidden>ひとことで何に困っているかを書いてください</div></div>' +
+            '<div class="field"><label class="lbl" for="body">くわしく</label>' +
+              '<textarea id="body" maxlength="2000" placeholder="いまの状況、試したこと、どこで止まっているか"></textarea>' +
+              '<div class="err" id="e-body" hidden>状況を1〜2行でいいので書いてください</div>' +
+              '<div class="hint">試したことを書くと、具体的な返事がつきやすくなります。</div></div>' +
+            '<div class="field"><label class="lbl" for="who">表示される肩書き</label>' +
+              '<input id="who" type="text" maxlength="40" value="製造業（従業員3,000人）／新規事業1年目"></div>' +
+            '<div class="actions"><a class="btn btn-ghost" href="#/">やめる</a><button class="btn btn-primary" id="submit" type="submit">相談を投稿する</button></div>' +
+          "</form>" +
+        "</div>" +
+      "</div>";
+
+    document.getElementById("f").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var title = document.getElementById("title"), body = document.getElementById("body");
+      var ok = true;
+      [[title, "e-title"], [body, "e-body"]].forEach(function (pair) {
+        var bad = !pair[0].value.trim();
+        pair[0].classList.toggle("invalid", bad);
+        document.getElementById(pair[1]).hidden = !bad;
+        if (bad) ok = false;
+      });
+      if (!ok) { (title.value.trim() ? body : title).focus(); return; }
+
+      var btn = document.getElementById("submit");
+      btn.disabled = true; btn.textContent = "投稿しています…";
+      setTimeout(function () {
+        var p = {
+          id: nextId++, tag: document.getElementById("tag").value,
+          who: document.getElementById("who").value.trim() || "新規事業担当",
+          ago: "たった今", title: title.value.trim(), body: body.value.trim(), replies: [], mine: true
+        };
+        posts.unshift(p);
+        state.pendingReplyFor = p.id;
+        location.hash = "#/post/" + p.id;
+        toast("相談を投稿しました");
+        // デモ：数秒後に他社の担当から返事が届く
+        setTimeout(function () {
+          var r = demoReplies[p.tag] || demoReplies["その他"];
+          p.replies.push({ who: r.who, text: r.text, fresh: true });
+          state.pendingReplyFor = null;
+          if (location.hash === "#/post/" + p.id) renderPost(p.id);
+          toast("返事が届きました");
+        }, 4500);
+      }, 700);
+    });
+  }
+
+  // ---- 相談の詳細 ----
+  function renderPost(id) {
+    var p = findPost(id);
+    if (!p) {
+      app.innerHTML = '<div class="wrap page"><div class="empty">この相談は見つかりませんでした。<br><a href="#/">相談の一覧へ戻る</a></div></div>';
+      return;
+    }
+    var waiting = state.pendingReplyFor === p.id;
+    var replies = p.replies.map(function (r) {
+      var html = '<div class="reply' + (r.fresh ? " new" : "") + '"><div class="who">' + esc(r.who) + "</div><p>" + esc(r.text) + "</p></div>";
+      r.fresh = false;
+      return html;
+    }).join("");
+    var emptyReplies = waiting
+      ? '<div class="reply"><div class="waiting"><span class="dots"><span></span><span></span><span></span></span>他社の新規事業担当に届けています。返事が来たらここに表示されます。</div></div>'
+      : '<div class="empty">まだ返事はありません。<br>同じ悩みを経験した人がいたら、最初の返事を書いてみませんか。</div>';
+
+    app.innerHTML =
+      '<div class="wrap page">' +
+        '<div class="back"><a class="btn btn-ghost" href="#/">← 相談の一覧へ戻る</a></div>' +
+        '<article class="panel">' +
+          '<div class="meta" style="margin-bottom:8px"><span class="tag">' + esc(p.tag) + "</span><span>" + esc(p.who) + "</span><span>" + esc(p.ago) + "</span>" +
+            (p.mine ? '<span class="tag" style="background:var(--demo-soft);color:var(--demo)">あなたの相談</span>' : "") + "</div>" +
+          "<h1>" + esc(p.title) + "</h1>" +
+          '<p class="body-text">' + esc(p.body) + "</p>" +
+        "</article>" +
+        '<section class="replies"><h2>返事' + (p.replies.length ? "（" + p.replies.length + "件）" : "") + "</h2>" +
+          (p.replies.length ? replies : emptyReplies) +
+        "</section>" +
+        '<section class="panel" style="margin-top:16px">' +
+          '<form id="rf" novalidate>' +
+            '<label class="lbl" for="rt">' + (p.mine ? "お礼や追加の情報を書く" : "返事を書く") + "</label>" +
+            '<textarea id="rt" style="min-height:96px" maxlength="1000" placeholder="' + (p.mine ? "例：ありがとうございます、試してみます" : "自分の経験をもとに、具体的に") + '"></textarea>' +
+            '<div class="err" id="e-rt" hidden>返事を入力してください</div>' +
+            '<div class="actions" style="margin-top:10px"><button class="btn btn-primary" type="submit">送信する</button></div>' +
+          "</form>" +
+        "</section>" +
+      "</div>";
+
+    document.getElementById("rf").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var rt = document.getElementById("rt");
+      var bad = !rt.value.trim();
+      rt.classList.toggle("invalid", bad);
+      document.getElementById("e-rt").hidden = !bad;
+      if (bad) { rt.focus(); return; }
+      p.replies.push({ who: "あなた（製造業／新規事業1年目）", text: rt.value.trim(), fresh: true });
+      renderPost(p.id);
+      toast("送信しました");
+    });
+  }
+
+  function route() {
+    var h = location.hash || "#/";
+    var m = h.match(/^#\/post\/(\d+)$/);
+    if (h === "#/new") renderNew();
+    else if (m) renderPost(parseInt(m[1], 10));
+    else renderHome();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>
+</body>
+</html>
