@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>画面の骨格 見比べ</title>
+<style>
+  :root {
+    --bg: #f6f6f4; --paper: #ffffff; --ink: #1d1d1b; --sub: #66665f; --line: #c9c9c2;
+    --block: #e6e6e0; --strong: #3a3a36; --pick: #2f5d8a; --pick-bg: #e8f0f8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1a1a19; --paper: #242422; --ink: #ededea; --sub: #a3a39c; --line: #4a4a46;
+      --block: #33332f; --strong: #d6d6d0; --pick: #8db8e3; --pick-bg: #23313f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif; line-height: 1.6; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 120px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .lead { color: var(--sub); margin: 0 0 28px; font-size: 14px; }
+  section.screen { margin-bottom: 44px; }
+  h2 { font-size: 18px; margin: 0 0 4px; }
+  .who { color: var(--sub); font-size: 13px; margin: 0 0 12px; }
+  .pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  label.opt { display: block; background: var(--paper); border: 2px solid var(--line);
+    border-radius: 10px; padding: 14px; cursor: pointer; }
+  label.opt:has(input:checked) { border-color: var(--pick); background: var(--pick-bg); }
+  .opt-head { display: flex; gap: 8px; align-items: center; font-weight: 700; margin-bottom: 4px; }
+  .gain, .loss { font-size: 13px; margin: 0; }
+  .gain::before { content: "嬉しい："; font-weight: 700; }
+  .loss::before { content: "失う："; font-weight: 700; }
+  .wf { margin-top: 12px; border: 1px solid var(--line); border-radius: 6px; padding: 10px;
+    background: var(--paper); font-size: 12px; }
+  .bar { background: var(--block); border-radius: 4px; padding: 6px 8px; margin: 6px 0; }
+  .bar.top { background: var(--strong); color: var(--paper); font-weight: 700; }
+  .row { display: flex; gap: 6px; }
+  .row > * { flex: 1; }
+  .box { border: 1px dashed var(--line); border-radius: 4px; padding: 6px; min-height: 40px; margin: 6px 0; }
+  .btn { display: inline-block; border: 1px solid var(--strong); border-radius: 4px; padding: 2px 8px; font-size: 11px; }
+  .btn.main { background: var(--strong); color: var(--paper); }
+  .tag { font-size: 10px; color: var(--sub); }
+  .states { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
+  .state { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font-size: 12px; }
+  .state b { display: block; font-size: 11px; color: var(--sub); }
+  .top1 { font-size: 12px; margin: 6px 0 0; color: var(--sub); }
+  .top1 strong { color: var(--ink); }
+  #out { position: fixed; left: 0; right: 0; bottom: 0; background: var(--paper); border-top: 1px solid var(--line);
+    padding: 12px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  #out code { font-size: 14px; background: var(--block); padding: 4px 8px; border-radius: 4px; }
+  #copy { border: 1px solid var(--strong); background: var(--strong); color: var(--paper); border-radius: 6px; padding: 6px 12px; font-size: 14px; cursor: pointer; }
+</style>
+</head>
+<body>
+<main>
+  <h1>画面の骨格（ワイヤーフレーム）見比べ</h1>
+  <p class="lead">色や見た目はまだ決めません。置き場所と、一番目立たせる情報だけを比べます。各画面で1つずつ選ぶと、下に答えが出ます。データはすべて架空です。</p>
+
+  <section class="screen">
+    <h2>画面1　部下：自分の育成の記録</h2>
+    <p class="who">使う人：研修に出た部下。15分の日付・指摘・直す前／直した後を書く。</p>
+    <div class="pair">
+      <label class="opt"><div class="opt-head"><input type="radio" name="s1" value="A">1-A　時系列で縦に並べる</div>
+        <p class="gain">1回目 → 2回目の順に読めて、「次にやること」が上に出る</p>
+        <p class="loss">直す前と後を見比べるには、少し下まで読む必要がある</p>
+        <div class="wf">
+          <div class="bar top">次にやること：1回目の「直した後」を貼る</div>
+          <div class="bar">1回目の15分　4/18　経験者：田中（企画部）</div>
+          <div class="box">指摘：「市場規模の根拠が1つしかない」</div>
+          <div class="row"><div class="box">直す前<br><span class="tag">抜粋を貼る</span></div><div class="box">直した後<br><span class="tag">まだです</span></div></div>
+          <div class="bar">2回目の15分　（5月中旬ごろ）</div>
+        </div>
+        <p class="top1">一番大事な情報：<strong>次にやること</strong></p>
+      </label>
+      <label class="opt"><div class="opt-head"><input type="radio" name="s1" value="B">1-B　前と後の比較を主役にする</div>
+        <p class="gain">「何が変わったか」がひと目で分かり、育った実感を持ちやすい</p>
+        <p class="loss">次にやることが目立たず、「直した後」の貼り忘れに気づきにくい</p>
+        <div class="wf">
+          <div class="row"><div class="bar">1回目</div><div class="bar">2回目</div></div>
+          <div class="row"><div class="box" style="min-height:70px">直す前<br><span class="tag">大きく表示</span></div><div class="box" style="min-height:70px">直した後<br><span class="tag">大きく表示</span></div></div>
+          <div class="box">指摘：「市場規模の根拠が1つしかない」　4/18 田中（企画部）</div>
+          <span class="btn">直した後を貼る</span>
+        </div>
+        <p class="top1">一番大事な情報：<strong>直す前と直した後</strong></p>
+      </label>
+    </div>
+    <div class="states">
+      <div class="state"><b>初回</b>「研修おつかれさまでした。担当の経験者は 田中さん です。15分の日付を入れましょう」</div>
+      <div class="state"><b>空</b>直した後が空：「直した後がまだです」と表示（試作品で貼り忘れを確かめる）</div>
+      <div class="state"><b>失敗</b>指摘が2行を超えた：「1〜2行に短くしてください」。保存できない：「保存できませんでした。もう一度押してください」</div>
+    </div>
+  </section>
+
+  <section class="screen">
+    <h2>画面2　経験者：担当する部下</h2>
+    <p class="who">使う人：経験者。2回目の15分の終わりに「1回目と同じ指摘か」を付けるだけ。</p>
+    <div class="pair">
+      <label class="opt"><div class="opt-head"><input type="radio" name="s2" value="A">2-A　一覧の中でそのまま付ける</div>
+        <p class="gain">開いてすぐ押せる。経験者の手間が最小</p>
+        <p class="loss">1回目の指摘を読まずに押してしまうおそれがある</p>
+        <div class="wf">
+          <div class="bar top">あなたにお願いすること：1件</div>
+          <div class="box">山本さん（営業部）　2回目 5/20<br>1回目の指摘：「市場規模の根拠が1つしかない」<br><span class="btn main">同じ指摘だった</span> <span class="btn">違う指摘だった</span></div>
+          <div class="box">佐藤さん（営業部）　2回目はまだです</div>
+        </div>
+        <p class="top1">一番大事な情報：<strong>お願いすることの件数</strong></p>
+      </label>
+      <label class="opt"><div class="opt-head"><input type="radio" name="s2" value="B">2-B　1回目と2回目を並べてから付ける</div>
+        <p class="gain">2つの指摘を見比べてから判断できるので、成功の指標の証拠が強くなる</p>
+        <p class="loss">1画面ぶん操作が増える（数秒〜十数秒）</p>
+        <div class="wf">
+          <div class="bar">山本さん（営業部）</div>
+          <div class="row"><div class="box">1回目の指摘<br>「市場規模の根拠が1つしかない」</div><div class="box">2回目の指摘<br>「競合の比較が浅い」</div></div>
+          <div class="bar top">1回目と同じ指摘でしたか？</div>
+          <span class="btn main">同じだった</span> <span class="btn">違った</span>
+        </div>
+        <p class="top1">一番大事な情報：<strong>1回目と2回目の指摘</strong></p>
+      </label>
+    </div>
+    <div class="states">
+      <div class="state"><b>初回</b>「担当の部下が15分を登録すると、ここに出てきます。お願いするのは2回目の終わりに1回押すことだけです」</div>
+      <div class="state"><b>空</b>お願いすることが0件：「今お願いすることはありません」</div>
+      <div class="state"><b>失敗</b>押し間違い：「付け直す」で変えられる。保存できない：「もう一度押してください」</div>
+    </div>
+  </section>
+
+  <section class="screen">
+    <h2>画面3　部長：部下の記録と受講報告書用の文</h2>
+    <p class="who">使う人：部長（または代わりに書く課長）。見る・コピーするだけ。</p>
+    <div class="pair">
+      <label class="opt"><div class="opt-head"><input type="radio" name="s3" value="A">3-A　部下の一覧から入る</div>
+        <p class="gain">部署全体の進み具合（誰が2回目まで終わったか）が分かる</p>
+        <p class="loss">報告書用の文までに1回クリックが要る</p>
+        <div class="wf">
+          <div class="bar top">部下の進み具合</div>
+          <div class="box">山本さん　1回目 ✓　2回目 ✓　→ 報告書用の文</div>
+          <div class="box">佐藤さん　1回目 ✓　2回目 まだ</div>
+        </div>
+        <p class="top1">一番大事な情報：<strong>誰が2回目まで終わったか</strong></p>
+      </label>
+      <label class="opt"><div class="opt-head"><input type="radio" name="s3" value="B">3-B　受講報告書用の文を主役にする</div>
+        <p class="gain">開いてすぐコピーできる。部長の手間が最小（必須③）</p>
+        <p class="loss">部署全体の進み具合は小さくしか見えない</p>
+        <div class="wf">
+          <div class="row"><div class="bar">山本さん</div><div class="bar">佐藤さん（未完了）</div></div>
+          <div class="box" style="min-height:70px">受講報告書　効果の欄に貼る文<br><span class="tag">4/18と5/20に経験者と15分の振り返り。1回目の指摘「市場規模の根拠が1つしかない」を受け、根拠を3つに増やした（前後を添付）。2回目は同じ指摘を受けなかった。</span></div>
+          <span class="btn main">文をコピー</span>
+        </div>
+        <p class="top1">一番大事な情報：<strong>効果の欄に貼る文</strong></p>
+      </label>
+    </div>
+    <div class="states">
+      <div class="state"><b>初回</b>「部下が15分の記録をつけると、ここに出てきます。部長の入力は要りません」</div>
+      <div class="state"><b>空</b>2回目がまだ：「2回目の15分がまだです。文は2回目のあとに出ます」</div>
+      <div class="state"><b>失敗</b>コピーできない：文を選択状態にして「手でコピーしてください」と出す</div>
+    </div>
+  </section>
+</main>
+
+<div id="out"><span>選んだ結果：</span><code id="ans">まだ選んでいません</code><button id="copy" type="button">コピー</button></div>
+
+<script>
+  const names = ["s1", "s2", "s3"];
+  function update() {
+    const parts = names.map((n, i) => {
+      const v = document.querySelector('input[name="' + n + '"]:checked');
+      return v ? (i + 1) + "-" + v.value : null;
+    }).filter(Boolean);
+    document.getElementById("ans").textContent = parts.length ? parts.join(", ") : "まだ選んでいません";
+  }
+  document.querySelectorAll("input[type=radio]").forEach(r => r.addEventListener("change", update));
+  document.getElementById("copy").addEventListener("click", () => {
+    const t = document.getElementById("ans").textContent;
+    if (navigator.clipboard) { navigator.clipboard.writeText(t).catch(() => {}); }
+  });
+</script>
+</body>
+</html>
