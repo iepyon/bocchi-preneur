@@ -137,7 +137,8 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
 .learn-ctx { font-size: 13px; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; display: inline-block; margin-bottom: 12px; }
 .learn-card { background: var(--surface); border: 1.5px solid var(--ember); border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
 .learn-card h2 { margin: 0; font-size: 20px; }
-.learn-card .body { line-height: 1.85; }
+.learn-card .body { line-height: 1.85; } .learn-card .body p { margin: 0 0 10px; } .learn-card .body p:last-child { margin: 0; }
+.learn-links { display: flex; flex-wrap: wrap; gap: 8px; } .learn-links a { color: var(--ink); font-size: 13px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; text-decoration: none; background: var(--bg); } .learn-links a:hover { border-color: var(--ember); }
 .learn-try { background: var(--ember-soft); border-radius: 12px; padding: 10px 12px; }
 .learn-try b { display: block; font-size: 12px; color: var(--ember); }
 .learn-src { font-size: 11px; color: var(--ink-3); overflow-wrap: anywhere; }
@@ -719,9 +720,10 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
       next ? h('article', { class: 'learn-card' },
         h('div', { class: 'row wrap-row' }, h('span', { class: 'chip' + (next.kind === 'tip' ? ' ember' : next.kind === 'plugin' ? ' ok' : '') }, KIND_LABEL[next.kind]), next.steps ? h('span', { class: 'meta' }, `ステップ${next.steps.join('・')}`) : null, h('span', { class: 'grow' }), times ? h('span', { class: 'meta' }, `${times + 1}回目`) : null),
         h('h2', {}, next.title),
-        h('div', { class: 'body' }, next.body),
+        h('div', { class: 'body' }, [].concat(next.body).map((p) => h('p', {}, p))),
         h('div', { class: 'learn-try' }, h('b', {}, 'やってみる'), next.try),
         h('div', { class: 'learn-src' }, `出典：${next.src}`),
+        next.links ? h('div', { class: 'learn-links' }, next.links.map((k) => h('a', { href: k.url, target: '_blank', rel: 'noopener noreferrer' }, k.label + ' ↗'))) : null,
         h('div', { class: 'row' },
           h('button', { class: 'btn primary grow', disabled: S.learnSeen === null, onclick: () => act(() => markRead(next.id)) }, '読んだ、次へ'),
           h('button', { class: 'btn ghost', onclick: () => { S.learnSkip.push(next.id); render(); } }, 'あとで'))) : null,
