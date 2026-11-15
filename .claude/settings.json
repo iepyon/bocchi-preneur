@@ -1,0 +1,10 @@
+{
+  "extraKnownMarketplaces": {
+    "solo-preneur": {
+      "source": { "source": "github", "repo": "iepyon/solo-preneur" }
+    }
+  },
+  "enabledPlugins": {
+    "solo-preneur@solo-preneur": true
+  }
+}
