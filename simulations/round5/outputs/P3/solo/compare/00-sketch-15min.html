@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>15分相談スケッチ</title>
+<style>
+:root{
+  --bg:#f6f5f2; --card:#ffffff; --ink:#1f2328; --sub:#5d636b; --line:#dedbd4;
+  --accent:#2f6f5e; --accent-ink:#ffffff; --soft:#e7f1ed; --warn:#8a5a00; --warn-bg:#fff4dc;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16181b; --card:#1f2226; --ink:#e8e6e1; --sub:#a3a8ae; --line:#33373c;
+    --accent:#6cc2a8; --accent-ink:#10231d; --soft:#22342e; --warn:#f0c46a; --warn-bg:#3a2f17;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16181b; --card:#1f2226; --ink:#e8e6e1; --sub:#a3a8ae; --line:#33373c;
+  --accent:#6cc2a8; --accent-ink:#10231d; --soft:#22342e; --warn:#f0c46a; --warn-bg:#3a2f17;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.6}
+header{max-width:1100px;margin:0 auto;padding:24px 16px 8px}
+h1{font-size:1.25rem;margin:0 0 6px}
+.note{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 12px;font-size:.88rem}
+.flow{max-width:1100px;margin:0 auto;padding:16px;display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.step{display:flex;flex-direction:column;gap:8px}
+.step h2{font-size:.9rem;color:var(--sub);margin:0;font-weight:600}
+.phone{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;min-height:380px;display:flex;flex-direction:column;gap:10px}
+.title{font-weight:700;font-size:1rem}
+.muted{color:var(--sub);font-size:.85rem}
+.field{border:1px solid var(--line);border-radius:10px;padding:10px;font-size:.9rem;color:var(--sub)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:.8rem}
+.tag.on{background:var(--soft);border-color:var(--accent);color:var(--ink)}
+.btn{margin-top:auto;background:var(--accent);color:var(--accent-ink);border:none;border-radius:10px;padding:12px;font-weight:700;font-size:.95rem;text-align:center}
+.person{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-weight:700;flex:none}
+.slot{margin-left:auto;font-size:.8rem;border:1px solid var(--accent);color:var(--accent);border-radius:8px;padding:2px 8px;white-space:nowrap}
+.big{font-size:2rem;font-weight:800;line-height:1.1}
+.row{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0;font-size:.9rem}
+.why{font-size:.82rem;color:var(--sub)}
+footer{max-width:1100px;margin:0 auto;padding:8px 16px 32px;font-size:.85rem;color:var(--sub)}
+</style>
+</head>
+<body>
+<header>
+  <h1>15分相談：流れのスケッチ（使い捨て）</h1>
+  <div class="note">これは「どんな体験か」を目で見るための下書きです。仕様でも完成画面でもありません。<strong>インタビューの相手には見せないでください</strong>（見せると褒め言葉が返ってきて、検証にならなくなります）。</div>
+</header>
+
+<main class="flow">
+  <section class="step">
+    <h2>① 会員：困りごとを一言で出す</h2>
+    <div class="phone">
+      <div class="title">ちょっと聞きたい</div>
+      <div class="field">経費ってどこまで入れていいんですか？</div>
+      <div class="muted">ジャンル</div>
+      <div class="tags"><span class="tag on">税金・お金</span><span class="tag">デザイン</span><span class="tag">営業</span><span class="tag">IT</span></div>
+      <div class="muted">いつがいい？</div>
+      <div class="tags"><span class="tag on">今日</span><span class="tag">今週</span></div>
+      <div class="btn">聞ける人を探す</div>
+    </div>
+    <div class="why">佐藤さんが受付で聞いた場面を、そのまま置き換えたもの。</div>
+  </section>
+
+  <section class="step">
+    <h2>② 会員：今日いる人から選ぶ</h2>
+    <div class="phone">
+      <div class="title">今日このスペースにいる人</div>
+      <div class="person"><div class="avatar">T</div><div><div>Tさん</div><div class="muted">税理士</div></div><span class="slot">14:00〜15分</span></div>
+      <div class="person"><div class="avatar">K</div><div><div>Kさん</div><div class="muted">経理代行</div></div><span class="slot">16:30〜15分</span></div>
+      <div class="muted">相談に乗る側は、自分で空き枠を出す。</div>
+      <div class="btn">14:00で申し込む</div>
+    </div>
+    <div class="why">受付であなたがやっている「この人に聞いてみたら」を代わりにやる部分。</div>
+  </section>
+
+  <section class="step">
+    <h2>③ 会員：ラウンジで会う</h2>
+    <div class="phone">
+      <div class="title">予約できました</div>
+      <div class="big">14:00</div>
+      <div>ラウンジ窓側で、Tさんと15分</div>
+      <div class="muted">終わったら「ありがとう」を一言送れます。</div>
+      <div class="btn">ありがとうを送る</div>
+    </div>
+    <div class="why">会員どうしはお金のやり取りなし（あなたの判断「相談料は生々しい」に合わせた形）。</div>
+  </section>
+
+  <section class="step">
+    <h2>④ 運営者：月額を払う理由を見る</h2>
+    <div class="phone">
+      <div class="title">今月のつながり</div>
+      <div class="big">12件</div>
+      <div class="muted">会員どうしの15分相談</div>
+      <div class="row"><span>相談した会員</span><span>9人</span></div>
+      <div class="row"><span>相談に乗った会員</span><span>5人</span></div>
+      <div class="row"><span>一度もつながっていない会員</span><span>14人</span></div>
+      <div class="btn">月額プラン（Stripe）</div>
+    </div>
+    <div class="why">払う人＝運営者。「誰とも話さないから退会」を防げているかが見える画面。</div>
+  </section>
+</main>
+
+<footer>
+  入っていないもの：会員どうしの書き込み（今日やること等）。必須か、あったら嬉しいかを、まだ決めていないため。<br>
+  ファイル：docs/solo/compare/00-sketch-15min.html
+</footer>
+</body>
+</html>
