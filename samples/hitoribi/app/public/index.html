@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ひとりび</title>
+  <meta name="description" content="ひとりで作る人たちの、ゆるいつながり。">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="ember" aria-hidden="true"></span>ひとりび</div>
+    <div class="who" id="who"></div>
+  </header>
+
+  <main id="view" tabindex="-1"></main>
+
+  <nav class="tabs" aria-label="メイン">
+    <button data-tab="fire" class="tab"><span class="ico" aria-hidden="true">◈</span>灯</button>
+    <button data-tab="path" class="tab"><span class="ico" aria-hidden="true">⋮</span>道</button>
+    <button data-tab="signs" class="tab"><span class="ico" aria-hidden="true">✧</span>サイン</button>
+    <button data-tab="echoes" class="tab"><span class="ico" aria-hidden="true">◌</span>残響<span class="badge" id="badge" hidden></span></button>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/lexicon.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

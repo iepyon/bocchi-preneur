@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>灯（ホーム）の骨格 A/B</title>
+<style>
+  :root { --ink:#222; --line:#999; --bg:#fafafa; --pick:#d9822b; }
+  body { margin:0; padding:16px; font-family: system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+  h1 { font-size:18px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+  .opt { border:1px solid var(--line); border-radius:10px; padding:12px; background:#fff; }
+  .phone { border:2px solid var(--ink); border-radius:18px; height:440px; padding:10px; display:flex; flex-direction:column; gap:8px; position:relative; }
+  .box { border:1px dashed var(--line); border-radius:6px; padding:8px; font-size:13px; }
+  .big { height:120px; display:flex; align-items:center; justify-content:center; font-weight:600; }
+  .tabs { margin-top:auto; display:flex; justify-content:space-around; border-top:1px solid var(--line); padding-top:6px; font-size:12px; }
+  .fab { position:absolute; right:14px; bottom:48px; width:52px; height:52px; border-radius:50%; border:2px solid var(--ink); display:flex; align-items:center; justify-content:center; font-size:12px; background:#fff; }
+  .note { font-size:13px; margin:8px 0 0; }
+  label { display:block; margin-top:8px; font-weight:600; }
+  #out { margin-top:16px; padding:10px; border:1px solid var(--pick); border-radius:8px; background:#fff; min-height:24px; }
+</style>
+</head>
+<body>
+<h1>灯（ホーム）の骨格：どちらにしますか</h1>
+<p>色や装飾はまだ考えません。置き場所と、最初に目に入るものだけを比べます。</p>
+<div class="grid">
+  <div class="opt">
+    <div class="phone">
+      <div class="box big">今日の一手を灯す（入力＋ボタン）</div>
+      <div class="box">いま 12 の灯がともっている</div>
+      <div class="box">ほかの灯 1 ／ あたる</div>
+      <div class="box">ほかの灯 2 ／ あたる</div>
+      <div class="tabs"><span>灯</span><span>道</span><span>サイン</span><span>残響</span></div>
+    </div>
+    <p class="note"><b>A：自分の一手が上</b><br>嬉しい：まず自分のことから始まる。失う：開いてすぐに他人の気配は見えにくい。</p>
+    <label><input type="radio" name="pick" value="A"> Aにする</label>
+  </div>
+  <div class="opt">
+    <div class="phone">
+      <div class="box">いま 12 の灯がともっている</div>
+      <div class="box">ほかの灯 1 ／ あたる</div>
+      <div class="box">ほかの灯 2 ／ あたる</div>
+      <div class="box">ほかの灯 3 ／ あたる</div>
+      <div class="fab">灯す</div>
+      <div class="tabs"><span>灯</span><span>道</span><span>サイン</span><span>残響</span></div>
+    </div>
+    <p class="note"><b>B：他人の灯の一覧が上</b><br>嬉しい：開いた瞬間に「誰かがいる」と分かる。失う：SNSのように眺めて比べるだけで終わりやすい。</p>
+    <label><input type="radio" name="pick" value="B"> Bにする</label>
+  </div>
+</div>
+<label for="why">なぜそれにしたか（一言）</label>
+<input id="why" type="text" style="width:100%;padding:8px" placeholder="例：比べてしまうので、まず自分の一手から">
+<div id="out">選ぶと、ここにチャットへ貼る文が出ます。</div>
+<script>
+  const out = document.getElementById('out');
+  const why = document.getElementById('why');
+  function update() {
+    const p = document.querySelector('input[name=pick]:checked');
+    out.textContent = p ? `灯（ホーム）は案${p.value}。理由：${why.value || '（未記入）'}` : '選ぶと、ここにチャットへ貼る文が出ます。';
+  }
+  document.querySelectorAll('input').forEach((el) => el.addEventListener('input', update));
+</script>
+</body>
+</html>

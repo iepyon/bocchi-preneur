@@ -375,7 +375,7 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
 const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'no-referrer',
-  'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com",
+  'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; frame-ancestors 'none'",
 };
 
 function send(res, status, obj) {
