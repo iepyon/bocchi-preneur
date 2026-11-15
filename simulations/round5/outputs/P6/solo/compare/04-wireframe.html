@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>試作品の画面案</title>
+<style>
+  :root { --bg:#f6f6f4; --card:#fff; --ink:#222; --sub:#666; --line:#ccc; --warn:#fff3cd; --warnline:#d9a400; --accent:#444; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#1b1b1b; --card:#262626; --ink:#eee; --sub:#aaa; --line:#555; --warn:#4a3c10; --warnline:#d9a400; --accent:#ddd; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif; line-height:1.6; }
+  main { max-width:1100px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:1.3rem; margin:0 0 4px; }
+  .lead { color:var(--sub); margin:0 0 20px; font-size:.95rem; }
+  .screens { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+  .screen { background:var(--card); border:2px solid var(--line); border-radius:10px; padding:14px; }
+  .screen h2 { font-size:1rem; margin:0 0 2px; }
+  .why { font-size:.8rem; color:var(--sub); margin:0 0 10px; }
+  .bar { display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--line); padding-bottom:8px; margin-bottom:10px; font-size:.85rem; }
+  .box { border:1px dashed var(--line); border-radius:6px; padding:8px; margin-bottom:8px; font-size:.85rem; }
+  .row { display:flex; justify-content:space-between; gap:8px; }
+  .stale { background:var(--warn); border:1px solid var(--warnline); }
+  .tag { font-size:.75rem; border:1px solid var(--line); border-radius:999px; padding:0 8px; white-space:nowrap; }
+  .btn { display:inline-block; border:1px solid var(--accent); border-radius:6px; padding:4px 10px; font-size:.85rem; background:transparent; color:var(--ink); }
+  .ph { height:56px; border:1px dashed var(--line); border-radius:6px; color:var(--sub); font-size:.8rem; padding:6px; margin-bottom:8px; }
+  .note { font-size:.75rem; color:var(--sub); }
+  .ac { font-size:.75rem; font-weight:bold; border-left:3px solid var(--accent); padding-left:6px; margin:6px 0; }
+  section.confirm { margin-top:28px; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  section.confirm h2 { font-size:1rem; margin-top:0; }
+  label { display:block; margin:6px 0; font-size:.9rem; }
+  textarea { width:100%; min-height:70px; font:inherit; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:6px; }
+  pre { white-space:pre-wrap; background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:8px; font-size:.85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>試作品の画面案（骨格のみ）</h1>
+  <p class="lead">色や見た目はまだ作り込んでいません。見てほしいのは「どの画面に何があるか」と「受け入れ条件1〜3がどこで満たされるか」です。データはすべてダミーで、ログインはありません。画面右上で「誰として見るか」を切り替えて、Aさん・Bさんの2人分を試せるようにします。</p>
+
+  <div class="screens">
+    <!-- 画面1 -->
+    <div class="screen">
+      <h2>① 仲間の一覧（トップ）</h2>
+      <p class="why">開いた瞬間に「誰が止まっているか」が分かる画面</p>
+      <div class="bar"><span>種づくり部屋（ダミー）</span><span class="tag">表示中：Bさん ▼</span></div>
+      <div class="ac">受け入れ条件2：1週間更新がない人は上に・色付きで出る</div>
+      <div class="box stale"><div class="row"><b>Cさん</b><span class="tag">9日 更新なし</span></div>最後：「ヒアリング先を探す」</div>
+      <div class="box"><div class="row"><b>Aさん</b><span class="tag">たった今</span></div>「申請フローの現状を3部署に聞いた」</div>
+      <div class="box"><div class="row"><b>Dさん</b><span class="tag">2日前</span></div>「競合を5つ調べた」</div>
+      <div class="ac">受け入れ条件1：Aさんが書くと、再読み込みなしでここに出る</div>
+      <p class="note">空のとき：「まだ誰も書いていません。最初の一言を書いてみましょう」</p>
+    </div>
+
+    <!-- 画面2 -->
+    <div class="screen">
+      <h2>② 進捗を書く</h2>
+      <p class="why">本業の合間でも1分で書ける。項目は最小限</p>
+      <div class="bar"><span>今週やったこと</span><span class="tag">表示中：Aさん ▼</span></div>
+      <div class="ph">今週やったこと（1行でOK）</div>
+      <div class="ph">次にやること</div>
+      <div class="ph">止まっていること（任意）</div>
+      <span class="btn">書き込む</span>
+      <p class="note">失敗したとき：「送れませんでした。書いた内容は消えていません。もう一度押してください」</p>
+      <p class="note">※ 自分の過去の書き込みも、この下に時系列で並ぶ</p>
+    </div>
+
+    <!-- 画面3 -->
+    <div class="screen">
+      <h2>③ 15分相談（モック）</h2>
+      <p class="why">相談の需要を「押したかどうか」で測るための仮の画面</p>
+      <div class="bar"><span>15分相談</span><span class="tag">表示中：Bさん ▼</span></div>
+      <div class="box">新規事業に詳しい人に、15分だけ相談できます（準備中）</div>
+      <div class="box">候補日時（ダミー）<br>□ 11/20 12:00　□ 11/21 18:00</div>
+      <span class="btn">予約する</span>
+      <div class="ac">受け入れ条件3：押された回数（誰が・いつ）を記録する</div>
+      <p class="note">押したあと：「ありがとうございます。この機能はまだ準備中です。関心があったことを記録しました」と正直に出す（予約できたと誤解させない）</p>
+    </div>
+  </div>
+
+  <section class="confirm">
+    <h2>確認（チェックしてから、下の文をコピーしてチャットに貼ってください）</h2>
+    <label><input type="checkbox" data-k="この3画面の構成でOK"> この3画面の構成でOK</label>
+    <label><input type="checkbox" data-k="「誰として見るか」の切り替えでOK（ログインなし）"> 「誰として見るか」の切り替えでOK（ログインなし）</label>
+    <label><input type="checkbox" data-k="進捗を書く項目は3つ（やったこと・次にやること・止まっていること）でOK"> 進捗を書く項目は3つ（やったこと・次・止まっていること）でOK</label>
+    <label><input type="checkbox" data-k="予約ボタンの後は「準備中」と正直に出すでOK"> 予約ボタンの後は「準備中」と正直に出すでOK</label>
+    <label>直したいところ（任意）<textarea id="memo" placeholder="例：進捗の項目は1つでいい"></textarea></label>
+    <pre id="out">（チェックすると、ここに貼り付け用の文が出ます）</pre>
+  </section>
+</main>
+<script>
+  const out = document.getElementById('out');
+  const memo = document.getElementById('memo');
+  function render() {
+    const ok = [...document.querySelectorAll('input[type=checkbox]')].filter(c => c.checked).map(c => '・' + c.dataset.k);
+    const m = memo.value.trim();
+    let t = '画面案の確認\n' + (ok.length ? ok.join('\n') : '・（チェックなし）');
+    if (m) t += '\n直したいところ：' + m;
+    out.textContent = t;
+  }
+  document.querySelectorAll('input, textarea').forEach(el => el.addEventListener('input', render));
+</script>
+</body>
+</html>
