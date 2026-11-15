@@ -21,7 +21,7 @@ solo-preneur/
 │   └── solo-preneur/         # プラグイン本体（インストールされるのはここだけ）
 │       ├── .claude-plugin/
 │       │   └── plugin.json
-│       ├── skills/           # 11ステップの伴走スキルと、start / next / status などの入口
+│       ├── skills/           # 6工程・11ステップの伴走スキルと、start / next / status などの入口
 │       ├── agents/           # レビュー・攻撃テスト・原因分析のエージェント
 │       └── README.md
 ├── simulations/              # シミュレーション記録と回帰テスト用シナリオ

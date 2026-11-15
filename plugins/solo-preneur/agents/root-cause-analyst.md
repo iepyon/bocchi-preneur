@@ -1,6 +1,6 @@
 ---
 name: root-cause-analyst
-description: 根深いバグや、何度直しても再発する問題の根本原因を分析し、根本的な直し方の案を平易に示す。実装はしない。ソロプレナーのステップ6で重いバグが出たとき、または /solo-preneur:rca で呼ぶ。
+description: 根深いバグや、何度直しても再発する問題の根本原因を分析し、根本的な直し方の案を平易に示す。実装はしない。ソロプレナーのステップ7で重いバグが出たとき、または /solo-preneur:rca で呼ぶ。
 tools: Read, Grep, Glob, Bash
 model: inherit
 ---

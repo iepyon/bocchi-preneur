@@ -1,6 +1,6 @@
 ---
 name: strict-reviewer
-description: 実装済みのコードを、作った本人とは別の目で厳しくレビュー・テストする。ソロプレナーのステップ4・6で実装が一区切りついたとき、または /solo-preneur:review で呼ぶ。コードは変更せず、問題を重大度順に報告する。
+description: 実装済みのコードを、作った本人とは別の目で厳しくレビュー・テストする。ソロプレナーのステップ4・7で実装が一区切りついたとき、または /solo-preneur:review で呼ぶ。コードは変更せず、問題を重大度順に報告する。
 tools: Read, Grep, Glob, Bash
 model: inherit
 ---
