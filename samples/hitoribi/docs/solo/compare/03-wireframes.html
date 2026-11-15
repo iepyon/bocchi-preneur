@@ -108,6 +108,13 @@ section.screen { margin-top: 44px; }
 .bubble.r { align-self: flex-end; background: var(--fill); border-color: var(--fill); }
 .card { aspect-ratio: 4/3; display: grid; place-items: center; text-align: center; }
 .small { font-size: 9px; color: var(--ink-3); }
+.tag { display:inline-block; border:1px solid var(--wire); border-radius:4px; padding:0 4px; font-size:8px; color:var(--ink-2); }
+.tag.exp { border-color: var(--ink-2); color: var(--ink); font-weight:700; }
+.sheet { position:absolute; left:0; right:0; bottom:0; border-top:2px solid var(--ink-2); border-radius:14px 14px 0 0; background:var(--paper); padding:8px 10px 10px; display:flex; flex-direction:column; gap:5px; }
+.dim { opacity:.35; }
+.steps { display:flex; gap:3px; flex-wrap:wrap; }
+.steps span { width:14px; height:14px; border:1.5px solid var(--wire); border-radius:3px; font-size:7px; display:grid; place-items:center; }
+.steps span.ok { background: var(--fill); border-color: var(--ink-3); }
 
 /* ---- 選んだ結果 ---- */
 .why { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
@@ -127,283 +134,253 @@ section.screen { margin-top: 44px; }
 
 <div class="wrap">
   <header>
-    <h1>ひとりび　画面の骨格を選ぶ</h1>
-    <p>ステップ3（画面設計）の比較ページです。決めるのは部品の置き場所と、その画面で一番大事な情報だけです。色や装飾はステップ8（デザイン）で決めます。画面ごとに1案選び、理由をひとこと書いて、最後に下の文をコピーしてチャットに貼ってください。</p>
+    <h1>ひとりび　画面の骨格を選ぶ（第2版）</h1>
+    <p>ステップ3（画面設計）の比較ページです。2026-11-15 に見直した戦略・要件・呼び名で作り直しました。決めるのは部品の置き場所と、その画面で一番大事な情報だけです。色や装飾はステップ8で決めます。名前や一手は見本です。画面ごとに1案選び、理由をひとこと書いて、下の文をコピーしてチャットに貼ってください。</p>
     <div class="legend">
       <span><i class="sw mark"></i>その案で一番目立たせる情報（★）</span>
       <span><i class="sw wire"></i>部品の置き場所</span>
     </div>
   </header>
 
-  <!-- 1 灯 -->
-  <section class="screen" data-screen="灯（ホーム）">
-    <div class="screen-head"><h2>1　灯（ホーム）</h2><span class="q">開いた瞬間、最初に何が目に入るべきか</span></div>
+  <section class="screen" data-screen="行動ログ（ホーム）">
+    <div class="screen-head"><h2>1　行動ログ（ホーム）</h2><span class="q">開いた瞬間、最初に何が目に入るべきか</span></div>
     <div class="opts">
       <label class="opt"><input type="radio" name="s1" value="A：自分の一手が先">
         <div class="opt-title"><b>A　自分の一手が先</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>ひとりび</span><span>霧の書記</span></div>
-          <div class="w hi stack"><b>今日の一手を灯す</b><div class="w solid">入力（40字）</div><div class="row"><span class="pill">場所</span><span class="grow"></span><span class="pill dark">灯す</span></div></div>
-          <div class="center">いま 12 の灯</div>
-          <div class="w row"><span class="dot"></span><span class="grow stack"><span class="ln m"></span><span class="ln s"></span></span><span class="pill">あたる</span></div>
-          <div class="w row"><span class="dot"></span><span class="grow stack"><span class="ln m"></span><span class="ln s"></span></span><span class="pill">あたる</span></div>
-          <div class="tabs"><span class="on">灯</span><span>道</span><span>サイン</span><span>残響</span></div>
+          <div class="bar"><span>ひとりび</span><span>山田さん（例）</span></div>
+          <div class="w solid small">止まっていた一手、できましたか？　<b>できた</b>／まだ</div>
+          <div class="w hi stack"><b>今日の一手</b><span>競合3社の価格を表にする</span><div class="row"><span class="tag">ステップ1</span><span class="grow"></span><span class="pill">できた</span></div><span class="pill dark center">この一手で15分相談</span></div>
+          <div class="small">ほかの人の行動ログ</div>
+          <div class="w row"><span class="grow stack"><b>試作の画面を2案描く</b><span class="small">佐藤さん・製造</span></span><span class="pill">応援する</span></div>
+          <div class="w row"><span class="grow stack"><b>上司向けの1枚を作る</b><span class="small">田中さん・小売</span></span><span class="pill">応援する</span></div>
+          <div class="tabs"><span class="on">行動ログ</span><span>15分相談</span><span>ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">自分のことから始まる。他人と比べる前に手が動く</p>
-        <p class="lose">開いてすぐには、ほかの人の気配が見えにくい</p>
+        <p class="gain">自分の一手と「できた」「15分相談」がすぐ押せる。止まったときの出口が目の前にある</p>
+        <p class="lose">ほかの人の雰囲気は下に追いやられ、前段（雰囲気で続ける）が弱まる</p>
       </label>
-
-      <label class="opt"><input type="radio" name="s1" value="B：気配が先">
-        <div class="opt-title"><b>B　気配が先</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s1" value="B：みんなの行動ログが先">
+        <div class="opt-title"><b>B　みんなの行動ログが先</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>ひとりび</span><span>霧の書記</span></div>
-          <div class="w hi center">いま 12 の灯がともっている</div>
-          <div class="w row"><span class="dot"></span><span class="grow stack"><span class="ln m"></span><span class="ln s"></span></span><span class="pill">あたる</span></div>
-          <div class="w row"><span class="dot"></span><span class="grow stack"><span class="ln m"></span><span class="ln s"></span></span><span class="pill">あたる</span></div>
-          <div class="w row"><span class="dot"></span><span class="grow stack"><span class="ln m"></span><span class="ln s"></span></span><span class="pill">あたる</span></div>
-          <div class="w row"><span class="dot"></span><span class="grow stack"><span class="ln m"></span><span class="ln s"></span></span><span class="pill">あたる</span></div>
-          <div class="w fill fab">灯す</div>
-          <div class="tabs"><span class="on">灯</span><span>道</span><span>サイン</span><span>残響</span></div>
+          <div class="bar"><span>ひとりび</span><span>山田さん（例）</span></div>
+          <div class="w hi center">いま 9 人が一手に取り組んでいる</div>
+          <div class="w row"><span class="grow stack"><b>試作の画面を2案描く</b><span class="small">佐藤さん・製造</span></span><span class="pill">応援する</span></div>
+          <div class="w row"><span class="grow stack"><b>上司向けの1枚を作る</b><span class="small">田中さん・小売</span></span><span class="pill">応援する</span></div>
+          <div class="w row"><span class="grow stack"><b>インタビュー2人目</b><span class="small">鈴木さん・金融</span></span><span class="pill">応援する</span></div>
+          <div class="w solid row"><span class="grow small">あなたの一手：競合3社の価格…</span><span class="pill">開く</span></div>
+          <div class="tabs"><span class="on">行動ログ</span><span>15分相談</span><span>ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">開いた瞬間に「誰かがいる」と分かる</p>
-        <p class="lose">眺めて終わりやすい。SNSに近い感触になる</p>
+        <p class="gain">開いた瞬間に「同じ立場の人がやっている」雰囲気が伝わる（前段）</p>
+        <p class="lose">自分の一手と相談の入口は一段奥。止まったときに一手間かかる</p>
       </label>
-
-      <label class="opt"><input type="radio" name="s1" value="C：灯の輪">
-        <div class="opt-title"><b>C　灯の輪</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s1" value="C：上に自分、下に相談の呼びかけ">
+        <div class="opt-title"><b>C　上に自分、下に相談の呼びかけ</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>ひとりび</span><span>霧の書記</span></div>
-          <div class="ring">
-            <span class="dot" style="top:-4px;left:46%"></span><span class="dot" style="top:14%;right:8%"></span><span class="dot" style="top:46%;right:-4px"></span>
-            <span class="dot" style="bottom:12%;right:12%"></span><span class="dot" style="bottom:-4px;left:44%"></span><span class="dot" style="bottom:16%;left:8%"></span>
-            <span class="dot" style="top:44%;left:-4px"></span><span class="dot" style="top:12%;left:12%"></span>
-            <div class="me w hi">あなたの灯</div>
-          </div>
-          <div class="center small">点に触れると、その人の一手が見える</div>
-          <div class="w solid row"><span class="grow">今日の一手…</span><span class="pill dark">灯す</span></div>
-          <div class="tabs"><span class="on">灯</span><span>道</span><span>サイン</span><span>残響</span></div>
+          <div class="bar"><span>ひとりび</span><span>山田さん（例）</span></div>
+          <div class="w hi row"><span class="grow stack"><b>競合3社の価格を表にする</b><span class="small">今日の一手・ステップ1</span></span><span class="pill">できた</span></div>
+          <div class="row"><span class="grow"></span><span class="pill dark">15分相談</span></div>
+          <div class="small">いま相談を求めている人</div>
+          <div class="w row"><span class="grow stack"><b>見てほしい・15分</b><span class="small">ステップ5・製造</span></span><span class="pill">応じる</span></div>
+          <div class="small">ほかの行動ログ 9</div>
+          <div class="w row"><span class="grow stack"><b>試作の画面を2案描く</b><span class="small">佐藤さん・製造</span></span><span class="pill">応援する</span></div>
+          <div class="tabs"><span class="on">行動ログ</span><span>15分相談</span><span>ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">「同じ火を囲んでいる」感じが一目で伝わる。文字を読まなくていい</p>
-        <p class="lose">一手の中身は触らないと読めない。人数が少ないと寂しく見える</p>
+        <p class="gain">自分の一手と、いま応じられる相談が1画面にある。応じる側に回りやすい</p>
+        <p class="lose">画面が混む。タブの「15分相談」と役割が重なる</p>
       </label>
     </div>
-    <div class="why"><label for="why1">選んだ理由</label><input id="why1" data-for="s1" type="text" placeholder="例：比べてしまうので、まず自分の一手から"></div>
+    <div class="why"><label for="why1">選んだ理由</label><input id="why1" data-for="s1" type="text" placeholder="例：止まったときにすぐ相談できるのが一番大事"></div>
   </section>
-
-  <!-- 2 道 -->
-  <section class="screen" data-screen="道">
-    <div class="screen-head"><h2>2　道</h2><span class="q">11ステップを、どんな形で歩かせるか</span></div>
+  <section class="screen" data-screen="15分相談を出す">
+    <div class="screen-head"><h2>2　15分相談を出す</h2><span class="q">止まっている人に、何を何回選ばせるか</span></div>
     <div class="opts">
-      <label class="opt"><input type="radio" name="s2" value="A：縦の一本道">
-        <div class="opt-title"><b>A　縦の一本道</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s2" value="A：1画面で全部選ぶ">
+        <div class="opt-title"><b>A　1画面で全部選ぶ</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>道</span><span></span></div>
-          <div class="small">調査</div>
-          <div class="w row"><span>1</span><span class="grow">問いの荒野</span><span class="pill">灯2 書3</span></div>
-          <div class="small">企画</div>
-          <div class="w row"><span>2</span><span class="grow">設計の書庫</span><span class="pill">灯1 書2</span></div>
-          <div class="small">試作</div>
-          <div class="w hi row"><span>3</span><span class="grow">下描きの工房（いまここ）</span></div>
-          <div class="w row"><span>4</span><span class="grow">鍛冶場</span><span class="pill">書2</span></div>
-          <div class="small">…11まで続く</div>
-          <div class="tabs"><span>灯</span><span class="on">道</span><span>サイン</span><span>残響</span></div>
+          <div class="bar"><span>‹</span><span>15分相談を出す</span></div>
+          <div class="w solid small">この一手：競合3社の価格を表にする</div>
+          <div class="w hi stack"><b>何をしてほしい？</b><div class="row"><span class="pill dark">見てほしい</span><span class="pill">聞いて</span><span class="pill">触って</span></div></div>
+          <div class="row"><span class="pill dark">15分</span><span class="pill">30分</span></div>
+          <div class="w stack"><b>所属をどこまで出す？</b><div class="row"><span class="pill">会社名</span><span class="pill dark">業界と規模</span><span class="pill">出さない</span></div></div>
+          <div class="w fill center">相談を出す</div>
+          <div class="tabs"><span>行動ログ</span><span class="on">15分相談</span><span>ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">押しやすく、全部の場所が一覧できる。数も比べやすい</p>
-        <p class="lose">ただの目次に見える。旅をしている感じは薄い</p>
+        <p class="gain">一目で全体が分かり、すぐ出せる</p>
+        <p class="lose">止まって疲れているときに、選ぶものが一度に多い</p>
       </label>
-
-      <label class="opt"><input type="radio" name="s2" value="B：6工程の地図">
-        <div class="opt-title"><b>B　6工程の地図</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s2" value="B：1問ずつ進む">
+        <div class="opt-title"><b>B　1問ずつ進む</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>道</span><span></span></div>
-          <div class="map">
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M12 88 L30 70 L22 50 L46 40 L70 52 L80 30 L60 14 L86 8"/></svg>
-            <span class="n" style="left:6%;top:82%">1</span><span class="n" style="left:24%;top:64%">2</span>
-            <span class="n" style="left:16%;top:44%">3</span><span class="n" style="left:40%;top:34%;border-color:var(--mark);background:var(--mark-bg)">4</span>
-            <span class="n" style="left:64%;top:46%">5</span><span class="n" style="left:74%;top:24%">6</span>
-            <span class="n" style="left:54%;top:8%">7</span><span class="n" style="left:80%;top:2%">…</span>
+          <div class="bar"><span>‹</span><span>1 / 3</span></div>
+          <div class="small center">この一手：競合3社の価格を表にする</div>
+          <div class="w hi stack center"><b>何をしてほしいですか</b></div>
+          <div class="w solid center">見てほしい</div>
+          <div class="w solid center">話を聞いてほしい</div>
+          <div class="w solid center">触ってほしい</div>
+          <div class="small center">次：時間 → 所属</div>
+          <div class="tabs"><span>行動ログ</span><span class="on">15分相談</span><span>ステップ</span><span>通知</span></div>
+        </div>
+        <p class="gain">1つずつ答えるだけ。迷わない</p>
+        <p class="lose">3回押さないと出せない。慣れた人には遠回り</p>
+      </label>
+      <label class="opt"><input type="radio" name="s2" value="C：行動ログの上で引き出す">
+        <div class="opt-title"><b>C　行動ログの上で引き出す</b><span class="pick"></span></div>
+        <div class="ph" aria-hidden="true">
+          <div class="bar"><span>ひとりび</span><span>山田さん（例）</span></div>
+          <div class="w dim stack"><b>競合3社の価格を表にする</b><span class="small">今日の一手</span></div>
+          <div class="w dim stack"><span class="ln m"></span><span class="ln s"></span></div>
+          <div class="sheet">
+            <b class="center">この一手で15分相談</b>
+            <div class="w hi row"><span class="pill dark">見てほしい</span><span class="pill">聞いて</span><span class="pill">触って</span></div>
+            <div class="row"><span class="pill dark">15分</span><span class="pill">30分</span><span class="grow"></span><span class="pill">業界と規模 ▾</span></div>
+            <div class="w fill center">出す</div>
           </div>
-          <div class="w hi">いまここ：鍛冶場（灯1・書き置き2）</div>
-          <div class="small center">点に触れて場所へ</div>
-          <div class="tabs"><span>灯</span><span class="on">道</span><span>サイン</span><span>残響</span></div>
         </div>
-        <p class="gain">旅の途中にいる感じがはっきり出る。現在地が目立つ</p>
-        <p class="lose">スマホでは点が小さく押しにくい。数字が読みにくい</p>
-      </label>
-
-      <label class="opt"><input type="radio" name="s2" value="C：現在地から始まる">
-        <div class="opt-title"><b>C　現在地から始まる</b><span class="pick"></span></div>
-        <div class="ph" aria-hidden="true">
-          <div class="bar"><span>‹ 3</span><span>4 / 11</span><span>5 ›</span></div>
-          <div class="w hi center"><b>鍛冶場</b><br>プロトタイプ実装</div>
-          <div class="small">この場所の書き置き</div>
-          <div class="w stack"><span class="ln m"></span><span class="ln s"></span></div>
-          <div class="w stack"><span class="ln m"></span><span class="ln s"></span></div>
-          <div class="small">左右にめくって隣の場所へ</div>
-          <div class="tabs"><span>灯</span><span class="on">道</span><span>サイン</span><span>残響</span></div>
-        </div>
-        <p class="gain">今の自分に関係ある書き置きだけがすぐ読める。1画面少ない</p>
-        <p class="lose">ほかの場所に何があるか見えない。全体の道のりがつかみにくい</p>
+        <p class="gain">一手から離れずに出せる。「この一手で助けを求める」がそのまま形になる</p>
+        <p class="lose">下から出る小さな面なので、説明を書く余地がない</p>
       </label>
     </div>
     <div class="why"><label for="why2">選んだ理由</label><input id="why2" data-for="s2" type="text" placeholder="ひとこと"></div>
   </section>
-
-  <!-- 3 場所 -->
-  <section class="screen" data-screen="場所（書き置き・痕跡）">
-    <div class="screen-head"><h2>3　場所（書き置き・痕跡）</h2><span class="q">先を歩いた人の言葉を、どう読ませるか</span></div>
+  <section class="screen" data-screen="15分相談の一覧（応じる側）">
+    <div class="screen-head"><h2>3　15分相談の一覧（応じる側）</h2><span class="q">応じる人に、どの相談を先に見せるか</span></div>
     <div class="opts">
-      <label class="opt"><input type="radio" name="s3" value="A：書き置き→痕跡の縦並び">
-        <div class="opt-title"><b>A　書き置き → 痕跡の縦並び</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s3" value="A：新しい順に全部">
+        <div class="opt-title"><b>A　新しい順に全部</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>‹ 道</span><span>審判の橋</span></div>
-          <div class="row"><span class="pill dark">書き置きを残す</span><span class="pill">ここで引き返した</span></div>
-          <div class="w hi">“先行課金を恐れるな”<br><span class="small">役に立った 9</span></div>
-          <div class="w">“まず撤退基準”<br><span class="small">役に立った 4</span></div>
-          <div class="small">痕跡</div>
-          <div class="w stack"><span class="ln m"></span><span class="ln m"></span><span class="ln s"></span></div>
-          <div class="tabs"><span>灯</span><span class="on">道</span><span>サイン</span><span>残響</span></div>
+          <div class="bar"><span>15分相談</span><span></span></div>
+          <div class="w solid row"><span class="grow small">あなたの相談：応じてもらえた</span><span class="pill dark">部屋へ</span></div>
+          <div class="small">いま出ている相談 4</div>
+          <div class="w hi row"><span class="grow stack"><b>見てほしい・15分</b><span class="small">ステップ6・製造・3分前</span></span><span class="pill dark">応じる</span></div>
+          <div class="w row"><span class="grow stack"><b>聞いてほしい・30分</b><span class="small">ステップ2・小売</span></span><span class="pill">応じる</span></div>
+          <div class="w row"><span class="grow stack"><b>触ってほしい・15分</b><span class="small">ステップ5</span></span><span class="pill">応じる</span></div>
+          <div class="tabs"><span>行動ログ</span><span class="on">15分相談</span><span>ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">役に立った順に、短い言葉がすぐ読める</p>
-        <p class="lose">痕跡は下までいかないと見えない</p>
+        <p class="gain">単純で、どの相談も見落とさない</p>
+        <p class="lose">自分が通っていないステップの相談も並び、応じてよいか迷う</p>
       </label>
-
-      <label class="opt"><input type="radio" name="s3" value="B：タブで切り替え">
-        <div class="opt-title"><b>B　タブで切り替え</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s3" value="B：通ったステップの相談が先">
+        <div class="opt-title"><b>B　通ったステップの相談が先</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>‹ 道</span><span>審判の橋</span></div>
-          <div class="row"><span class="pill dark grow center">書き置き 6</span><span class="pill grow center">痕跡 2</span></div>
-          <div class="w hi">“先行課金を恐れるな”</div>
-          <div class="w">“まず撤退基準”</div>
-          <div class="w">“この先、作り込みに注意”</div>
-          <div class="w fill center">＋ 書き置きを残す</div>
-          <div class="tabs"><span>灯</span><span class="on">道</span><span>サイン</span><span>残響</span></div>
+          <div class="bar"><span>15分相談</span><span></span></div>
+          <div class="small">あなたの通過記録</div>
+          <div class="steps"><span class="ok">1</span><span class="ok">2</span><span class="ok">3</span><span>4</span><span>5</span><span>6</span><span>…</span></div>
+          <div class="w hi stack"><b>あなたが通ったステップの相談 2</b><div class="row"><span class="grow small">聞いてほしい・ステップ2</span><span class="pill dark">応じる</span></div><div class="row"><span class="grow small">見てほしい・ステップ3</span><span class="pill dark">応じる</span></div></div>
+          <div class="small">ほかの相談 2</div>
+          <div class="w row dim"><span class="grow small">見てほしい・ステップ6</span><span class="pill">応じる</span></div>
+          <div class="tabs"><span>行動ログ</span><span class="on">15分相談</span><span>ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">書き置きと痕跡がはっきり分かれ、それぞれの数が見える</p>
-        <p class="lose">痕跡のタブは押されにくい。切り替えのひと手間が増える</p>
+        <p class="gain">「一度通した人」が自分の出番に気づける。戦略の後段に一番近い</p>
+        <p class="lose">通過記録が少ないうちは上がほぼ空になる（招待した経験者で埋める）</p>
       </label>
-
-      <label class="opt"><input type="radio" name="s3" value="C：1枚ずつ拾って読む">
-        <div class="opt-title"><b>C　1枚ずつ拾って読む</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s3" value="C：助けを求める側が主">
+        <div class="opt-title"><b>C　助けを求める側が主</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>‹ 道</span><span>審判の橋</span></div>
-          <div class="small center">足もとに書き置きが 6 つ</div>
-          <div class="w hi card"><span><b>“先行課金を恐れるな”</b><br><span class="small">役に立った 9</span></span></div>
-          <div class="row"><span class="pill grow center">役に立った</span><span class="pill grow center">次の1枚 ›</span></div>
-          <div class="w fill center">＋ 書き置きを残す</div>
-          <div class="tabs"><span>灯</span><span class="on">道</span><span>サイン</span><span>残響</span></div>
+          <div class="bar"><span>15分相談</span><span></span></div>
+          <div class="w hi stack"><b>あなたの相談</b><span class="small">見てほしい・15分・ステップ1</span><span class="small">応じた人：佐藤さん <span class="tag exp">ステップ1 通過</span></span><div class="row"><span class="pill dark grow center">この人と始める</span><span class="pill">待つ</span></div></div>
+          <div class="small">ほかの人の相談 4</div>
+          <div class="w row"><span class="grow small">聞いてほしい・ステップ2</span><span class="pill">応じる</span></div>
+          <div class="w row"><span class="grow small">見てほしい・ステップ6</span><span class="pill">応じる</span></div>
+          <div class="tabs"><span>行動ログ</span><span class="on">15分相談</span><span>ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">1つの言葉に向き合える。「拾った」感じがある</p>
-        <p class="lose">全部を見渡せない。急いでいるときは遅い</p>
+        <p class="gain">応じた人の印を見て「この人と始める」を選べる（R5-a：受けるかは求めた側が決める）</p>
+        <p class="lose">受けるかを選ぶ一手間が増える。応じた人が待たされる</p>
       </label>
     </div>
     <div class="why"><label for="why3">選んだ理由</label><input id="why3" data-for="s3" type="text" placeholder="ひとこと"></div>
   </section>
-
-  <!-- 4 サイン -->
-  <section class="screen" data-screen="救援サイン">
-    <div class="screen-head"><h2>4　救援サイン</h2><span class="q">助けを求める人と、応じる人のどちらを主役にするか</span></div>
+  <section class="screen" data-screen="相談部屋">
+    <div class="screen-head"><h2>4　相談部屋</h2><span class="q">15分のあいだ、何を一番大きく見せるか</span></div>
     <div class="opts">
-      <label class="opt"><input type="radio" name="s4" value="A：一覧が主、出すのは下">
-        <div class="opt-title"><b>A　一覧が主、出すのは下</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s4" value="A：会議リンクが主">
+        <div class="opt-title"><b>A　会議リンクが主</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>救援サイン</span><span></span></div>
-          <div class="small">いま出ているサイン 4</div>
-          <div class="w hi row"><span class="grow">見てほしい<br><span class="small">15分・天秤の間</span></span><span class="pill dark">応じる</span></div>
-          <div class="w row"><span class="grow">並んで作業したい<br><span class="small">30分・下描きの工房</span></span><span class="pill">応じる</span></div>
-          <div class="w row"><span class="grow">話を聞いてほしい<br><span class="small">30分・設計の書庫</span></span><span class="pill">応じる</span></div>
-          <div class="w fill center">＋ サインを出す</div>
-          <div class="tabs"><span>灯</span><span>道</span><span class="on">サイン</span><span>残響</span></div>
+          <div class="bar"><span>‹</span><span>佐藤さんと相談中</span></div>
+          <div class="timer">14:59</div>
+          <div class="w hi stack center"><b>会議リンク</b><span class="small">meet.example/abc-defg</span><span class="pill dark">開く</span></div>
+          <div class="small center">画面は会議の中で共有してください。ひとりびは資料を預かりません</div>
+          <div class="w solid row"><span class="grow small">ひとこと送る</span><span class="pill">送る</span></div>
+          <div class="w fill center">相談を終える</div>
+          <div class="tabs"><span>行動ログ</span><span class="on">15分相談</span><span>ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">応じる人が迷わない。助け合いが起きやすい</p>
-        <p class="lose">助けを求めたい人は、一段下まで探す</p>
+        <p class="gain">すぐ外の会議に移れる。この部屋の役目（出会う場所）がはっきりする</p>
+        <p class="lose">部屋の中で話せることは少ない</p>
       </label>
-
-      <label class="opt"><input type="radio" name="s4" value="B：出すのが主">
-        <div class="opt-title"><b>B　出すのが主</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s4" value="B：文字のやりとりが主">
+        <div class="opt-title"><b>B　文字のやりとりが主</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>救援サイン</span><span></span></div>
-          <div class="w hi stack"><b>サインを出す</b>
-            <div class="row"><span class="pill">見てほしい</span><span class="pill">聞いてほしい</span></div>
-            <div class="row"><span class="pill">触ってほしい</span><span class="pill">並んで作業</span></div>
-            <div class="row"><span class="pill dark">15分</span><span class="pill">30分</span><span class="grow"></span><span class="pill dark">出す</span></div>
+          <div class="bar"><span>‹</span><span>佐藤さんと相談中 14:59</span></div>
+          <div class="stack">
+            <div class="bubble">リンク貼りました</div>
+            <div class="bubble r">入ります</div>
           </div>
-          <div class="small">ほかの人のサイン 4</div>
-          <div class="w row"><span class="grow">見てほしい・15分</span><span class="pill">応じる</span></div>
-          <div class="tabs"><span>灯</span><span>道</span><span class="on">サイン</span><span>残響</span></div>
+          <div class="w solid small">会議リンク：meet.example/abc… <b>開く</b></div>
+          <div class="w hi row"><span class="grow">ひとこと送る</span><span class="pill dark">送る</span></div>
+          <div class="w fill center">相談を終える</div>
+          <div class="tabs"><span>行動ログ</span><span class="on">15分相談</span><span>ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">詰まった夜に、すぐ助けを求められる</p>
-        <p class="lose">応じる側が後回しになり、サインが放置されやすい</p>
+        <p class="gain">会議の前後の短いやりとりがしやすい</p>
+        <p class="lose">チャットが主に見え、会議に移らず文字で済ませがちになる（社外秘を書く恐れ）</p>
       </label>
-
-      <label class="opt"><input type="radio" name="s4" value="C：灯の輪に浮かぶサイン">
-        <div class="opt-title"><b>C　灯の輪に浮かぶサイン</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s4" value="C：出口を常に見せる">
+        <div class="opt-title"><b>C　出口を常に見せる</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>救援サイン</span><span></span></div>
-          <div class="ring">
-            <span class="dot" style="top:-4px;left:46%"></span><span class="dot" style="top:46%;right:-4px;background:var(--mark)"></span>
-            <span class="dot" style="bottom:-4px;left:44%"></span><span class="dot" style="top:44%;left:-4px;background:var(--mark)"></span>
-            <div class="me w solid">あなた</div>
-          </div>
-          <div class="w hi small">光っている点がサイン。触れると内容と「応じる」</div>
-          <div class="w fill center">＋ サインを出す</div>
-          <div class="tabs"><span>灯</span><span>道</span><span class="on">サイン</span><span>残響</span></div>
+          <div class="bar"><span>‹</span><span>佐藤さんと相談中</span></div>
+          <div class="row"><span class="timer grow">14:59</span><span class="pill dark">会議を開く</span></div>
+          <div class="w solid small">会議リンク：meet.example/abc-defg</div>
+          <div class="small">終わったら</div>
+          <div class="w hi stack center"><b>動き出せそうですか</b><div class="row"><span class="pill dark grow center">動き出せた</span><span class="pill grow center">まだ</span></div></div>
+          <div class="row"><span class="pill">お礼</span><span class="pill">手を振る</span></div>
+          <div class="tabs"><span>行動ログ</span><span class="on">15分相談</span><span>ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">灯の輪（ホームC）と同じ世界観で、つながりが目に見える</p>
-        <p class="lose">内容は触らないと分からない。ホームでCを選ばないと浮く</p>
+        <p class="gain">成功の指標（動き出せた）とお礼が、終える瞬間に必ず目に入る</p>
+        <p class="lose">相談の最中から「終わり」が見えて、急かされる感じがある</p>
       </label>
     </div>
     <div class="why"><label for="why4">選んだ理由</label><input id="why4" data-for="s4" type="text" placeholder="ひとこと"></div>
   </section>
-
-  <!-- 5 合流部屋 -->
-  <section class="screen" data-screen="合流部屋">
-    <div class="screen-head"><h2>5　合流部屋</h2><span class="q">15〜30分の間、何で通じ合わせるか</span></div>
+  <section class="screen" data-screen="ステップ（やめる決断の学び）">
+    <div class="screen-head"><h2>5　ステップ（やめる決断の学び）</h2><span class="q">先に通った人・やめた人の跡を、どう読ませるか</span></div>
     <div class="opts">
-      <label class="opt"><input type="radio" name="s5" value="A：自由に話せる">
-        <div class="opt-title"><b>A　自由に話せる</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s5" value="A：11ステップの一覧から">
+        <div class="opt-title"><b>A　11ステップの一覧から</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>‹</span><span>霧の商人が来てくれた</span></div>
-          <div class="w hi timer">14:59</div>
-          <div class="stack">
-            <div class="bubble">見出し、2案目が一番刺さりました</div>
-            <div class="bubble r">ありがとう、理由も聞きたい</div>
-          </div>
-          <div class="w solid row"><span class="grow">ことばを送る</span><span class="pill dark">送る</span></div>
-          <div class="row"><span class="pill">礼</span><span class="pill">手を振る</span><span class="pill">灯を分ける</span></div>
-          <div class="tabs"><span>灯</span><span>道</span><span class="on">サイン</span><span>残響</span></div>
+          <div class="bar"><span>ステップ</span><span></span></div>
+          <div class="w row"><span>1</span><span class="grow">コンセプトと課題検証</span><span class="tag">通過 12・学び 3</span></div>
+          <div class="w row"><span>2</span><span class="grow">仕様設計</span><span class="tag">通過 8・学び 1</span></div>
+          <div class="w hi row"><span>3</span><span class="grow">画面設計（いまここ）</span><span class="tag">学び 2</span></div>
+          <div class="w row"><span>4</span><span class="grow">プロトタイプ</span><span class="tag">学び 0</span></div>
+          <div class="small">…11まで</div>
+          <div class="tabs"><span>行動ログ</span><span>15分相談</span><span class="on">ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">見てほしい・聞いてほしいに、具体的に答えられる</p>
-        <p class="lose">個人情報や連絡先を書かれる恐れ。見回りの手間が出る</p>
+        <p class="gain">全体の道のりと、どこでやめる人が多いかが見える</p>
+        <p class="lose">学びそのものは1つ奥。読むまでが遠い</p>
       </label>
-
-      <label class="opt"><input type="radio" name="s5" value="B：言葉なしで並ぶ">
-        <div class="opt-title"><b>B　言葉なしで並ぶ</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s5" value="B：いまのステップの学びが先">
+        <div class="opt-title"><b>B　いまのステップの学びが先</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>‹</span><span>霧の商人と並んでいる</span></div>
-          <div class="w hi timer">29:59</div>
-          <div class="row center" style="justify-content:center;gap:24px;margin:10px 0"><span class="dot" style="width:22px;height:22px;background:var(--mark)"></span><span class="dot" style="width:22px;height:22px"></span></div>
-          <div class="small center">相手が手を止めると、灯が少し暗くなる</div>
-          <div class="row"><span class="pill">がんばれ</span><span class="pill">ひと休み</span><span class="pill">できた</span></div>
-          <div class="w fill center">終える</div>
-          <div class="tabs"><span>灯</span><span>道</span><span class="on">サイン</span><span>残響</span></div>
+          <div class="bar"><span>‹ 2</span><span>ステップ3 画面設計</span><span>4 ›</span></div>
+          <div class="small">ここを通った人 8 ／ ここでやめた人の学び 2</div>
+          <div class="w hi stack"><b>わかったこと</b><span class="small">上司の前に画面を出したら…</span><b>次に持っていくもの</b><span class="small">…</span></div>
+          <div class="w stack"><span class="ln m"></span><span class="ln s"></span></div>
+          <div class="w fill center">＋ やめる決断の学びを残す</div>
+          <div class="tabs"><span>行動ログ</span><span>15分相談</span><span class="on">ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">一番ゆるい。返事を考えなくていい。見回りが要らない</p>
-        <p class="lose">「見てほしい」「聞いてほしい」には答えられない</p>
+        <p class="gain">今の自分に一番関係ある学びがすぐ読める</p>
+        <p class="lose">ほかのステップは左右にめくらないと見えない</p>
       </label>
-
-      <label class="opt"><input type="radio" name="s5" value="C：サインの種類で変える">
-        <div class="opt-title"><b>C　サインの種類で変える</b><span class="pick"></span></div>
+      <label class="opt"><input type="radio" name="s5" value="C：学びだけを並べる">
+        <div class="opt-title"><b>C　学びだけを並べる</b><span class="pick"></span></div>
         <div class="ph" aria-hidden="true">
-          <div class="bar"><span>‹</span><span>合流部屋</span></div>
-          <div class="w hi timer">14:59</div>
-          <div class="w stack"><b>見てほしい・聞いてほしい</b><span class="small">→ A の形（ことばを送れる）</span></div>
-          <div class="w stack"><b>並んで作業したい</b><span class="small">→ B の形（言葉なし）</span></div>
-          <div class="w stack"><b>触ってほしい</b><span class="small">→ 試作品のURLを1つだけ貼れる</span></div>
-          <div class="tabs"><span>灯</span><span>道</span><span class="on">サイン</span><span>残響</span></div>
+          <div class="bar"><span>やめる決断の学び</span><span></span></div>
+          <div class="row"><span class="pill dark">すべて</span><span class="pill">いまのステップ</span></div>
+          <div class="w hi stack"><span class="tag">ステップ5でやめた・名前なし</span><span class="small">先行課金ゼロで判断した</span></div>
+          <div class="w stack"><span class="tag">ステップ6で方向転換・佐藤さん</span><span class="small">部長に価格を…</span></div>
+          <div class="w stack"><span class="tag">ステップ2でやめた・名前なし</span><span class="ln m"></span></div>
+          <div class="tabs"><span>行動ログ</span><span>15分相談</span><span class="on">ステップ</span><span>通知</span></div>
         </div>
-        <p class="gain">頼みごとに合った最小の手段だけを渡せる</p>
-        <p class="lose">作る量が3倍。最初の版には重い</p>
+        <p class="gain">読み物として続けて読める。他人の代理行動から学ぶ、に一番近い</p>
+        <p class="lose">ステップの全体像と、通過した人の数は見えない</p>
       </label>
     </div>
     <div class="why"><label for="why5">選んだ理由</label><input id="why5" data-for="s5" type="text" placeholder="ひとこと"></div>
@@ -421,7 +398,7 @@ section.screen { margin-top: 44px; }
 (() => {
   const out = document.getElementById('out');
   const btn = document.getElementById('copy');
-  const KEY = 'hitoribi.wire.v1';
+  const KEY = 'hitoribi.wire.v2';
   const screens = [...document.querySelectorAll('section.screen')];
 
   function text() {
