@@ -101,7 +101,7 @@ label.f > input, label.f > select, label.f > textarea { margin-top: 4px; }
 .mybar .ask { background: var(--ember-soft); border-radius: 10px; padding: 8px 10px; }
 
 nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
-nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); }
+nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); }
 .tab { background: none; border: 0; padding: 10px 0 12px; font-size: 13px; color: var(--ink-3); position: relative; }
 .tab.active { color: var(--ink); font-weight: 700; }
 .tab.active::after { content: ""; position: absolute; left: 30%; right: 30%; top: 0; height: 2px; background: var(--ember); }
@@ -133,6 +133,15 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
 .toast { position: fixed; left: 50%; top: calc(56px + env(safe-area-inset-top, 0px)); transform: translate(-50%, -8px); z-index: 20; background: var(--ink); color: var(--bg); border-radius: 999px; padding: 8px 16px; font-size: 14px; opacity: 0; pointer-events: none; transition: .2s; max-width: calc(100vw - 32px); }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .toast.err { background: var(--danger); color: #fff; }
+/* 学び */
+.learn-ctx { font-size: 13px; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; display: inline-block; margin-bottom: 12px; }
+.learn-card { background: var(--surface); border: 1.5px solid var(--ember); border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.learn-card h2 { margin: 0; font-size: 20px; }
+.learn-card .body { line-height: 1.85; }
+.learn-try { background: var(--ember-soft); border-radius: 12px; padding: 10px 12px; }
+.learn-try b { display: block; font-size: 12px; color: var(--ember); }
+.learn-src { font-size: 11px; color: var(--ink-3); overflow-wrap: anywhere; }
+.learn-bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; } .learn-bar i { display: block; height: 100%; background: var(--ember); }
 .celebrate { background: var(--ok-soft); border: 1px solid var(--ok); color: var(--ink); border-radius: 14px; padding: 12px 14px; }
 @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
 </style>
@@ -148,10 +157,12 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
 <nav class="tabs" aria-label="メイン"><div class="in">
   <button class="tab" data-tab="logs">行動ログ</button>
   <button class="tab" data-tab="ask">15分相談<span class="badge" id="b-ask" hidden></span></button>
+  <button class="tab" data-tab="learn">学び</button>
   <button class="tab" data-tab="notes">通知<span class="badge" id="b-notes" hidden></span></button>
 </div></nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="lessons.js"></script>
 <script>
 (() => {
   // ---------- 定数 ----------
@@ -204,7 +215,7 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
   const S = {
     ready: false, db: null, user: null, me: null, isOwner: false, readOnly: false,
     logs: new Map(), cheers: [], signs: [], lessons: [], bows: [], thanks: [], experts: new Map(),
-    myPending: [], myOutcomes: [], allPending: [], allOutcomes: [], profiles: {},
+    myPending: [], myOutcomes: [], learnRead: null, learnSkip: [], allPending: [], allOutcomes: [], profiles: {},
     tab: 'logs', wizard: null, roomId: null, room: null, roomMsgs: [], roomUnsubs: [], lessonForm: false,
     celebrate: null, editing: false, dismissAskDone: ls.get('hb.dismiss') || '',
   };
@@ -253,6 +264,7 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
     listen(db.collection('thanks').where('to', '==', me), (s) => { S.thanks = docs(s); });
     listen(db.collection('experts'), (s) => { S.experts = new Map(s.docs.map((d) => [d.id, d.data()])); });
     listen(db.doc('pending/' + me), (d) => { S.myPending = d.exists ? d.data().items || [] : []; });
+    listen(db.doc('data/users/' + me + '/learn'), (d) => { S.learnRead = d.exists ? d.data().read || [] : []; });
     listen(db.doc('outcomes/' + me), (d) => { S.myOutcomes = d.exists ? d.data().items || [] : []; });
     if (S.isOwner) {
       listen(db.collection('pending'), (s) => { S.allPending = docs(s); });
@@ -432,6 +444,7 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
       : S.tab === 'ask' ? (S.wizard ? viewWizard() : viewAsk())
       : S.tab === 'room' ? viewRoom()
       : S.tab === 'quit' ? viewQuit()
+      : S.tab === 'learn' ? viewLearn()
       : S.tab === 'notes' ? viewNotes()
       : S.tab === 'admin' && S.isOwner ? viewAdmin()
       : viewLogs();
@@ -653,6 +666,57 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
       h('label', { class: 'row muted' }, show, '名前を出す'),
       h('div', { class: 'warn' }, SECRET_NOTE + '。公開前に運営者が読みます。'),
       h('button', { class: 'btn primary block', onclick: () => act(async () => { await submitLesson({ step: Number(step.value), type: type.value, learned: a.value, carry: b.value, drop: c.value, showName: show.checked }); await S.db.doc('logs/' + S.me).update({ quitAt: Date.now() }); S.quitDone = true; go('logs'); }, 'やめる決断を記録しました') }, 'やめる決断を記録する'));
+  }
+
+  // 学び（R7）：いまのステップと状況に合う背景・ヒントを1枚ずつ
+  const STATE_LABEL = { none: '一手を書く前', lit: '一手に取り組み中', asking: '15分相談の最中', after: '相談のあと', done: '一手ができた', quit: 'やめる決断をした' };
+  function learnContext() {
+    const l = myLog();
+    let state = 'none';
+    if (l && isLit(l)) state = l.quitAt ? 'quit' : (mySign() || myResponding().length) ? 'asking' : pendingAskDone().length ? 'after' : l.doneAt ? 'done' : 'lit';
+    return { state, step: l ? l.step : 1, hasLog: !!l };
+  }
+  function learnQueue(ctx) {
+    const L = window.LESSONS || [];
+    const byState = L.filter((x) => x.states && x.states.includes(ctx.state) && (!x.steps || x.steps.includes(ctx.step) || ctx.state === 'none'));
+    const byStep = L.filter((x) => x.kind === 'tip' && !x.states && x.steps.includes(ctx.step));
+    const bg = L.filter((x) => x.kind === 'bg');
+    const order = ctx.state === 'none' ? [...bg, ...byStep] : [...byState, ...byStep, ...bg];
+    return [...new Map(order.map((x) => [x.id, x])).values()];
+  }
+  async function markRead(id) {
+    const read = Array.from(new Set([...(S.learnRead || []), id]));
+    S.learnRead = read; render();
+    await S.db.doc('data/users/' + S.me + '/learn').set({ read, at: Date.now() });
+  }
+  function viewLearn() {
+    const ctx = learnContext();
+    const queue = learnQueue(ctx);
+    const read = new Set(S.learnRead || []);
+    const next = queue.find((x) => !read.has(x.id) && !S.learnSkip.includes(x.id)) || queue.find((x) => !read.has(x.id));
+    const stepTips = (window.LESSONS || []).filter((x) => x.steps && x.steps.includes(ctx.step));
+    const doneN = stepTips.filter((x) => read.has(x.id)).length;
+    const readList = (window.LESSONS || []).filter((x) => read.has(x.id));
+    const where = ctx.hasLog ? `ステップ${ctx.step} ${STEPS[ctx.step - 1]}・${STATE_LABEL[ctx.state]}` : STATE_LABEL.none;
+    return h('div', {},
+      h('h1', {}, '学び'),
+      h('p', { class: 'lead' }, 'いまやっていることに合わせて、1枚ずつ。このプロダクトが必要とされる背景と、新規事業を進めるヒントです。'),
+      h('span', { class: 'learn-ctx' }, `いま：${where}`),
+      next ? h('article', { class: 'learn-card' },
+        h('div', { class: 'row' }, h('span', { class: 'chip' + (next.kind === 'bg' ? '' : ' ember') }, next.kind === 'bg' ? '背景' : 'ヒント'), next.steps && next.kind === 'tip' ? h('span', { class: 'meta' }, `ステップ${next.steps.join('・')}`) : null),
+        h('h2', {}, next.title),
+        h('div', { class: 'body' }, next.body),
+        h('div', { class: 'learn-try' }, h('b', {}, 'やってみる'), next.try),
+        h('div', { class: 'learn-src' }, `出典：${next.src}`),
+        h('div', { class: 'row' },
+          h('button', { class: 'btn primary grow', disabled: S.learnRead === null, onclick: () => act(() => markRead(next.id)) }, '読んだ、次へ'),
+          h('button', { class: 'btn ghost', onclick: () => { S.learnSkip.push(next.id); render(); } }, 'あとで')))
+        : h('div', { class: 'card stack' }, h('b', {}, 'いまの状況に合う学びは、すべて読みました'), h('div', { class: 'muted' }, '一手を進めたり、相談したりすると、次の学びが出てきます。')),
+      h('h2', {}, `ステップ${ctx.step}の学び ${doneN} / ${stepTips.length}`),
+      h('div', { class: 'learn-bar' }, h('i', { style: `width:${stepTips.length ? Math.round((doneN / stepTips.length) * 100) : 0}%` })),
+      readList.length ? h('details', { id: 'learnread', style: 'margin-top:16px' }, h('summary', { class: 'muted' }, `読んだ学び ${readList.length}`),
+        h('div', { class: 'stack', style: 'margin-top:8px' }, readList.map((x) => h('div', { class: 'card' }, h('b', {}, x.title), h('div', { class: 'muted' }, x.try))))) : null,
+    );
   }
 
   // 通知
