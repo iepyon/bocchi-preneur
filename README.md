@@ -1,13 +1,12 @@
 # solo-preneur
 
+[![ソロプレナー紹介動画（3分）](docs/media/solo-preneur-intro.webp)](docs/media/solo-preneur-intro.mp4)
+
+**3分の紹介動画**：使う人の置かれた状況、困りごと、このプラグインの解決策、使い方を3分にまとめました。上の画像はこのページの中でそのまま動きます（音なし）。音つき（BGM。読み上げはなし）で見るときは、画像を押すと MP4（13MB）が開きます。
+
 非エンジニアの経営者が、AIと二人三脚でプロダクトを課題検証からローンチ（リリース）まで作り切るための Claude Code プラグインと、そのマーケットプレイスです。
 
 プラグインの使い方は [plugins/solo-preneur/README.md](plugins/solo-preneur/README.md) を見てください。
-
-## 3分の紹介動画
-[![ソロプレナー紹介動画（3分）](docs/media/solo-preneur-intro.webp)](docs/media/solo-preneur-intro.mp4)
-
-使う人の置かれた状況、困りごと、このプラグインの解決策、使い方を3分にまとめた動画です。上の画像はこのページの中でそのまま動きます（音なし）。音つき（BGM。読み上げはなし）で見るときは、画像を押すと MP4（13MB）が開きます。
 
 ## インストール
 
