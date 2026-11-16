@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>残りの画面の骨格</title>
+<style>
+:root{
+  --bg:#f4f4f2; --card:#ffffff; --ink:#1d1f22; --sub:#666b72; --line:#cfd1d4; --fill:#e6e7e9; --strong:#1d1f22; --strong-ink:#ffffff; --focus:#2b6cb0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171a; --card:#1e2125; --ink:#e7e8ea; --sub:#a0a5ac; --line:#3a3e44; --fill:#2b2f34; --strong:#e7e8ea; --strong-ink:#15171a; --focus:#7fb3ec;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171a; --card:#1e2125; --ink:#e7e8ea; --sub:#a0a5ac; --line:#3a3e44; --fill:#2b2f34; --strong:#e7e8ea; --strong-ink:#15171a; --focus:#7fb3ec;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding:24px 16px 160px}
+h1{font-size:1.2rem;margin:0 0 4px}
+h2{font-size:1.02rem;margin:36px 0 2px;padding-top:12px;border-top:1px solid var(--line)}
+.lead{color:var(--sub);font-size:.9rem;margin:0 0 14px}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.opt{display:flex;flex-direction:column;gap:8px}
+label.pick{display:flex;gap:8px;align-items:flex-start;cursor:pointer;font-weight:700}
+label.pick input{margin-top:5px;accent-color:var(--focus)}
+.gain{font-size:.82rem;color:var(--sub)}
+.phone{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:14px;min-height:330px;display:flex;flex-direction:column;gap:9px}
+.phone.small{min-height:220px}
+.bar{display:flex;justify-content:space-between;font-size:.76rem;color:var(--sub);border-bottom:1px dashed var(--line);padding-bottom:6px}
+.t{font-weight:800;font-size:1.02rem}
+.big{font-size:2.1rem;font-weight:800;line-height:1.05}
+.s{font-size:.8rem;color:var(--sub)}
+.box{border:1.5px solid var(--line);border-radius:10px;padding:9px;font-size:.88rem}
+.input{border:1.5px solid var(--line);border-radius:8px;padding:9px;font-size:.84rem;color:var(--sub)}
+.row{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;border-bottom:1px solid var(--line);padding:5px 0}
+.btn{background:var(--strong);color:var(--strong-ink);border-radius:10px;padding:10px;text-align:center;font-weight:700;font-size:.88rem;margin-top:auto}
+.btn2{border:1.5px solid var(--ink);border-radius:10px;padding:9px;text-align:center;font-weight:700;font-size:.86rem}
+.pri{font-size:.76rem;border-left:3px solid var(--ink);padding-left:8px}
+.chip{display:inline-block;border:1.5px solid var(--line);border-radius:999px;padding:2px 9px;font-size:.78rem;margin:0 4px 4px 0}
+.chip.on{border-color:var(--ink);font-weight:700}
+.tag{display:inline-block;font-size:.72rem;border:1px dashed var(--ink);border-radius:4px;padding:0 6px}
+.cal{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;font-size:.76rem;text-align:center}
+.cal span{border:1.5px solid var(--line);border-radius:6px;padding:5px 0}
+.cal span.on{border-color:var(--ink);font-weight:700}
+.ok{display:flex;gap:8px;align-items:center;font-size:.86rem;font-weight:700;cursor:pointer}
+.ok input{accent-color:var(--focus)}
+.result{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1.5px solid var(--ink);padding:10px 16px}
+.result .in{max-width:1120px;margin:0 auto;font-size:.88rem}
+.result code{display:block;margin-top:4px;padding:7px;background:var(--fill);border-radius:6px;white-space:pre-wrap;font-family:inherit;max-height:80px;overflow:auto}
+.copy{margin-top:6px;background:var(--strong);color:var(--strong-ink);border:none;border-radius:8px;padding:7px 14px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>残りの画面：骨格</h1>
+  <p class="lead">判断が分かれる2画面（②申し込み、⑥今月のつながり）だけ2案を並べました。他は1案です。「このままでOK」にチェックを入れるか、チャットで直したい所を教えてください。乗り手の顔は写真なしで、名前・得意分野・一言の自己紹介です（あなたの決定）。</p>
+
+  <!-- 2 -->
+  <h2>② 申し込み（会員）</h2>
+  <p class="lead">ホームで山本さんの12:30をタップしたあと。</p>
+  <div class="grid">
+    <section class="opt">
+      <label class="pick"><input type="radio" name="apply" value="②申し込み：A 1画面で完結">A. 1画面で完結</label>
+      <div class="phone">
+        <div class="bar"><span>← 今日の人</span><span></span></div>
+        <div class="t">山本さん｜12:30〜15分</div>
+        <div class="s">税金・お金｜「確定申告の小さな疑問ならどうぞ」</div>
+        <div class="input">聞きたいことを一言（40字まで）</div>
+        <div class="s">金額やマイナンバーなど、具体的な数字は書かないでください</div>
+        <div class="btn">この内容で予約する</div>
+        <div class="pri">一番大事：誰と何時か</div>
+      </div>
+      <div class="gain">嬉しい：最短で予約できる（せっかちな人向け、ホームA選択の理由と一致）。失う：送る前に見直す画面がない。</div>
+    </section>
+    <section class="opt">
+      <label class="pick"><input type="radio" name="apply" value="②申し込み：B 書いて→確認">B. 書いて→確認の2段</label>
+      <div class="phone">
+        <div class="bar"><span>1/2</span><span></span></div>
+        <div class="input">聞きたいことを一言（40字まで）</div>
+        <div class="btn2">次へ</div>
+        <div class="bar"><span>2/2 確認</span><span></span></div>
+        <div class="box">山本さん｜12:30〜15分<br><span class="s">「経費ってどこまで入れていい？」</span></div>
+        <div class="btn">予約する</div>
+        <div class="pri">一番大事：送る内容の確認</div>
+      </div>
+      <div class="gain">嬉しい：書き間違いに気づける。失う：1タップ増える。</div>
+    </section>
+  </div>
+
+  <!-- 6 -->
+  <h2>⑥ 今月のつながり（運営者）</h2>
+  <p class="lead">他のオーナーに見せる画面でもあります。困りごとの一言は出さず、ジャンル別の件数だけ（あなたの決定）。</p>
+  <div class="grid">
+    <section class="opt">
+      <label class="pick"><input type="radio" name="dash" value="⑥今月のつながり：A 数字を大きく">A. 数字を大きく</label>
+      <div class="phone">
+        <div class="bar"><span>12月</span><span>オーナー用</span></div>
+        <div class="s">会員どうしの相談</div>
+        <div class="big">12件</div>
+        <div class="row"><span>相談した会員</span><span>9人</span></div>
+        <div class="row"><span>2回目も使った会員</span><span>4人</span></div>
+        <div class="row"><span>オーナーが乗った回（別枠）</span><span>3件</span></div>
+        <div><span class="chip">税金・お金 6</span><span class="chip">デザイン 3</span><span class="chip">営業 3</span></div>
+        <div class="pri">一番大事：会員どうしでつながった件数</div>
+      </div>
+      <div class="gain">嬉しい：成功の指標（10人・2回目5人）とそのまま照らせる。他のオーナーに一目で伝わる。失う：誰がまだつながっていないかは分からない。</div>
+    </section>
+    <section class="opt">
+      <label class="pick"><input type="radio" name="dash" value="⑥今月のつながり：B 数字＋まだつながっていない会員">B. 数字＋まだつながっていない会員</label>
+      <div class="phone">
+        <div class="bar"><span>12月</span><span>オーナー用</span></div>
+        <div class="row"><span>会員どうしの相談</span><b>12件</b></div>
+        <div class="row"><span>2回目も使った会員</span><b>4人</b></div>
+        <div class="s">まだ一度もつながっていない会員</div>
+        <div class="box">Tさん・Mさん・Hさん…ほか11人</div>
+        <div class="btn2">受付で声をかける候補にする</div>
+        <div class="pri">一番大事：声をかけるべき人</div>
+      </div>
+      <div class="gain">嬉しい：「誰とも話さないから退会」を先回りで防ぐ行動につながる。失う：利用の有無を個人単位で運営者が見ることになり、会員への説明が要る。他のオーナーへの見せ方は弱くなる。</div>
+    </section>
+  </div>
+
+  <!-- singles -->
+  <h2>1案のみ：このままでよいか確認</h2>
+  <div class="grid">
+    <section class="opt">
+      <label class="ok"><input type="checkbox" class="okc" value="③予約完了・わたしの予約">③ 予約完了／わたしの予約（会員）</label>
+      <div class="phone">
+        <div class="t">予約できました</div>
+        <div class="big">12:30</div>
+        <div>山本さんと15分｜ラウンジ</div>
+        <div class="s">山本さんにメールで知らせました</div>
+        <div class="btn2">取り消す（開始前まで）</div>
+        <div class="box s">失敗：山本さんが取り消した → 「ほかに空いている人」を表示し、メールでも知らせる</div>
+        <div class="pri">一番大事：何時に誰と</div>
+      </div>
+    </section>
+    <section class="opt">
+      <label class="ok"><input type="checkbox" class="okc" value="④枠を出す">④ 枠を出す（乗り手）</label>
+      <div class="phone">
+        <div class="t">相談に乗れる時間</div>
+        <div><span class="chip on">火 12/9</span><span class="chip">木 12/11</span></div>
+        <div class="cal"><span>12:00</span><span class="on">12:30</span><span>12:45</span><span>13:00</span><span>13:30</span><span>14:00</span><span>14:15</span><span>14:45</span></div>
+        <div class="s">得意分野：税金・お金｜自己紹介を編集</div>
+        <div class="btn">この時間を出す</div>
+        <div class="box s">空：まだ枠がない → 「週1回、15分だけでOKです」</div>
+        <div class="pri">一番大事：出す時刻</div>
+      </div>
+    </section>
+    <section class="opt">
+      <label class="ok"><input type="checkbox" class="okc" value="⑤受けた相談">⑤ 受けた相談（乗り手）</label>
+      <div class="phone">
+        <div class="t">12:30 佐藤さん</div>
+        <div class="box">「経費ってどこまで入れていい？」</div>
+        <div class="s">相談が終わったら記録してください</div>
+        <div class="btn">相談できた</div>
+        <div class="btn2">相手が来なかった</div>
+        <div class="pri">一番大事：相手の一言（準備用）</div>
+      </div>
+    </section>
+    <section class="opt">
+      <label class="ok"><input type="checkbox" class="okc" value="⑦招待">⑦ 相談に乗れる人を招待（運営者）</label>
+      <div class="phone small">
+        <div class="t">相談に乗れる人を招待</div>
+        <div class="input">メールアドレス</div>
+        <div class="btn">招待メールを送る</div>
+        <div class="box s">初回：「まず3人招待しましょう（火木に3人いると聞きやすい）」</div>
+        <div class="pri">一番大事：今いる乗り手の人数</div>
+      </div>
+    </section>
+    <section class="opt">
+      <label class="ok"><input type="checkbox" class="okc" value="⑧月額プラン">⑧ 月額プラン（運営者）</label>
+      <div class="phone small">
+        <div class="t">月額プラン <span class="tag">テスト：本物のお金は動きません</span></div>
+        <div class="row"><span>月額</span><span>¥5,000（仮）</span></div>
+        <div class="btn">申し込む（決済画面へ）</div>
+        <div class="box s">失敗：決済サービスの理由を表示し「もう一度試す」</div>
+        <div class="pri">一番大事：テストであること</div>
+      </div>
+    </section>
+    <section class="opt">
+      <label class="ok"><input type="checkbox" class="okc" value="⑨メールで入る">⑨ メールのリンクで入る（共通）</label>
+      <div class="phone small">
+        <div class="t">メールアドレスを入れてください</div>
+        <div class="input">sato@example.com</div>
+        <div class="btn">入るためのリンクを送る</div>
+        <div class="box s">失敗：リンクの期限切れ → 「もう一度送る」</div>
+        <div class="pri">一番大事：次に何をするか（メールを見る）</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="result"><div class="in">
+  <strong>選んだ結果</strong>（チャットに貼ってください。理由は一言添えて）
+  <code id="out">まだ選んでいません</code>
+  <button class="copy" id="copy" type="button">コピー</button>
+</div></div>
+
+<script>
+(function(){
+  var out=document.getElementById('out');
+  function render(){
+    var parts=[];
+    var a=document.querySelector('input[name="apply"]:checked'); if(a) parts.push(a.value);
+    var d=document.querySelector('input[name="dash"]:checked'); if(d) parts.push(d.value);
+    var oks=[].slice.call(document.querySelectorAll('.okc:checked')).map(function(c){return c.value});
+    if(oks.length) parts.push('このままでOK：'+oks.join('、'));
+    out.textContent = parts.length ? parts.join('\n') : 'まだ選んでいません';
+  }
+  document.querySelectorAll('input').forEach(function(i){i.addEventListener('change',render)});
+  document.getElementById('copy').addEventListener('click',function(){
+    try{ navigator.clipboard.writeText(out.textContent); this.textContent='コピーしました'; }catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

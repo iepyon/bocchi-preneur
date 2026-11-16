@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>相談室 中間報告</title>
+<style>
+  :root { --bg:#f6f5f1; --surface:#fff; --ink:#1d1f23; --ink-2:#5b606a; --line:#e4e2dc; --accent:#1f5f4a; --accent-ink:#fff; --soft:#eef4f0; --warn:#fbf1dc; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#15171a; --surface:#1e2125; --ink:#eceae4; --ink-2:#b2b5bc; --line:#2e3237; --accent:#7cc4a6; --accent-ink:#0f1a15; --soft:#1f2e28; --warn:#352b17; } }
+  :root[data-theme="dark"] { --bg:#15171a; --surface:#1e2125; --ink:#eceae4; --ink-2:#b2b5bc; --line:#2e3237; --accent:#7cc4a6; --accent-ink:#0f1a15; --soft:#1f2e28; --warn:#352b17; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic UI",Meiryo,system-ui,sans-serif; line-height:1.7; }
+  .wrap { max-width:960px; margin:0 auto; padding:24px 16px 64px; }
+  .top { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  h1 { font-size:22px; margin:0; }
+  .btn { border:0; border-radius:999px; padding:12px 22px; font:inherit; font-weight:700; background:var(--accent); color:var(--accent-ink); cursor:pointer; }
+  .btn[disabled] { opacity:.6; cursor:default; }
+  .msg { font-size:13px; color:var(--ink-2); margin:4px 0 20px; min-height:1.5em; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:16px; }
+  .slide { aspect-ratio:16/9; background:#fff; color:#1d1f23; border:1px solid var(--line); border-radius:10px; padding:5% 6%; display:flex; flex-direction:column; overflow:hidden; position:relative; font-size:clamp(9px,1.25vw,12px); }
+  .slide.dark { background:#1f5f4a; color:#fff; justify-content:center; }
+  .slide .n { position:absolute; right:10px; bottom:6px; font-size:10px; color:#8b909a; }
+  .slide.dark .n { color:#cfe3d8; }
+  .slide h2 { font-size:1.45em; margin:0 0 .6em; line-height:1.35; }
+  .slide.dark h2 { font-size:2em; margin:0 0 .3em; }
+  .slide p { margin:0 0 .4em; }
+  .cards { display:flex; gap:4%; flex:1; }
+  .c { flex:1; background:#eef4f0; border-radius:8px; padding:6%; font-size:.95em; }
+  .c.w { background:#fbf1dc; }
+  .c.g { background:#1f5f4a; color:#fff; }
+  .c b { display:block; }
+  .notes { font-size:12px; color:var(--ink-2); margin-top:6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>新規事業担当の相談室（仮）中間報告</h1>
+    <button class="btn" id="dl">PowerPointでダウンロード</button>
+  </div>
+  <p class="msg" id="msg">ボタンを押すと「中間報告.pptx」が保存されます（インターネット接続が必要です）。話す内容は各スライドのノートに入っています。</p>
+  <div class="grid" id="preview"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script>
+(function () {
+  "use strict";
+  var K = { ink: "1D1F23", white: "FFFFFF", soft: "EEF4F0", green: "1F5F4A", amber: "D98E2B", gray: "5B606A", mint: "7CC4A6", mute: "8B909A", cream: "FBF1DC", paleGreen: "CFE3D8" };
+  var FONT = "Meiryo";
+
+  // ---- 中身（プレビューとPowerPointで共通） ----
+  var D = {
+    title: "新規事業担当の相談室（仮）",
+    sub: "中間報告　2026年11月",
+    hero: "社内に相談相手がいない新規事業担当が、\n他社の新規事業担当に匿名で相談できる掲示板",
+    points: [["匿名で相談", "表示は業種と担当年数だけ。会社名は出さない"], ["返事は全員が新規事業担当", "同じ立場の人の経験談が届く"], ["他の人の相談も読める", "似た悩みの解決例を探せる"]],
+    who: "大企業の新規事業担当のうち、\n社内に気軽に相談できる\n相手がいない人",
+    pain: "上司から「種を1つ形にしろ」と言われたが、企画書をつくるときに切り口が決まらず、手が止まってしまう",
+    caveatH: "現時点では仮説です",
+    caveat: "対象に当てはまる人にはまだ話を聞いていません。担当者本人も、半年前に社内の同期に相談して企画が整理できた経験はありますが、他社に相談したいと思ったことはありません。",
+    steps: [["悩みを書く", "テーマを選んで、困っていることを書く。社外秘は書かない前提"], ["他社の担当に届く", "業種と担当年数だけが表示され、匿名で届く"], ["返事が届く", "同じ立場の人から経験談が届き、手が動き出す"]],
+    demo: "この場で、試作品を実際に動かしてお見せします（表示内容はすべて架空のデモです）",
+    known: ["試作品で「書く→返事が届く」を1周見せられる", "担当者本人は、半年前に社内の同期への相談で企画が整理できた（1件）", "社内に新規事業に関わる人が約10人いる"],
+    unknown: ["対象の人が本当に困っているか", "実際に悩みを書き込んでくれるか", "返事を書いてくれる他社の担当が集まるか", "誰が、いくら払うか"],
+    plan: [["1週目前半", "書き込みが保存され、全員で見られる版に更新する"], ["1〜2週目", "社内の新規事業担当 約10人に使ってもらう（社内での予行演習）"], ["2週目末", "書き込み数と返事の数を数えて報告する"]],
+    goal: "10人中\n5人", goalB: "が自分の悩みを書き込む",
+    planCaveat: "※社内の人は対象（社内に相談相手がいない人）とは異なるため、今回の結果は予行演習として扱う",
+    ask: "次の2週間、このまま進めることをご了承ください",
+    notes: [
+      "中間報告です。この2週間で、誰のどんな課題を狙うかを決め、見せられる試作品を作りました。最後に、次の2週間の進め方についてご了承をいただきたいです。",
+      "一言でいうと、社内に相談相手がいない新規事業担当のための、他社の担当どうしの匿名の相談掲示板です。",
+      "狙うのは、社内に相談相手がいない新規事業担当です。課題は、切り口が決まらず手が止まること。ただし、ここはまだ仮説で、対象の人には聞けていません。",
+      "ここで prototype/index.html を開いて実演します。トップ→「悩みを相談する」→投稿→約5秒で返事が届く、の流れです。表示されている相談と返事はすべて架空です。",
+      "正直に言うと、まだ分かっていないことの方が多いです。次の2週間で、まず「書き込んでくれるか」を確かめます。",
+      "次の2週間は、社内の新規事業担当10人ほどに試作品を使ってもらい、実際に悩みを書き込むかを見ます。合格ラインは10人中5人。社内の人は本来の対象とは違うので、あくまで予行演習という位置づけです。",
+      "次の2週間、この進め方で続けることについてご了承をお願いします。"
+    ]
+  };
+
+  // ---- プレビュー ----
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }).replace(/\n/g, "<br>"); }
+  function li(a) { return a.map(function (x) { return "<p>・" + esc(x) + "</p>"; }).join(""); }
+  var P = [
+    '<div class="slide dark"><h2>' + esc(D.title) + "</h2><p>" + esc(D.sub) + "</p>",
+    '<div class="slide"><h2>ひとことで言うと</h2><div class="c g" style="flex:0 0 auto;margin-bottom:4%"><b>' + esc(D.hero) + '</b></div><div class="cards">' + D.points.map(function (p) { return '<div class="c"><b>' + esc(p[0]) + "</b>" + esc(p[1]) + "</div>"; }).join("") + "</div>",
+    '<div class="slide"><h2>誰の、どんな課題か</h2><div class="cards"><div class="c"><b>対象</b>' + esc(D.who) + '</div><div style="flex:1.4"><p><b>' + esc(D.pain) + '</b></p><div class="c w"><b>' + esc(D.caveatH) + "</b>" + esc(D.caveat) + "</div></div></div>",
+    '<div class="slide"><h2>試作品：悩みを書くと、他社の担当から返事が届く</h2><div class="cards">' + D.steps.map(function (p, i) { return '<div class="c"><b>' + (i + 1) + ". " + esc(p[0]) + "</b>" + esc(p[1]) + "</div>"; }).join("") + '</div><p style="margin-top:3%;color:#1f5f4a"><b>' + esc(D.demo) + "</b></p>",
+    '<div class="slide"><h2>分かっていること、まだ分かっていないこと</h2><div class="cards"><div class="c"><b>分かっていること</b>' + li(D.known) + '</div><div class="c w"><b>まだ分かっていないこと</b>' + li(D.unknown) + "</div></div>",
+    '<div class="slide"><h2>次の2週間：書き込んでくれるかを確かめる</h2><div class="cards"><div style="flex:1.6">' + D.plan.map(function (p, i) { return "<p><b>" + (i + 1) + ". " + esc(p[0]) + "</b>　" + esc(p[1]) + "</p>"; }).join("") + '</div><div class="c g"><b>合格ライン</b><span style="font-size:1.8em;font-weight:700">' + esc(D.goal) + "</span><br>" + esc(D.goalB) + '</div></div><p style="color:#5b606a;font-size:.85em">' + esc(D.planCaveat) + "</p>",
+    '<div class="slide dark"><h2>お願い</h2><p>' + esc(D.ask) + "</p>"
+  ];
+  document.getElementById("preview").innerHTML = P.map(function (h, i) {
+    return "<div>" + h + '<span class="n">' + (i + 1) + '</span></div><p class="notes">ノート：' + esc(D.notes[i]) + "</p></div>";
+  }).join("");
+
+  // ---- PowerPoint 生成 ----
+  function build() {
+    var pres = new PptxGenJS();
+    pres.layout = "LAYOUT_16x9";
+    pres.title = "新規事業担当の相談室（仮）中間報告";
+    pres.theme = { headFontFace: FONT, bodyFontFace: FONT };
+
+    pres.defineSlideMaster({
+      title: "DARK", background: { color: K.green },
+      objects: [
+        { placeholder: { options: { name: "title", type: "title", x: 0.6, y: 1.6, w: 8.8, h: 1.4, fontSize: 36, bold: true, color: K.white, fontFace: FONT, valign: "bottom", margin: 0 }, text: "" } },
+        { placeholder: { options: { name: "body", type: "body", x: 0.6, y: 3.15, w: 8.8, h: 1.0, fontSize: 16, color: K.paleGreen, fontFace: FONT, valign: "top", margin: 0 }, text: "" } }
+      ]
+    });
+    pres.defineSlideMaster({
+      title: "CONTENT", background: { color: K.white },
+      objects: [
+        { placeholder: { options: { name: "title", type: "title", x: 0.6, y: 0.35, w: 8.8, h: 0.75, fontSize: 26, bold: true, color: K.ink, fontFace: FONT, valign: "middle", margin: 0 }, text: "" } },
+        { text: { text: "新規事業担当の相談室（仮）中間報告", options: { x: 0.6, y: 5.2, w: 6, h: 0.3, fontSize: 9, color: K.mute, fontFace: FONT, margin: 0 } } }
+      ],
+      slideNumber: { x: 9.0, y: 5.2, w: 0.4, h: 0.3, fontSize: 9, color: K.mute, align: "right" }
+    });
+
+    function T(s, text, o) { o.isTextBox = true; o.fontFace = FONT; if (o.margin === undefined) o.margin = 0; s.addText(text, o); }
+    function card(s, name, x, y, w, h, fill) {
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { objectName: name, x: x, y: y, w: w, h: h, rectRadius: 0.12, fill: { color: fill || K.soft }, line: { color: fill || K.soft } });
+    }
+    function num(s, name, n, x, y) {
+      s.addShape(pres.shapes.OVAL, { objectName: name + "-circle", x: x, y: y, w: 0.5, h: 0.5, fill: { color: K.green }, line: { color: K.green } });
+      T(s, String(n), { objectName: name + "-num", x: x, y: y, w: 0.5, h: 0.5, fontSize: 16, bold: true, color: K.white, align: "center", valign: "middle" });
+    }
+    function bullets(a) { return a.map(function (t, i) { return { text: t, options: i < a.length - 1 ? { bullet: true, breakLine: true } : { bullet: true } }; }); }
+
+    // 1
+    pres.addSection({ title: "はじめに" });
+    var s = pres.addSlide({ masterName: "DARK", sectionTitle: "はじめに" });
+    s.addText(D.title, { placeholder: "title" });
+    s.addText(D.sub, { placeholder: "body" });
+    s.addNotes(D.notes[0]);
+
+    // 2
+    s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "はじめに" });
+    s.addText("ひとことで言うと", { placeholder: "title" });
+    card(s, "hero-card", 0.6, 1.3, 8.8, 1.3, K.green);
+    T(s, D.hero, { objectName: "hero-text", x: 0.9, y: 1.3, w: 8.2, h: 1.3, fontSize: 20, bold: true, color: K.white, valign: "middle" });
+    D.points.forEach(function (p, i) {
+      var x = 0.6 + i * 3.0;
+      card(s, "pt" + i, x, 2.95, 2.8, 1.95);
+      num(s, "pt" + i, i + 1, x + 0.25, 3.15);
+      T(s, p[0], { objectName: "pt" + i + "-h", x: x + 0.25, y: 3.75, w: 2.35, h: 0.4, fontSize: 14, bold: true, color: K.ink });
+      T(s, p[1], { objectName: "pt" + i + "-b", x: x + 0.25, y: 4.15, w: 2.35, h: 0.65, fontSize: 11, color: K.gray, valign: "top" });
+    });
+    s.addNotes(D.notes[1]);
+
+    // 3
+    pres.addSection({ title: "課題と試作品" });
+    s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "課題と試作品" });
+    s.addText("誰の、どんな課題か", { placeholder: "title" });
+    card(s, "who-card", 0.6, 1.3, 3.6, 3.6);
+    s.addShape(pres.shapes.OVAL, { objectName: "who-avatar", x: 1.9, y: 1.6, w: 1.0, h: 1.0, fill: { color: K.mint }, line: { color: K.mint } });
+    T(s, "対象", { objectName: "who-label", x: 0.85, y: 2.8, w: 3.1, h: 0.35, fontSize: 12, bold: true, color: K.green, align: "center" });
+    T(s, D.who, { objectName: "who-text", x: 0.85, y: 3.15, w: 3.1, h: 1.5, fontSize: 14, bold: true, color: K.ink, align: "center", valign: "top" });
+    T(s, "課題", { objectName: "pain-label", x: 4.6, y: 1.3, w: 4.8, h: 0.35, fontSize: 12, bold: true, color: K.green });
+    T(s, D.pain, { objectName: "pain-text", x: 4.6, y: 1.7, w: 4.8, h: 1.6, fontSize: 17, bold: true, color: K.ink, valign: "top" });
+    card(s, "status-card", 4.6, 3.5, 4.8, 1.4, K.cream);
+    T(s, [{ text: D.caveatH, options: { bold: true, breakLine: true } }, { text: D.caveat }], { objectName: "status-text", x: 4.8, y: 3.55, w: 4.4, h: 1.3, fontSize: 10.5, color: K.ink, valign: "middle" });
+    s.addNotes(D.notes[2]);
+
+    // 4
+    s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "課題と試作品" });
+    s.addText("試作品：悩みを書くと、他社の担当から返事が届く", { placeholder: "title" });
+    D.steps.forEach(function (p, i) {
+      var x = 0.6 + i * 3.05;
+      card(s, "step" + i, x, 1.4, 2.7, 2.9);
+      num(s, "step" + i, i + 1, x + 0.25, 1.65);
+      T(s, p[0], { objectName: "step" + i + "-h", x: x + 0.25, y: 2.35, w: 2.25, h: 0.45, fontSize: 16, bold: true, color: K.ink });
+      T(s, p[1], { objectName: "step" + i + "-b", x: x + 0.25, y: 2.85, w: 2.25, h: 1.3, fontSize: 12, color: K.gray, valign: "top" });
+      if (i < 2) T(s, "→", { objectName: "arrow" + i, x: x + 2.7, y: 2.6, w: 0.35, h: 0.5, fontSize: 20, bold: true, color: K.green, align: "center", valign: "middle" });
+    });
+    T(s, D.demo, { objectName: "demo-note", x: 0.6, y: 4.5, w: 8.8, h: 0.4, fontSize: 13, bold: true, color: K.green });
+    s.addNotes(D.notes[3]);
+
+    // 5
+    pres.addSection({ title: "現状と次の一手" });
+    s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "現状と次の一手" });
+    s.addText("分かっていること、まだ分かっていないこと", { placeholder: "title" });
+    card(s, "known", 0.6, 1.3, 4.25, 3.6);
+    card(s, "unknown", 5.15, 1.3, 4.25, 3.6, K.cream);
+    T(s, "分かっていること", { objectName: "known-h", x: 0.85, y: 1.5, w: 3.8, h: 0.4, fontSize: 16, bold: true, color: K.green });
+    T(s, bullets(D.known), { objectName: "known-b", x: 0.85, y: 2.0, w: 3.8, h: 2.7, fontSize: 13, color: K.ink, valign: "top", paraSpaceAfter: 8 });
+    T(s, "まだ分かっていないこと", { objectName: "unknown-h", x: 5.4, y: 1.5, w: 3.8, h: 0.4, fontSize: 16, bold: true, color: K.amber });
+    T(s, bullets(D.unknown), { objectName: "unknown-b", x: 5.4, y: 2.0, w: 3.8, h: 2.7, fontSize: 13, color: K.ink, valign: "top", paraSpaceAfter: 8 });
+    s.addNotes(D.notes[4]);
+
+    // 6
+    s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "現状と次の一手" });
+    s.addText("次の2週間：書き込んでくれるかを確かめる", { placeholder: "title" });
+    D.plan.forEach(function (p, i) {
+      var y = 1.35 + i * 1.0;
+      num(s, "plan" + i, i + 1, 0.6, y + 0.1);
+      T(s, p[0], { objectName: "plan" + i + "-when", x: 1.25, y: y, w: 1.5, h: 0.7, fontSize: 13, bold: true, color: K.green, valign: "middle" });
+      T(s, p[1], { objectName: "plan" + i + "-what", x: 2.75, y: y, w: 3.35, h: 0.7, fontSize: 13, color: K.ink, valign: "middle" });
+    });
+    card(s, "goal-card", 6.4, 1.35, 3.0, 2.7, K.green);
+    T(s, "合格ライン", { objectName: "goal-h", x: 6.6, y: 1.5, w: 2.6, h: 0.35, fontSize: 12, bold: true, color: K.paleGreen });
+    T(s, D.goal, { objectName: "goal-num", x: 6.6, y: 1.9, w: 2.6, h: 1.3, fontSize: 32, bold: true, color: K.white, valign: "middle" });
+    T(s, D.goalB, { objectName: "goal-b", x: 6.6, y: 3.25, w: 2.6, h: 0.6, fontSize: 13, color: K.white, valign: "top" });
+    T(s, D.planCaveat, { objectName: "plan-caveat", x: 0.6, y: 4.4, w: 8.8, h: 0.5, fontSize: 11, color: K.gray });
+    s.addNotes(D.notes[5]);
+
+    // 7
+    s = pres.addSlide({ masterName: "DARK", sectionTitle: "現状と次の一手" });
+    s.addText("お願い", { placeholder: "title" });
+    s.addText(D.ask, { placeholder: "body" });
+    s.addNotes(D.notes[6]);
+
+    return pres.writeFile({ fileName: "中間報告.pptx" });
+  }
+
+  var btn = document.getElementById("dl"), msg = document.getElementById("msg");
+  btn.addEventListener("click", function () {
+    if (typeof PptxGenJS === "undefined") { msg.textContent = "PowerPointを作る部品を読み込めませんでした。インターネットにつながっているか確かめて、ページを開き直してください。"; return; }
+    btn.disabled = true; btn.textContent = "作成中…";
+    build().then(function () { msg.textContent = "「中間報告.pptx」を保存しました。ダウンロードフォルダを確認してください。"; })
+      .catch(function (e) { msg.textContent = "作成に失敗しました：" + e; })
+      .then(function () { btn.disabled = false; btn.textContent = "PowerPointでダウンロード"; });
+  });
+})();
+</script>
+</body>
+</html>

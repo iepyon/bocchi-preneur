@@ -1,0 +1,458 @@
+<title>新規事業担当の相談室</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Layout: a narrow single column (board → post detail), with a sticky header; the owner sees a count panel at the top */
+  :root {
+    --bg: #f5f6f3; --surface: #ffffff; --ink: #1c211f; --ink-2: #545c58; --ink-3: #848c88;
+    --line: #dfe3df; --accent: #1f5f4a; --accent-ink: #ffffff; --accent-soft: #e3eee8;
+    --warn: #a3321f; --warn-soft: #f9e9e5; --amber: #8a5a00; --amber-soft: #f8eed8;
+    --font: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141816; --surface: #1c211f; --ink: #e9ece9; --ink-2: #b0b8b4; --ink-3: #848c88;
+      --line: #2c3330; --accent: #7cc4a6; --accent-ink: #0d1a14; --accent-soft: #1d2e27;
+      --warn: #f0998a; --warn-soft: #3a2420; --amber: #f0c46a; --amber-soft: #352b17; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141816; --surface: #1c211f; --ink: #e9ece9; --ink-2: #b0b8b4; --ink-3: #848c88;
+    --line: #2c3330; --accent: #7cc4a6; --accent-ink: #0d1a14; --accent-soft: #1d2e27;
+    --warn: #f0998a; --warn-soft: #3a2420; --amber: #f0c46a; --amber-soft: #352b17; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.7; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  a { color: var(--accent); }
+  .wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  header.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+  header.bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; }
+  .logo { font-weight: 700; text-decoration: none; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  .logo-mark { width: 22px; height: 22px; border-radius: 6px; background: var(--accent); position: relative; flex: none; }
+  .logo-mark::after { content: ""; position: absolute; left: 5px; top: 6px; width: 12px; height: 8px; border-radius: 3px; background: var(--accent-ink); }
+  .pill { font-size: 12px; padding: 2px 10px; border-radius: 999px; white-space: nowrap; background: var(--accent-soft); color: var(--accent); }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 999px; padding: 10px 20px; font-weight: 700; cursor: pointer; text-decoration: none; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary[disabled] { opacity: .55; cursor: default; }
+  .btn-line { background: transparent; border: 1px solid var(--line); color: var(--ink); font-weight: 500; }
+  .btn-ghost { background: transparent; color: var(--ink-2); padding: 8px 4px; font-weight: 500; }
+  .btn-danger { background: transparent; color: var(--warn); padding: 6px 4px; font-weight: 500; font-size: 13px; }
+  .btn-sm { padding: 6px 14px; font-size: 14px; }
+
+  main { padding-block: 24px 48px; }
+  .stack { display: grid; gap: 16px; }
+  .intro h1 { font-size: clamp(22px, 5vw, 30px); line-height: 1.4; margin: 8px 0 6px; text-wrap: balance; }
+  .intro p { margin: 0 0 16px; color: var(--ink-2); }
+  .rule { font-size: 13px; background: var(--warn-soft); color: var(--warn); border-radius: 10px; padding: 10px 12px; }
+
+  .stats { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+  .stats h2 { font-size: 14px; margin: 0 0 10px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .stats-main { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .stats-main .big { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .meter { height: 8px; background: var(--accent-soft); border-radius: 999px; overflow: hidden; margin-bottom: 12px; position: relative; }
+  .meter > span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+  .meter > i { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink-2); left: 50%; }
+  .stats dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px 16px; margin: 0; }
+  .stats dt { font-size: 12px; color: var(--ink-3); }
+  .stats dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .section-head h2 { font-size: 17px; margin: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 12px; font-size: 13px; cursor: pointer; color: var(--ink-2); }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+  .list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; text-decoration: none; color: var(--ink); }
+  .card:hover { border-color: var(--accent); }
+  .card h3 { font-size: 16px; margin: 0 0 4px; line-height: 1.5; overflow-wrap: anywhere; }
+  .meta { font-size: 13px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: center; }
+  .tag { font-size: 12px; background: var(--accent-soft); color: var(--accent); padding: 1px 8px; border-radius: 999px; }
+  .tag.mine { background: var(--amber-soft); color: var(--amber); }
+  .count { margin-left: auto; font-weight: 700; color: var(--ink-2); }
+  .empty { text-align: center; color: var(--ink-2); background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); padding: 24px 16px; }
+  .note { font-size: 13px; color: var(--ink-2); }
+  .status { font-size: 13px; color: var(--amber); }
+
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; min-width: 0; }
+  .panel h1 { font-size: 21px; line-height: 1.45; margin: 6px 0 0; overflow-wrap: anywhere; text-wrap: balance; }
+  .body-text { white-space: pre-wrap; overflow-wrap: anywhere; margin: 12px 0 0; }
+  .reply { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
+  .reply p { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .talk { background: var(--accent-soft); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 10px; }
+  .talk h2 { font-size: 15px; margin: 0; }
+  .talk-row { background: var(--surface); border-radius: 10px; padding: 10px 12px; display: grid; gap: 6px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+  label.lbl { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .field { display: grid; }
+  input[type=text], textarea, select { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 9px 12px; }
+  textarea { min-height: 130px; resize: vertical; }
+  .invalid { border-color: var(--warn) !important; }
+  .err { color: var(--warn); font-size: 13px; margin-top: 4px; }
+  .actions { display: flex; gap: 12px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+  .confirm { background: var(--warn-soft); color: var(--warn); border-radius: 10px; padding: 10px 12px; font-size: 13px; display: grid; gap: 8px; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(16px); opacity: 0; background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-size: 14px; transition: opacity .2s, transform .2s; pointer-events: none; z-index: 20; max-width: calc(100% - 32px); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="logo" href="#"><span class="logo-mark" aria-hidden="true"></span>新規事業担当の相談室</a>
+    <span class="pill">社内試用版</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- 一覧 -->
+  <section id="view-home" class="stack">
+    <div class="intro">
+      <h1>社内の新規事業担当どうしで、名前を出さずに相談できる場所です。</h1>
+      <p>「切り口が決まらない」「誰に話を聞けばいいか分からない」。手が止まったら書いてください。同じ立場の人が返事をします。直接15分話すこともできます。</p>
+      <div class="row"><a class="btn btn-primary" href="#new" id="cta-new">悩みを相談する</a></div>
+    </div>
+    <div id="stats" class="stats" hidden></div>
+    <p id="load-msg" class="note" hidden></p>
+    <div class="section-head"><h2>みんなの相談</h2></div>
+    <div class="chips" id="chips" role="group" aria-label="テーマで絞り込む"></div>
+    <div id="list-wrap"></div>
+  </section>
+
+  <!-- 相談を書く -->
+  <section id="view-new" class="stack" hidden>
+    <div><a class="btn btn-ghost" href="#">← 相談の一覧へ戻る</a></div>
+    <div class="panel stack">
+      <h1 style="margin:0">悩みを相談する</h1>
+      <div class="rule">社外秘の情報、取引先名、個人名は書かないでください。あなたの名前は表示されません。</div>
+      <form id="f-new" class="stack" novalidate>
+        <div class="field"><label class="lbl" for="n-tag">テーマ</label><select id="n-tag"></select></div>
+        <div class="field"><label class="lbl" for="n-title">ひとことで言うと</label>
+          <input id="n-title" type="text" maxlength="80" placeholder="例：切り口が決まらず、3か月手が止まっています">
+          <div class="err" id="e-title" hidden>何に困っているかを、ひとことで書いてください</div></div>
+        <div class="field"><label class="lbl" for="n-body">くわしく</label>
+          <textarea id="n-body" maxlength="2000" placeholder="いまの状況、試したこと、どこで止まっているか"></textarea>
+          <div class="err" id="e-body" hidden>状況を1〜2行でいいので書いてください</div></div>
+        <div class="field"><label class="lbl" for="n-years">担当年数（任意・表示されます）</label>
+          <select id="n-years"><option value="">表示しない</option><option>担当1年目</option><option>担当2〜3年目</option><option>担当4年目以上</option></select></div>
+        <div class="err" id="e-new" hidden></div>
+        <div class="actions"><a class="btn btn-ghost" href="#">やめる</a><button class="btn btn-primary" id="b-new" type="submit">相談を投稿する</button></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- 相談の詳細 -->
+  <section id="view-post" class="stack" hidden>
+    <div><a class="btn btn-ghost" href="#">← 相談の一覧へ戻る</a></div>
+    <div id="post-head"></div>
+    <div id="post-talk"></div>
+    <div class="stack" id="post-replies"></div>
+    <div class="panel">
+      <form id="f-reply" novalidate>
+        <label class="lbl" for="r-text" id="r-label">返事を書く</label>
+        <textarea id="r-text" style="min-height:96px" maxlength="1000" placeholder="自分の経験をもとに、具体的に"></textarea>
+        <div class="err" id="e-reply" hidden></div>
+        <div class="actions" style="margin-top:10px"><button class="btn btn-primary" id="b-reply" type="submit">返事を送る</button></div>
+      </form>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+  var TAGS = ["切り口・テーマ", "顧客探し", "社内調整・稟議", "報告・見せ方", "その他"];
+  var TARGET_PEOPLE = 10, PASS_LINE = 5;
+
+  var S = { db: null, user: null, uid: null, token: null, canWrite: false, isOwner: false,
+            posts: [], replies: [], talks: [], loaded: { posts: false, replies: false, talks: false },
+            filter: null, route: { view: "home", id: null }, ready: false, sentId: {} };
+
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function newId() { return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10); }
+  function ago(ms) {
+    var d = (Date.now() - (ms || 0)) / 1000;
+    if (d < 60) return "たった今"; if (d < 3600) return Math.floor(d / 60) + "分前";
+    if (d < 86400) return Math.floor(d / 3600) + "時間前"; if (d < 86400 * 7) return Math.floor(d / 86400) + "日前";
+    var t = new Date(ms); return (t.getMonth() + 1) + "月" + t.getDate() + "日";
+  }
+  function toast(m) { var t = $("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(function () { t.classList.remove("show"); }, 2600); }
+  function findPost(id) { for (var i = 0; i < S.posts.length; i++) if (S.posts[i].id === id) return S.posts[i]; return null; }
+  function repliesOf(id) { return S.replies.filter(function (r) { return r.postId === id; }); }
+  function talksOf(id) { return S.talks.filter(function (t) { return t.postId === id; }); }
+  function uniq(a) { var o = {}; a.forEach(function (x) { if (x) o[x] = 1; }); return Object.keys(o).length; }
+
+  // ---- 匿名の印（本人の非公開領域にだけ保存。名前やIDは相談に残さない） ----
+  async function ensureToken() {
+    if (S.token) return S.token;
+    if (!S.db || !S.uid) throw new Error("サインインしていないため書き込めません");
+    var ref = S.db.doc("data/users/" + S.uid + "/me");
+    var snap = await ref.get();
+    var tok = snap.exists && snap.data().token;
+    if (!tok) { tok = (crypto.randomUUID ? crypto.randomUUID() : newId() + newId()); await ref.set({ token: tok }); }
+    S.token = tok; return tok;
+  }
+
+  // ---- 一覧 ----
+  function renderChips() {
+    var html = '<button class="chip" type="button" data-tag="" aria-pressed="' + (!S.filter) + '">すべて</button>' +
+      TAGS.map(function (t) { return '<button class="chip" type="button" data-tag="' + esc(t) + '" aria-pressed="' + (S.filter === t) + '">' + esc(t) + "</button>"; }).join("");
+    $("chips").innerHTML = html;
+  }
+  function renderStats() {
+    var el = $("stats");
+    if (!S.isOwner) { el.hidden = true; return; }
+    var posters = uniq(S.posts.map(function (p) { return p.token; }));
+    var repliers = uniq(S.replies.map(function (r) { return r.token; }));
+    var req = S.talks.length, ok = S.talks.filter(function (t) { return t.status === "accepted"; }).length;
+    var pct = Math.min(100, posters / TARGET_PEOPLE * 100);
+    el.innerHTML =
+      "<h2><span>あなたにだけ見えている集計</span><span>合格ライン：" + TARGET_PEOPLE + "人中" + PASS_LINE + "人が相談を書く</span></h2>" +
+      '<div class="stats-main"><span class="big">' + posters + "人</span><span class=\"note\">が相談を書いた（" + TARGET_PEOPLE + "人中）" +
+      (posters >= PASS_LINE ? "　<b style=\"color:var(--accent)\">合格ラインに到達</b>" : "　あと" + (PASS_LINE - posters) + "人") + "</span></div>" +
+      '<div class="meter" aria-hidden="true"><span style="width:' + pct + '%"></span><i></i></div>' +
+      "<dl><div><dt>相談の数</dt><dd>" + S.posts.length + "件</dd></div>" +
+      "<div><dt>返事の数</dt><dd>" + S.replies.length + "件</dd></div>" +
+      "<div><dt>返事を書いた人</dt><dd>" + repliers + "人</dd></div>" +
+      "<div><dt>15分の申し込み</dt><dd>" + req + "件</dd></div>" +
+      "<div><dt>15分が成立</dt><dd>" + ok + "件</dd></div></dl>" +
+      '<p class="note" style="margin:10px 0 0">人数は、書き込んだ人の匿名の印で数えています。誰が書いたかは、あなたにも分かりません。</p>';
+    el.hidden = false;
+  }
+  function renderList() {
+    var w = $("list-wrap");
+    if (!S.loaded.posts) { w.innerHTML = '<div class="empty">相談を読み込んでいます…</div>'; return; }
+    var list = S.filter ? S.posts.filter(function (p) { return p.tag === S.filter; }) : S.posts;
+    if (!list.length) {
+      w.innerHTML = '<div class="empty">' + (S.posts.length ? "このテーマの相談はまだありません。" : "まだ相談はありません。<br>最初の1件を書いてみませんか。") +
+        '<br><a href="#new">悩みを相談する</a></div>';
+      return;
+    }
+    w.innerHTML = '<ul class="list">' + list.map(function (p) {
+      var n = repliesOf(p.id).length, t = talksOf(p.id).length;
+      var mine = S.token && p.token === S.token;
+      return '<li><a class="card" href="#post-' + esc(p.id) + '"><h3>' + esc(p.title) + "</h3>" +
+        '<div class="meta"><span class="tag">' + esc(p.tag) + "</span>" + (p.years ? "<span>" + esc(p.years) + "</span>" : "") +
+        "<span>" + ago(p.createdAt) + "</span>" + (mine ? '<span class="tag mine">あなたの相談</span>' : "") +
+        '<span class="count">' + (n ? "返事 " + n + "件" : "まだ返事なし") + (t ? "・15分 " + t + "件" : "") + "</span></div></a></li>";
+    }).join("") + "</ul>";
+  }
+  function renderHome() { renderChips(); renderStats(); renderList(); }
+
+  // ---- 詳細 ----
+  var nameCache = {};
+  async function names(ids) {
+    ids = ids.filter(Boolean);
+    if (!ids.length || !S.user) return {};
+    try { var ps = await S.user.profiles(ids); ids.forEach(function (id) { nameCache[id] = (ps[id] && ps[id].name) || ""; }); } catch (e) {}
+    return nameCache;
+  }
+  function renderPost() {
+    var id = S.route.id, p = findPost(id);
+    var head = $("post-head"), talk = $("post-talk"), reps = $("post-replies");
+    if (!p) {
+      head.innerHTML = '<div class="empty">' + (S.loaded.posts ? "この相談は見つかりませんでした。削除された可能性があります。" : "読み込んでいます…") + '<br><a href="#">相談の一覧へ戻る</a></div>';
+      talk.innerHTML = ""; reps.innerHTML = ""; $("f-reply").hidden = true; return;
+    }
+    $("f-reply").hidden = !S.canWrite;
+    var mine = !!(S.token && p.token === S.token);
+    $("r-label").textContent = mine ? "お礼や追加の情報を書く" : "返事を書く";
+    head.innerHTML = '<article class="panel"><div class="meta"><span class="tag">' + esc(p.tag) + "</span>" + (p.years ? "<span>" + esc(p.years) + "</span>" : "") +
+      "<span>" + ago(p.createdAt) + "</span>" + (mine ? '<span class="tag mine">あなたの相談</span>' : "") + "</div>" +
+      "<h1>" + esc(p.title) + '</h1><p class="body-text">' + esc(p.body) + "</p>" +
+      ((mine || S.isOwner) && S.canWrite ? '<div class="actions" style="margin-top:8px"><button class="btn btn-danger" type="button" id="b-del">この相談を削除する</button></div><div id="del-confirm"></div>' : "") +
+      "</article>";
+
+    var rs = repliesOf(p.id);
+    reps.innerHTML = "<h2 style=\"font-size:16px;margin:8px 0 0\">返事" + (rs.length ? "（" + rs.length + "件）" : "") + "</h2>" +
+      (rs.length ? rs.map(function (r) {
+        var who = r.token === p.token ? "相談者" : "新規事業担当";
+        var me = S.token && r.token === S.token;
+        return '<div class="reply"><div class="meta"><span>' + who + (me ? "（あなた）" : "") + "</span><span>" + ago(r.createdAt) + "</span></div><p>" + esc(r.text) + "</p></div>";
+      }).join("") : '<div class="empty">まだ返事はありません。<br>同じことで悩んだ経験があれば、最初の返事を書いてみませんか。</div>');
+
+    renderTalk(p, mine);
+  }
+
+  async function renderTalk(p, mine) {
+    var el = $("post-talk");
+    var ts = talksOf(p.id);
+    if (!S.canWrite) { el.innerHTML = ""; return; }
+    if (mine) {
+      if (!ts.length) { el.innerHTML = '<div class="talk"><h2>15分話したい人</h2><p class="note" style="margin:0">「15分話したい」と申し込みがあると、ここに表示されます。承諾したときだけ、お互いの名前が見えます。</p></div>'; return; }
+      var nm = await names(ts.map(function (t) { return t.requesterId; }));
+      el.innerHTML = '<div class="talk"><h2>15分話したい人（' + ts.length + "件）</h2>" + ts.map(function (t) {
+        var body = '<div class="talk-row">' + (t.note ? "<div>「" + esc(t.note) + "」</div>" : "") + '<div class="meta"><span>' + ago(t.createdAt) + "</span></div>";
+        if (t.status === "requested") body += '<div class="row"><button class="btn btn-primary btn-sm" type="button" data-accept="' + esc(t.id) + '">承諾する（名前を見せ合う）</button><button class="btn btn-line btn-sm" type="button" data-decline="' + esc(t.id) + '">今回は見送る</button></div>';
+        else if (t.status === "accepted") body += '<div class="status">' + (t.requesterId ? "<b>" + esc(nm[t.requesterId] || "相手") + "</b>さんと話しましょう。日程は社内チャットなどで直接連絡してください。" : "承諾しました。相手がこのページを開くと、名前が表示されます。") + "</div>";
+        else body += '<div class="note">見送りました。</div>';
+        return body + "</div>";
+      }).join("") + "</div>";
+      return;
+    }
+    var my = S.token ? ts.filter(function (t) { return t.requesterToken === S.token; })[0] : null;
+    if (my) {
+      if (my.status === "accepted" && !my.requesterId && S.uid && !S.sentId[my.id]) {
+        // 承諾されたので、自分の名前を相手に見せる（1回だけ書く）
+        S.sentId[my.id] = true;
+        try { await S.db.doc("talks/" + my.id).update({ requesterId: S.uid }); } catch (e) { S.sentId[my.id] = false; }
+      }
+      var msg;
+      if (my.status === "requested") msg = "申し込みました。相談者が承諾すると、お互いの名前が見えます。";
+      else if (my.status === "accepted") { var n2 = await names([my.posterId]); msg = "<b>" + esc(n2[my.posterId] || "相談者") + "</b>さんが承諾しました。日程は社内チャットなどで直接連絡してください。"; }
+      else msg = "今回は見送られました。返事で経験を伝えるのも助けになります。";
+      el.innerHTML = '<div class="talk"><h2>15分話す</h2><div class="status">' + msg + "</div></div>";
+      return;
+    }
+    // 入力中のひとことを消さないよう、申し込みフォームがすでに出ていれば描き直さない
+    if (el.querySelector("#f-talk") && el.getAttribute("data-post") === p.id) return;
+    el.setAttribute("data-post", p.id);
+    el.innerHTML = '<div class="talk"><h2>この相談者と15分話す</h2>' +
+      '<p class="note" style="margin:0">書くより話したほうが早そうなときに。相談者が承諾したときだけ、お互いの名前が見えます。</p>' +
+      '<form id="f-talk" class="stack" style="gap:8px" novalidate><label class="lbl" for="t-note" style="margin:0">ひとこと（任意）</label>' +
+      '<input id="t-note" type="text" maxlength="100" placeholder="例：去年同じことで悩みました。話せます">' +
+      '<div class="err" id="e-talk" hidden></div><div class="actions"><button class="btn btn-primary btn-sm" type="submit" id="b-talk">15分話したいと申し込む</button></div></form></div>';
+  }
+
+  // ---- 操作 ----
+  async function submitNew(e) {
+    e.preventDefault();
+    var t = $("n-title"), b = $("n-body"), ok = true;
+    [[t, "e-title"], [b, "e-body"]].forEach(function (x) { var bad = !x[0].value.trim(); x[0].classList.toggle("invalid", bad); $(x[1]).hidden = !bad; if (bad) ok = false; });
+    if (!ok) { (t.value.trim() ? b : t).focus(); return; }
+    var btn = $("b-new"); btn.disabled = true; btn.textContent = "投稿しています…"; $("e-new").hidden = true;
+    try {
+      var tok = await ensureToken(), id = newId();
+      await S.db.collection("posts").doc(id).set({ title: t.value.trim(), body: b.value.trim(), tag: $("n-tag").value, years: $("n-years").value, token: tok, createdAt: Date.now() });
+      t.value = ""; b.value = "";
+      location.hash = "post-" + id; toast("相談を投稿しました");
+    } catch (err) {
+      $("e-new").textContent = "投稿できませんでした（" + (err && (err.code || err.message) || "不明なエラー") + "）。少し待ってからもう一度押してください。"; $("e-new").hidden = false;
+    } finally { btn.disabled = false; btn.textContent = "相談を投稿する"; }
+  }
+  async function submitReply(e) {
+    e.preventDefault();
+    var r = $("r-text"), bad = !r.value.trim();
+    r.classList.toggle("invalid", bad); $("e-reply").textContent = "返事を入力してください"; $("e-reply").hidden = !bad;
+    if (bad) { r.focus(); return; }
+    var btn = $("b-reply"); btn.disabled = true;
+    try {
+      var tok = await ensureToken();
+      await S.db.collection("replies").doc(newId()).set({ postId: S.route.id, text: r.value.trim(), token: tok, createdAt: Date.now() });
+      r.value = ""; toast("返事を送りました");
+    } catch (err) {
+      $("e-reply").textContent = "送れませんでした（" + (err && (err.code || err.message) || "不明なエラー") + "）。もう一度押してください。"; $("e-reply").hidden = false;
+    } finally { btn.disabled = false; }
+  }
+  async function submitTalk(e) {
+    e.preventDefault();
+    var btn = $("b-talk"); btn.disabled = true;
+    try {
+      var tok = await ensureToken(), p = findPost(S.route.id);
+      if (p && p.token === tok) return;
+      await S.db.collection("talks").doc(newId()).set({ postId: S.route.id, requesterToken: tok, note: $("t-note").value.trim(), status: "requested", createdAt: Date.now() });
+      toast("申し込みました");
+    } catch (err) {
+      $("e-talk").textContent = "申し込めませんでした（" + (err && (err.code || err.message) || "不明なエラー") + "）。"; $("e-talk").hidden = false; btn.disabled = false;
+    }
+  }
+  async function answerTalk(id, accept) {
+    try {
+      await S.db.doc("talks/" + id).update(accept ? { status: "accepted", posterId: S.uid } : { status: "declined" });
+      toast(accept ? "承諾しました" : "見送りました");
+    } catch (err) { toast("更新できませんでした。もう一度押してください"); }
+  }
+  async function deletePost(id) {
+    try {
+      var rs = repliesOf(id), ts = talksOf(id);
+      for (var i = 0; i < rs.length; i++) await S.db.doc("replies/" + rs[i].id).delete();
+      for (var j = 0; j < ts.length; j++) await S.db.doc("talks/" + ts[j].id).delete();
+      await S.db.doc("posts/" + id).delete();
+      location.hash = ""; toast("削除しました");
+    } catch (err) { toast("削除できませんでした。もう一度押してください"); }
+  }
+
+  // ---- 画面の切り替え ----
+  function route() {
+    var h = location.hash.replace(/^#/, "");
+    if (h === "new") S.route = { view: "new", id: null };
+    else if (h.indexOf("post-") === 0) S.route = { view: "post", id: h.slice(5) };
+    else S.route = { view: "home", id: null };
+    $("view-home").hidden = S.route.view !== "home";
+    $("view-new").hidden = S.route.view !== "new";
+    $("view-post").hidden = S.route.view !== "post";
+    if (S.route.view === "new" && S.ready) {
+      $("b-new").disabled = !S.canWrite; $("e-new").hidden = S.canWrite;
+      if (!S.canWrite) $("e-new").textContent = "この画面では書き込めません。リンクを共有してくれた人に、書き込める権限（Contributor以上）をもらってください。";
+    }
+    if (S.route.view === "post") { $("r-text").value = ""; $("e-reply").hidden = true; }
+    render(); window.scrollTo(0, 0);
+  }
+  function render() { if (S.route.view === "home") renderHome(); else if (S.route.view === "post") renderPost(); }
+
+  document.addEventListener("click", function (e) {
+    var c = e.target.closest("[data-tag]");
+    if (c && c.classList.contains("chip")) { S.filter = c.getAttribute("data-tag") || null; renderHome(); return; }
+    var a = e.target.closest("[data-accept]"); if (a) { a.disabled = true; answerTalk(a.getAttribute("data-accept"), true); return; }
+    var d = e.target.closest("[data-decline]"); if (d) { d.disabled = true; answerTalk(d.getAttribute("data-decline"), false); return; }
+    if (e.target.id === "b-del") {
+      $("del-confirm").innerHTML = '<div class="confirm">この相談と、ついた返事・申し込みをすべて削除します。元に戻せません。<div class="row"><button class="btn btn-primary btn-sm" type="button" id="b-del-yes" style="background:var(--warn)">削除する</button><button class="btn btn-line btn-sm" type="button" id="b-del-no">やめる</button></div></div>';
+      return;
+    }
+    if (e.target.id === "b-del-no") { $("del-confirm").innerHTML = ""; return; }
+    if (e.target.id === "b-del-yes") { e.target.disabled = true; deletePost(S.route.id); }
+  });
+  document.addEventListener("submit", function (e) {
+    if (e.target.id === "f-new") submitNew(e);
+    else if (e.target.id === "f-reply") submitReply(e);
+    else if (e.target.id === "f-talk") submitTalk(e);
+  });
+  window.addEventListener("hashchange", route);
+
+  $("n-tag").innerHTML = TAGS.map(function (t) { return "<option>" + esc(t) + "</option>"; }).join("");
+
+  // ---- 起動 ----
+  function setLoadMsg(t) { var m = $("load-msg"); m.textContent = t || ""; m.hidden = !t; }
+  function subscribe(name, q, key) {
+    q.onSnapshot(function (snap) {
+      S[key] = snap.docs.map(function (d) { var o = Object.assign({}, d.data()); o.id = d.id; return o; });
+      if (!snap.metadata.fromCache) S.loaded[key] = true;
+      if (S.loaded.posts) { clearTimeout(S.timer); setLoadMsg(""); }
+      render();
+    }, function (err) {
+      S.loaded[key] = true; clearTimeout(S.timer);
+      setLoadMsg("データを読み込めませんでした（" + err.code + "）。ページを開き直してください。"); render();
+    });
+  }
+  async function start() {
+    route();
+    if (!window.claude || !window.claude.use) { setLoadMsg("このページは claude.ai 上で開いたときだけ動きます。"); S.loaded.posts = true; render(); return; }
+    var got = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+    S.db = got[0]; S.user = got[1];
+    if (!S.db) { setLoadMsg("相談データにつながりません。claude.ai にサインインしてから開き直してください。"); S.loaded.posts = true; render(); return; }
+    if (S.user) {
+      S.uid = await S.user.id();
+      S.isOwner = await S.user.isOwner();
+      var cw = await S.user.can("data.write");
+      S.canWrite = !!S.uid && cw !== false;
+      if (S.uid) { try { var me = await S.db.doc("data/users/" + S.uid + "/me").get(); if (me.exists && me.data().token) S.token = me.data().token; } catch (e) {} }
+    }
+    $("cta-new").hidden = !S.canWrite;
+    S.ready = true;
+    S.timer = setTimeout(function () { setLoadMsg("相談の読み込みに時間がかかっています。通信状況を確かめてください。"); }, 10000);
+    subscribe("posts", S.db.collection("posts").orderBy("createdAt", "desc").limit(500), "posts");
+    subscribe("replies", S.db.collection("replies").orderBy("createdAt", "asc").limit(1000), "replies");
+    subscribe("talks", S.db.collection("talks").orderBy("createdAt", "asc").limit(500), "talks");
+    route();
+  }
+  start();
+})();
+</script>

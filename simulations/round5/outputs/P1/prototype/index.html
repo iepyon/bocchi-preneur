@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>育成の記録 試作品</title>
+<style>
+  :root {
+    --bg: #f6f6f4; --paper: #ffffff; --ink: #1d1d1b; --sub: #66665f; --line: #c9c9c2;
+    --block: #ececE6; --strong: #2f2f2c; --accent: #2f5d8a; --accent-bg: #e8f0f8;
+    --warn: #8a3b2f; --warn-bg: #f8ece8; --ok: #2f6b3f; --ok-bg: #e9f4ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1a1a19; --paper: #242422; --ink: #ededea; --sub: #a3a39c; --line: #4a4a46;
+      --block: #33332f; --strong: #e6e6e0; --accent: #8db8e3; --accent-bg: #23313f;
+      --warn: #e8a497; --warn-bg: #3a2522; --ok: #95d1a6; --ok-bg: #1f3326;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", "Meiryo", sans-serif; line-height: 1.6; }
+  header { background: var(--paper); border-bottom: 1px solid var(--line); padding: 12px 16px; }
+  .head-in { max-width: 760px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+  .app-name { font-weight: 700; }
+  .dummy { font-size: 12px; color: var(--sub); }
+  .role { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-left: auto; font-size: 14px; }
+  select, textarea, button { font: inherit; }
+  select { padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); }
+  main { max-width: 760px; margin: 0 auto; padding: 16px 16px 64px; }
+  .next { background: var(--strong); color: var(--paper); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+  .next small { display: block; opacity: .8; font-size: 12px; }
+  .next b { font-size: 17px; }
+  .welcome { background: var(--accent-bg); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; }
+  .card { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  .card.locked { opacity: .55; }
+  .card h3 { margin: 0 0 8px; font-size: 16px; }
+  .field { margin: 10px 0; }
+  .field label { display: block; font-size: 13px; color: var(--sub); margin-bottom: 4px; }
+  textarea { width: 100%; min-height: 64px; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); resize: vertical; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 560px) { .pair { grid-template-columns: 1fr; } }
+  .btn { border: 1px solid var(--strong); background: var(--paper); color: var(--ink); border-radius: 6px; padding: 6px 14px; cursor: pointer; }
+  .btn.main { background: var(--strong); color: var(--paper); }
+  .btn.small { padding: 2px 10px; font-size: 13px; }
+  .choice { display: flex; gap: 12px; flex-wrap: wrap; margin: 6px 0; font-size: 14px; }
+  .msg { font-size: 13px; margin-top: 6px; }
+  .msg.err { color: var(--warn); }
+  .msg.ok { color: var(--ok); }
+  .empty { color: var(--sub); font-size: 14px; }
+  .missing { background: var(--warn-bg); color: var(--warn); border-radius: 6px; padding: 4px 8px; font-size: 13px; display: inline-block; }
+  .wait { background: var(--accent-bg); border-radius: 6px; padding: 6px 10px; font-size: 14px; }
+  .done { background: var(--ok-bg); color: var(--ok); border-radius: 6px; padding: 2px 8px; font-size: 13px; display: inline-block; }
+  .quote { background: var(--block); border-radius: 6px; padding: 6px 10px; margin: 6px 0; white-space: pre-wrap; }
+  .quote small { display: block; color: var(--sub); font-size: 12px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .tab { border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 999px; padding: 4px 14px; cursor: pointer; font-size: 14px; }
+  .tab[aria-selected=true] { background: var(--strong); color: var(--paper); border-color: var(--strong); }
+  .report { white-space: pre-wrap; background: var(--paper); border: 2px solid var(--strong); border-radius: 10px; padding: 14px 16px; font-size: 15px; user-select: all; }
+  .report-label { font-size: 13px; color: var(--sub); margin: 0 0 6px; }
+  .copyrow { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+  .copyrow .btn.main { font-size: 16px; padding: 8px 20px; }
+  .progress { font-size: 13px; color: var(--sub); margin-top: 14px; }
+  footer { max-width: 760px; margin: 0 auto; padding: 0 16px 24px; font-size: 12px; color: var(--sub); }
+</style>
+</head>
+<body>
+<header>
+  <div class="head-in">
+    <span class="app-name">育成の記録（試作品・作り直し版）</span>
+    <span class="dummy">データはすべて架空です</span>
+    <div class="role">
+      <label for="role">見る人：</label>
+      <select id="role">
+        <option value="buka">部下</option>
+        <option value="keiken">経験者</option>
+        <option value="bucho">部長</option>
+      </select>
+      <select id="who" aria-label="だれとして見るか"></select>
+    </div>
+  </div>
+</header>
+<main id="app"></main>
+<footer>
+  試作品のため、入力はこのブラウザの中にだけ保存されます。経験者への通知メールは、本番の Lists で届きます（試作品では送りません）。
+  <button class="btn small" id="reset" type="button">架空データに戻す</button>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- 架空データ ------------------------------------------------------
+  // 組み合わせ（作り手が一度だけ登録する表の代わり）
+  const PEOPLE = {
+    buka: [
+      { id: "yamamoto", name: "山本", dept: "営業部", keiken: "tanaka" },
+      { id: "kobayashi", name: "小林", dept: "営業部", keiken: "tanaka" },
+      { id: "sato", name: "佐藤", dept: "企画部", keiken: "suzuki" },
+      { id: "takahashi", name: "高橋", dept: "生産技術部", keiken: "ito" }
+    ],
+    keiken: [
+      { id: "tanaka", name: "田中", dept: "営業部" },
+      { id: "suzuki", name: "鈴木", dept: "企画部" },
+      { id: "ito", name: "伊藤", dept: "生産技術部" }
+    ],
+    bucho: [
+      { id: "eigyo", name: "営業部長", dept: "営業部" },
+      { id: "kikaku", name: "企画部長", dept: "企画部" },
+      { id: "seigi", name: "生産技術部長", dept: "生産技術部" }
+    ]
+  };
+
+  function ymd(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function today() { return ymd(new Date()); }
+  function daysAgo(n) { const d = new Date(); d.setDate(d.getDate() - n); return ymd(d); }
+  function emptySession() { return { before: "", beforeAt: "", shiteki: "", shitekiAt: "", after: "", same: null }; }
+
+  function seed() {
+    return {
+      yamamoto: [emptySession(), emptySession()],
+      kobayashi: [
+        { before: "市場規模：約500億円（業界団体の資料より）", beforeAt: daysAgo(40),
+          shiteki: "市場規模の根拠が1つしかない", shitekiAt: daysAgo(38),
+          after: "市場規模：約500億円。業界団体の資料、上場3社の決算、顧客10社への聞き取りの3つで確かめた", same: null },
+        { before: "競合：A社、B社", beforeAt: daysAgo(6),
+          shiteki: "競合の比較が浅い", shitekiAt: daysAgo(4),
+          after: "競合：A社、B社、C社を価格・導入期間・サポートの3軸で比較", same: false }
+      ],
+      sato: [
+        { before: "対象：中小企業", beforeAt: daysAgo(35),
+          shiteki: "誰が買うのかがはっきりしない", shitekiAt: daysAgo(33),
+          after: "対象：従業員50〜300人の製造業で、品質管理の担当者がいる会社", same: null },
+        { before: "売上見込み：3年目に1億円", beforeAt: daysAgo(2), shiteki: "", shitekiAt: "", after: "", same: null }
+      ],
+      takahashi: [
+        { before: "現場は検査の手間に困っている", beforeAt: daysAgo(3), shiteki: "", shitekiAt: "", after: "", same: null },
+        emptySession()
+      ]
+    };
+  }
+
+  // ---- 保存（このブラウザの中だけ）-----------------------------------
+  const KEY = "ikusei-kiroku-prototype-v2";
+  let data;
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) { data = JSON.parse(raw); return; }
+    } catch (e) { /* 読めなくても架空データで動く */ }
+    data = seed();
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); return true; }
+    catch (e) { return false; }
+  }
+
+  // ---- 共通 -------------------------------------------------------------
+  const $app = document.getElementById("app");
+  const $role = document.getElementById("role");
+  const $who = document.getElementById("who");
+  const byId = (list, id) => list.find(p => p.id === id);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  function fmtDate(d) {
+    if (!d) return "";
+    const p = d.split("-").map(Number);
+    return p[1] + "月" + p[2] + "日";
+  }
+  function daysSince(d) {
+    if (!d) return 0;
+    const ms = new Date(today()) - new Date(d);
+    return Math.max(0, Math.round(ms / 86400000));
+  }
+  function sessionDone(s) { return !!(s.before && s.shiteki && s.after); }
+  function shitekiError(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
+    if (!text) return "指摘を書いてください";
+    if (lines.length > 2 || text.length > 120) return "1〜2行に短くしてください（120字まで）";
+    return "";
+  }
+  const kOf = b => byId(PEOPLE.keiken, b.keiken);
+
+  // 部下の「次にやること」
+  function nextStep(bukaId) {
+    const ss = data[bukaId];
+    const kName = kOf(byId(PEOPLE.buka, bukaId)).name;
+    for (let i = 0; i < 2; i++) {
+      const s = ss[i], n = i === 0 ? "1回目" : "2回目";
+      if (!s.before) return i === 0
+        ? "企画書の見てほしい部分を「直す前」として貼りましょう（1〜3文）"
+        : "約1か月後に、2回目の「直す前」を貼りましょう";
+      if (!s.shiteki) return kName + "さんの指摘を待っています（貼ってから" + daysSince(s.beforeAt) + "日）";
+      if (!s.after) return n + "の指摘を受けて直し、「直した後」を貼りましょう";
+    }
+    return "すべて終わりました。部長が受講報告書用の文を使えます";
+  }
+
+  // ---- 画面1：部下（時系列、「次にやること」が主役）--------------------
+  function renderBuka(bukaId) {
+    const me = byId(PEOPLE.buka, bukaId);
+    const k = kOf(me);
+    const ss = data[bukaId];
+    let h = "";
+    h += '<div class="next"><small>次にやること</small><b>' + esc(nextStep(bukaId)) + "</b></div>";
+    if (!ss[0].before) {
+      h += '<div class="welcome">研修おつかれさまでした。担当の経験者は <b>' + esc(k.name) + "さん（" + esc(k.dept) + "）</b> です。会う必要はありません。企画書の見てほしい部分を貼ると、" + esc(k.name) + "さんに知らせが届き、指摘が返ってきます。</div>";
+    }
+    for (let i = 0; i < 2; i++) {
+      const s = ss[i];
+      const locked = i === 1 && !sessionDone(ss[0]);
+      const n = i === 0 ? "1回目" : "2回目";
+      h += '<section class="card' + (locked ? " locked" : "") + '">';
+      h += "<h3>" + n + "　<span class=\"dummy\">経験者：" + esc(k.name) + "さん</span></h3>";
+      if (locked) {
+        h += '<p class="empty">1回目が終わると、ここに入れられます（約1か月後が目安です）。</p></section>';
+        continue;
+      }
+      h += '<p class="dummy">貼る量の目安：指摘してほしい部分だけ、1〜3文で</p>';
+      // 直す前
+      h += '<div class="field"><label for="before' + i + '">直す前（見てほしい部分、1〜3文）</label>';
+      h += '<textarea id="before' + i + '">' + esc(s.before) + "</textarea></div>";
+      // 指摘（経験者が書く。部下は読むだけ）
+      if (s.before && !s.shiteki) {
+        h += '<div class="wait">' + esc(k.name) + "さんの指摘を待っています（貼ってから" + daysSince(s.beforeAt) + "日）</div>";
+      }
+      if (s.shiteki) {
+        h += '<div class="quote"><small>' + esc(k.name) + "さんの指摘（" + fmtDate(s.shitekiAt) + "）</small>" + esc(s.shiteki) + "</div>";
+        h += '<div class="field"><label for="after' + i + '">直した後（同じ部分を、指摘を受けて直したもの）</label>';
+        h += '<textarea id="after' + i + '">' + esc(s.after) + "</textarea>";
+        if (!s.after) h += '<span class="missing">直した後がまだです</span>';
+        h += "</div>";
+        if (i === 1 && s.same !== null) {
+          h += '<p><span class="done">' + esc(k.name) + "さんの確認：1回目と" + (s.same ? "同じ指摘だった" : "違う指摘だった") + "</span></p>";
+        }
+      }
+      h += '<button class="btn main" data-act="save" data-i="' + i + '" type="button">保存</button>';
+      h += '<div class="msg" id="msg' + i + '" role="status"></div>';
+      h += "</section>";
+    }
+    $app.innerHTML = h;
+  }
+
+  function saveBukaSession(bukaId, i) {
+    const s = data[bukaId][i];
+    const msg = document.getElementById("msg" + i);
+    const bEl = document.getElementById("before" + i);
+    const aEl = document.getElementById("after" + i);
+    const before = bEl ? bEl.value.trim() : s.before;
+    if (!before) { msg.className = "msg err"; msg.textContent = "「直す前」を貼ってください"; return; }
+    if (!s.before) s.beforeAt = today();
+    s.before = before;
+    if (aEl) s.after = aEl.value.trim();
+    const ok = save();
+    render();
+    const m2 = document.getElementById("msg" + i);
+    if (m2) {
+      m2.className = ok ? "msg ok" : "msg err";
+      m2.textContent = ok
+        ? (s.shiteki ? "保存しました" : "保存しました。経験者に知らせが届きます（本番の Lists の場合）")
+        : "保存できませんでした。もう一度押してください（この画面を閉じるまでは残っています）";
+    }
+  }
+
+  // ---- 画面2：経験者（一覧の中でそのまま書く・付ける）----------------
+  function renderKeiken(keikenId) {
+    const mine = PEOPLE.buka.filter(b => b.keiken === keikenId);
+    const tasks = [];
+    mine.forEach(b => { data[b.id].forEach((s, i) => { if (s.before && !s.shiteki) tasks.push({ b, i }); }); });
+    let h = "";
+    const anyStarted = mine.some(b => data[b.id][0].before);
+    if (!anyStarted) {
+      h += '<div class="welcome">担当の部下が「直す前」を貼ると、知らせが届き、ここに出てきます。お願いするのは、それを読んで指摘を1〜2行書くことだけです。会う必要はありません。</div>';
+    }
+    h += '<div class="next"><small>あなたにお願いすること</small><b>' + (tasks.length ? "指摘を書く：" + tasks.length + "件" : "今お願いすることはありません") + "</b></div>";
+    mine.forEach(b => {
+      const ss = data[b.id];
+      h += '<section class="card"><h3>' + esc(b.name) + "さん（" + esc(b.dept) + "）</h3>";
+      let shown = false;
+      ss.forEach((s, i) => {
+        if (!s.before) return;
+        shown = true;
+        const n = i === 0 ? "1回目" : "2回目";
+        h += '<div class="quote"><small>' + n + "の直す前（" + fmtDate(s.beforeAt) + "）</small>" + esc(s.before) + "</div>";
+        if (!s.shiteki) {
+          if (i === 1) h += '<div class="quote"><small>1回目のあなたの指摘</small>' + esc(ss[0].shiteki) + "</div>";
+          h += '<div class="field"><label for="k-' + b.id + "-" + i + '">' + n + "の指摘（1〜2行）</label>";
+          h += '<textarea id="k-' + b.id + "-" + i + '" rows="2"></textarea></div>';
+          if (i === 1) {
+            h += '<div class="choice" role="radiogroup" aria-label="1回目と同じ指摘か">';
+            h += '<label><input type="radio" name="same-' + b.id + '" value="1"> 1回目と同じ指摘だった</label>';
+            h += '<label><input type="radio" name="same-' + b.id + '" value="0"> 違う指摘だった</label></div>';
+          }
+          h += '<button class="btn main" data-act="shiteki" data-id="' + b.id + '" data-i="' + i + '" type="button">指摘を送る</button>';
+          h += '<div class="msg" id="kmsg-' + b.id + "-" + i + '" role="status"></div>';
+        } else {
+          h += '<div class="quote"><small>' + n + "のあなたの指摘（" + fmtDate(s.shitekiAt) + "）</small>" + esc(s.shiteki) + "</div>";
+          if (i === 1 && s.same !== null) h += '<span class="done">1回目と' + (s.same ? "同じ指摘だった" : "違う指摘だった") + "</span> ";
+          h += '<button class="btn small" data-act="shiteki-redo" data-id="' + b.id + '" data-i="' + i + '" type="button">書き直す</button>';
+        }
+      });
+      if (!shown) h += '<p class="empty">まだ「直す前」が貼られていません。</p>';
+      h += "</section>";
+    });
+    if (!mine.length) h += '<p class="empty">担当の部下はまだいません。</p>';
+    $app.innerHTML = h;
+  }
+
+  function sendShiteki(bukaId, i) {
+    const s = data[bukaId][i];
+    const ta = document.getElementById("k-" + bukaId + "-" + i);
+    const msg = document.getElementById("kmsg-" + bukaId + "-" + i);
+    const text = ta.value.trim();
+    const err = shitekiError(text);
+    if (err) { msg.className = "msg err"; msg.textContent = err; ta.focus(); return; }
+    let same = null;
+    if (i === 1) {
+      const r = document.querySelector('input[name="same-' + bukaId + '"]:checked');
+      if (!r) { msg.className = "msg err"; msg.textContent = "「1回目と同じ指摘か」を選んでください"; return; }
+      same = r.value === "1";
+    }
+    s.shiteki = text; s.shitekiAt = today();
+    if (i === 1) s.same = same;
+    const ok = save();
+    render();
+    if (!ok) {
+      const card = document.querySelector("main");
+      card.insertAdjacentHTML("afterbegin", '<p class="msg err">保存できませんでした。もう一度押してください</p>');
+    }
+  }
+
+  // ---- 画面3：部長（受講報告書用の文が主役）---------------------------
+  let buchoTab = null;
+  function reportText(b) {
+    const ss = data[b.id];
+    const k = kOf(b);
+    return "研修後、社内の新規事業経験者（" + k.dept + "・" + k.name + "）から、企画書への指摘を2回受けて直した（" + fmtDate(ss[0].shitekiAt) + "、" + fmtDate(ss[1].shitekiAt) + "）。\n" +
+      "1回目の指摘「" + ss[0].shiteki + "」を受け、企画書を次のとおり直した。\n" +
+      "　直す前：" + ss[0].before + "\n" +
+      "　直した後：" + ss[0].after + "\n" +
+      "約1か月後の2回目では、1回目と" + (ss[1].same ? "同じ指摘を受けた" : "同じ指摘は受けなかった") + "（経験者の確認による）。\n" +
+      "2回目の指摘「" + ss[1].shiteki + "」を受け、次のとおり直した。\n" +
+      "　直す前：" + ss[1].before + "\n" +
+      "　直した後：" + ss[1].after;
+  }
+  function missingFor(b) {
+    const ss = data[b.id];
+    const out = [];
+    ["1回目", "2回目"].forEach((n, i) => {
+      const s = ss[i];
+      if (!s.before) out.push(n + "の直す前");
+      if (!s.shiteki) out.push(n + "の経験者の指摘");
+      if (!s.after) out.push(n + "の直した後");
+    });
+    return out;
+  }
+  function renderBucho(buchoId) {
+    const me = byId(PEOPLE.bucho, buchoId);
+    const mine = PEOPLE.buka.filter(b => b.dept === me.dept);
+    if (!buchoTab || !mine.some(b => b.id === buchoTab)) buchoTab = mine.length ? mine[0].id : null;
+    let h = "";
+    if (!mine.some(b => data[b.id][0].before)) {
+      h += '<div class="welcome">部下が記録をつけると、ここに出てきます。部長の入力は要りません。</div>';
+    }
+    if (!mine.length) { $app.innerHTML = h + '<p class="empty">この部署の部下はまだ登録されていません。</p>'; return; }
+    h += '<div class="tabs" role="tablist">';
+    mine.forEach(b => {
+      const done = missingFor(b).length === 0;
+      h += '<button class="tab" role="tab" aria-selected="' + (b.id === buchoTab) + '" data-act="tab" data-id="' + b.id + '" type="button">' + esc(b.name) + "さん" + (done ? "" : "（未完了）") + "</button>";
+    });
+    h += "</div>";
+    const b = byId(PEOPLE.buka, buchoTab);
+    const miss = missingFor(b);
+    if (miss.length) {
+      h += '<section class="card"><p class="report-label">受講報告書　効果の欄に貼る文</p>';
+      h += "<p>" + (data[b.id][1].before ? "まだそろっていないものがあります。文はそろったあとに出ます。" : "2回目がまだです。文は2回目のあとに出ます。") + "</p>";
+      h += '<p class="empty">まだのもの：' + miss.map(esc).join("、") + "</p></section>";
+    } else {
+      h += '<p class="report-label">受講報告書　効果の欄に貼る文</p>';
+      h += '<div class="report" id="report">' + esc(reportText(b)) + "</div>";
+      h += '<div class="copyrow"><button class="btn main" data-act="copy" type="button">文をコピー</button><span class="msg" id="cmsg" role="status"></span></div>';
+    }
+    const doneCount = mine.filter(x => missingFor(x).length === 0).length;
+    h += '<p class="progress">この部署の進み具合：' + doneCount + "人 / " + mine.length + "人が2回目まで完了</p>";
+    $app.innerHTML = h;
+  }
+
+  function copyReport() {
+    const el = document.getElementById("report");
+    const msg = document.getElementById("cmsg");
+    const text = el.textContent;
+    function fallback() {
+      const r = document.createRange(); r.selectNodeContents(el);
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      msg.className = "msg err"; msg.textContent = "文を選択しました。手でコピーしてください（Ctrl+C）";
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        msg.className = "msg ok"; msg.textContent = "コピーしました。受講報告書の効果の欄に貼ってください";
+      }, fallback);
+    } else { fallback(); }
+  }
+
+  // ---- 切り替え ----------------------------------------------------------
+  function fillWho() {
+    const list = PEOPLE[$role.value];
+    $who.innerHTML = list.map(p => '<option value="' + p.id + '">' + esc(p.name) + ($role.value !== "bucho" ? "（" + esc(p.dept) + "）" : "") + "</option>").join("");
+  }
+  function render() {
+    const r = $role.value, id = $who.value;
+    if (r === "buka") renderBuka(id);
+    else if (r === "keiken") renderKeiken(id);
+    else renderBucho(id);
+  }
+
+  $role.addEventListener("change", () => { fillWho(); render(); });
+  $who.addEventListener("change", render);
+  $app.addEventListener("click", e => {
+    const t = e.target.closest("[data-act]");
+    if (!t) return;
+    const act = t.dataset.act;
+    if (act === "save") saveBukaSession($who.value, Number(t.dataset.i));
+    else if (act === "shiteki") sendShiteki(t.dataset.id, Number(t.dataset.i));
+    else if (act === "shiteki-redo") {
+      if (!window.confirm("指摘を書き直しますか。部下の画面では、新しい指摘が届くまで「待っています」と表示されます。")) return;
+      const s = data[t.dataset.id][Number(t.dataset.i)];
+      s.shiteki = ""; s.shitekiAt = ""; if (Number(t.dataset.i) === 1) s.same = null;
+      save(); render();
+    }
+    else if (act === "tab") { buchoTab = t.dataset.id; render(); }
+    else if (act === "copy") copyReport();
+  });
+  document.getElementById("reset").addEventListener("click", () => { data = seed(); save(); render(); });
+
+  load();
+  fillWho();
+  render();
+})();
+</script>
+</body>
+</html>
