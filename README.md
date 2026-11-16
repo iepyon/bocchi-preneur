@@ -27,6 +27,7 @@ solo-preneur/
 ├── simulations/              # シミュレーション記録と回帰テスト用シナリオ
 ├── tools/                    # 参照を確かめるスクリプト（check-refs.py）
 ├── archive/                  # スコープから外した資料（インストールされない）
+├── docs/media/               # 紹介動画（MP4）とサムネイル（インストールされない）
 ├── samples/                  # プラグインで通したプロダクトと、企画書（samples/solo-preneur/）
 └── README.md
 ```
