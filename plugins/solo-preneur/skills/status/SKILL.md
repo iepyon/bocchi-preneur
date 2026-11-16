@@ -19,4 +19,6 @@ disable-model-invocation: true
 - 外販なら、届けるトラックのチェックポイントの状況
 - 撤退基準と、残りのタイムボックス
 
+state.md が旧い版の形なら、本体の `references/migrations.md` の「共通の考え方」に従って表示し、付け替えが要ることを最後に1行だけ伝えてください（付け替えはしない）。
+
 state.md がなければ、`/solo-preneur:start` で始められることだけ伝えてください。
