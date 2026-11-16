@@ -43,6 +43,8 @@
 
 元のファイルは [artifact/hitoribi.html](artifact/hitoribi.html) です。自分のアーティファクトとして公開し直して試すこともできます。保存の場所とアクセスのきまりは `04-prototype.md` にあります。
 
+2人のユーザーを同時に動かすテストは、リポジトリのルートで `node samples/hitoribi/artifact/test/e2e2.js` を実行すると流せます（Playwright が必要。保存の仕組みは `test/mock.js` で手元に真似ています）。スクリーンショットは一時フォルダに出ます（`OUT` で出力先を変えられます）。
+
 ## 成果物
 
 ```

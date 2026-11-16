@@ -1,20 +1,37 @@
+// 2人のユーザーを同時に動かすテスト。使い方：node samples/hitoribi/artifact/test/e2e2.js
+// 出力（スクリーンショットと配信用の srv/）は OUT（なければ一時フォルダ）に置く。
 const { chromium } = require('playwright');
 const fs = require('fs');
-const dir = process.env.OUT || __dirname;
-const html = fs.readFileSync('/home/user/solo-preneur/samples/hitoribi/artifact/hitoribi.html', 'utf8');
-fs.writeFileSync(dir + '/srv/index.html', '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="mock.js"></script></head><body>' + html + '</body></html>');
-fs.copyFileSync(dir + '/mock.js', dir + '/srv/mock.js');
-fs.copyFileSync('/home/user/solo-preneur/samples/hitoribi/artifact/lessons.js', dir + '/srv/lessons.js');
+const os = require('os');
+const path = require('path');
+const http = require('http');
+const artifact = path.resolve(__dirname, '..');
+const dir = process.env.OUT || fs.mkdtempSync(path.join(os.tmpdir(), 'hitoribi-e2e-'));
+const srv = path.join(dir, 'srv');
+fs.mkdirSync(srv, { recursive: true });
+const html = fs.readFileSync(path.join(artifact, 'hitoribi.html'), 'utf8');
+fs.writeFileSync(path.join(srv, 'index.html'), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="mock.js"></script></head><body>' + html + '</body></html>');
+fs.copyFileSync(path.join(__dirname, 'mock.js'), path.join(srv, 'mock.js'));
+fs.copyFileSync(path.join(artifact, 'lessons.js'), path.join(srv, 'lessons.js'));
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8' };
+const server = http.createServer((req, res) => {
+  const f = path.join(srv, path.basename(new URL(req.url, 'http://localhost').pathname) || 'index.html');
+  if (!fs.existsSync(f)) { res.writeHead(404); return res.end(); }
+  res.writeHead(200, { 'Content-Type': types[path.extname(f)] || 'application/octet-stream' });
+  fs.createReadStream(f).pipe(res);
+}).listen(8765);
+console.log('出力先：' + dir);
 (async () => {
   const b = await chromium.launch();
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
   const errs = [];
+  let failed = 0;
   const page = async (u) => { const p = await ctx.newPage(); p.on('pageerror', (e) => errs.push(u + ': ' + e.message)); p.on('console', (m) => m.type() === 'error' && errs.push(u + ' console: ' + m.text())); await p.goto('http://localhost:8765/index.html?u=' + u); await p.waitForTimeout(400); return p; };
   const A = await page('A'); // 運営者（持ち主）
   await A.evaluate(() => localStorage.clear()); await A.reload(); await A.waitForTimeout(400);
   const B = await page('B');
   const shot = (p, n) => p.screenshot({ path: dir + '/' + n + '.png', fullPage: false });
-  const step = async (label, fn) => { try { await fn(); console.log('OK  ', label); } catch (e) { console.log('FAIL', label, e.message.split('\n')[0]); } };
+  const step = async (label, fn) => { try { await fn(); console.log('OK  ', label); } catch (e) { failed++; console.log('FAIL', label, e.message.split('\n')[0]); } };
 
   await shot(B, 'h-empty');
   await step('B: 一手を書く前の学びは、背景の1枚（GitHubへのリンクつき）', async () => {
@@ -80,4 +97,6 @@ fs.copyFileSync('/home/user/solo-preneur/samples/hitoribi/artifact/lessons.js', 
   await step('A: 経験者の印を付ける', async () => { await A.click('button.linkbtn:text-is("運営")'); await A.fill('#expq', '田中'); await A.waitForSelector('text=経験者として保存'); await A.click('.card:has-text("田中") label.chip:has-text("5") input'); await A.click('button:text-is("経験者として保存")'); await A.waitForSelector('text=ステップ 5'); });
   console.log('errors:', errs);
   await b.close();
+  server.close();
+  if (errs.length || failed) process.exitCode = 1;
 })();
