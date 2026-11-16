@@ -1,14 +1,13 @@
 # ソロプレナー（solo-preneur）v0.14.1
 
+[![ソロプレナー紹介動画（3分）](https://raw.githubusercontent.com/iepyon/solo-preneur/main/docs/media/solo-preneur-intro.webp)](https://github.com/iepyon/solo-preneur/raw/main/docs/media/solo-preneur-intro.mp4)
+
+**3分の紹介動画**：使う人の置かれた状況、困りごと、このプラグインの解決策、使い方を3分にまとめました。上の画像はこのページの中でそのまま動きます（音なし）。音つき（BGM。読み上げはなし）で見るときは、画像を押すと MP4（13MB）が開きます。
+
 非エンジニアの経営者が、Claude Code と一緒にプロダクトを課題検証からローンチ（リリース）まで作り切るためのプラグイン。計測・運用は、いまはスコープ外。
 
 **決めるのは人、作るのはAI、確かめるのは現場。**
 事業判断はAIが1問ずつ問い詰めて本人の言葉で決めてもらう（GrillMe式）。AIが作ったものは、本人が要点と弱点を自分の言葉で説明できてから受け入れる（説明チェック）。本人が引き受けた判断は意思決定ログに残し、工程を通るたびに、読み手（事業責任者など）が5分で読める要約にまとめる。顧客の課題と払う意思は、チャットではなく現場の宿題（インタビュー、事前予約）で確かめる。届けることは初日から並走させる。
-
-## 3分の紹介動画
-[![ソロプレナー紹介動画（3分）](https://raw.githubusercontent.com/iepyon/solo-preneur/main/docs/media/solo-preneur-intro.webp)](https://github.com/iepyon/solo-preneur/raw/main/docs/media/solo-preneur-intro.mp4)
-
-使う人の置かれた状況、困りごと、このプラグインの解決策、使い方を3分にまとめた動画です。上の画像はこのページの中でそのまま動きます（音なし）。音つき（BGM。読み上げはなし）で見るときは、画像を押すと MP4（13MB）が開きます。
 
 ## 5工程・10ステップ＋並走トラック
 工程の区切りは、本人が責任を持って決める場面に置いている。工程を出るときの条件（工程ゲート）は `skills/solo-preneur/references/phase-gates.md`。
