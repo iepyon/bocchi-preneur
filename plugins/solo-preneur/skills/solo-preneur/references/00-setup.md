@@ -25,7 +25,7 @@
    - GitHub などに上げるかどうかは、ここでは決めない。上げる場合も、AIが勝手に push しない。
 
 4. **記録の置き場所を作る**
-   `docs/solo/` を作り、`templates/state.md` から `docs/solo/state.md` を作る。ここまで終わったら本題に入る。
+   `docs/solo/` と `docs/solo/decisions/` を作り、`templates/state.md` から `docs/solo/state.md` を作る。ここまで終わったら本題に入る。
 
 ## 必要になったら入れるもの（最初は入れない）
 - 試作品を動かす道具（Node.js など）：ステップ4で技術を選んでから、AIが入れ方を案内する。
@@ -41,7 +41,9 @@
 ```
 <プロダクトのフォルダ>/
 ├── docs/solo/
-│   ├── state.md          進み具合・出している宿題・本人の判断
+│   ├── state.md          進み具合・出している宿題・判断の一覧
+│   ├── report.md         読み手（事業責任者など）への要約。工程を通るたびに更新
+│   ├── decisions/        意思決定ログ（本人が引き受けた判断を1件ずつ）
 │   ├── 01-concept.md …   各ステップの成果物
 │   ├── fieldwork/        宿題（インタビュー）の台本と記録
 │   └── compare/          見比べ用の使い捨てHTML
