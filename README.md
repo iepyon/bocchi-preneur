@@ -25,6 +25,8 @@ solo-preneur/
 │       ├── agents/           # レビュー・攻撃テスト・原因分析のエージェント
 │       └── README.md
 ├── simulations/              # シミュレーション記録と回帰テスト用シナリオ
+├── tools/                    # 参照を確かめるスクリプト（check-refs.py）
+├── archive/                  # スコープから外した資料（インストールされない）
 ├── samples/                  # プラグインで通したプロダクトと、企画書（samples/solo-preneur/）
 └── README.md
 ```

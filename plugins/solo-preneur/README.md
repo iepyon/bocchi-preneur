@@ -1,4 +1,4 @@
-# ソロプレナー（solo-preneur）v0.13.0
+# ソロプレナー（solo-preneur）v0.14.1
 
 非エンジニアの経営者が、Claude Code と一緒にプロダクトを課題検証からローンチ（リリース）まで作り切るためのプラグイン。計測・運用は、いまはスコープ外。
 
@@ -63,16 +63,22 @@
 agents/              strict-reviewer, pentester, root-cause-analyst
 skills/
   solo-preneur/      本体
-    SKILL.md         思想・絶対ルール・分岐・進め方
-    references/      ステップ別の詳細、phase-gates（工程ゲート）、explain-check（説明チェック）、decision-log（意思決定ログ）、manager-report（読み手への要約）、ux-layers（UXの5レイヤー）、interview-kit、track-distribution、research-basis
-    templates/        state.md、decision.md（意思決定ログ）、report.md（読み手への要約）
-  start/ next/ status/ step/ homework/ review/ pentest/ rca/
-                     / で呼び出す入口（各 SKILL.md）
+    SKILL.md         思想・絶対ルール・分岐・進め方・references の一覧（どのステップで何を読むか）
+    references/      ステップ別の詳細、phase-gates（工程ゲート）、explain-check（説明チェック）、decision-log（意思決定ログ）、manager-report（読み手への要約）、ux-layers（UXの5レイヤー）、interview-kit、disposable-html、track-distribution、research-basis、migrations（旧い版の付け替え）
+    templates/       state.md、decision.md（意思決定ログ）、report.md（読み手への要約）
+  start/ next/ status/ step/ homework/
+                     / で呼び出す入口。本体の SKILL.md を ${CLAUDE_PLUGIN_ROOT} から読み込み、その手順に従う
+  review/ pentest/ rca/
+                     / で呼び出す入口。エージェントに任せる
 ```
+
+決まりと手順は本体の SKILL.md と references にだけ書き、入口には書かない。references は SKILL.md から1段だけたどり、references どうしは参照し合わない。変更したら、リポジトリのルートで `python3 tools/check-refs.py` を流して参照の切れや入れ子がないことを確かめる。
 
 シミュレーション記録と回帰テスト用シナリオは、利用者の環境に入らないようリポジトリ直下の `simulations/` に置いている。
 
 ## 変更履歴
+- v0.14.1：v0.14 の動作確認（`simulations/v0.14-check.md`）で見つかった、旧い版の記録の扱いを直した。`migrations.md` に v0.11〜v0.13 の付け替え（保守の行とステップ11、本人の説明、意思決定ログと report.md）を足し、旧い版で通ったゲートに新しい記録を遡って求めないようにした。status も同じ考え方で表示する
+- v0.14.0：構成を見直した。入口のスキル（start・next・status・step・homework）が本体の references を自分のフォルダから探して見つけられなかった問題を直した。入口は本体の SKILL.md を `${CLAUDE_PLUGIN_ROOT}` から読み込み、手順は本体の「セッション開始時」「ゲートを確かめて次へ進む」「ステップを移動する・飛ばしたいと言われたら」に1つにまとめた。スキル作成のベストプラクティスに合わせ、references は SKILL.md から1段にした（SKILL.md に references の一覧と、ステップごとの「読むもの」を置き、references どうしの参照をなくした）。本人の記録は `docs/solo/…` と書いて references と区別した。説明文を三人称にして使う場面を `when_to_use` に分け、SKILL.md の見出しから版番号を外し、旧い版の付け替えは `migrations.md` に、スコープ外の `11-metrics.md` はプラグインの外（リポジトリの `archive/`）に移した。工程ゲートに目次を付け、参照を確かめるスクリプト `tools/check-refs.py` を加えた
 - v0.13.0：判断の記録を入れた（シミュレーション Round 5 の R5-2・R5-3・R5-5）。本人が引き受けた判断（工程の判断、対象の変更、入れる・入れない、技術の選択、ゲートを満たさずに進むこと、基準の変更、進む・作り直す・やめる）を `docs/solo/decisions/` に1件ずつ残す。本人の理由は本人の言葉で、記号だけでは残さない。工程を通るたびに、読み手が5分で読める要約 `docs/solo/report.md`（冒頭5行：今どこ・何を決めた・何が外れてどう戻ったか・次に何を確かめるか・何がほしいか）を更新し、本人が約束していないことは書かない。価値検証の判断のあとは、進む・作り直す・やめるのどれでも学び3行を書く。作り直すときは、戻り先・2回目の合格基準・新しい撤退基準を決め、戻ったら下の層を直してゲートを確かめ直す（SKILL.md ルール12・「作り直すと決めたら」、`decision-log.md`、`manager-report.md`、`05-value-test.md`、`phase-gates.md`、templates、next・status）
 - v0.12.0：説明チェックを入れた（シミュレーション Round 5 の R5-1）。AIが作ったもの（仕様の下書き・骨格・試作品・試算・本番のしくみ・攻撃テストの結果と規約・素材）をゲートで受け入れる前に、本人が自分の言葉で要点と弱点を言う。公開工程では、弱点を直すか受け入れるかも決める。AIは答えを言わず、見る場所を示して問い返す。「まとめて進めて」でも省かない。飛ばしたら「説明待ち」としてゲートを閉じず、工程ゲートの前に必ず済ませる。結果は各成果物の「本人の説明」に残す（SKILL.md ルール11、`explain-check.md`、各ステップのゲート、`phase-gates.md`、state.md の状態、start・next・status）。🟡で選んだ理由も、記号ではなく本人の言葉で残す
 - v0.11.0：ゴールをローンチ（リリース）までに絞った。計測・運用・継続判断（旧 6 保守・ステップ11）はスコープ外とし、`11-metrics.md` は将来のために残す。公開工程を出たら、振り返り・ローンチした日と最初の反応の記録をして完了する（SKILL.md「ゴール」）。5工程・10ステップに改め、state.md の雛形、step・status・next、工程ゲート、説明を合わせて直した
