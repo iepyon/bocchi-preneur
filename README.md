@@ -4,6 +4,11 @@
 
 プラグインの使い方は [plugins/solo-preneur/README.md](plugins/solo-preneur/README.md) を見てください。
 
+## 3分の紹介動画
+[![ソロプレナー紹介動画（3分）](docs/media/solo-preneur-intro.png)](docs/media/solo-preneur-intro.mp4)
+
+使う人の置かれた状況、困りごと、このプラグインの解決策、使い方を3分にまとめた動画です。画像を押すと MP4（13MB、BGMあり・読み上げなし）が開きます。
+
 ## インストール
 
 ```
