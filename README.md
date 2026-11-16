@@ -5,9 +5,9 @@
 プラグインの使い方は [plugins/solo-preneur/README.md](plugins/solo-preneur/README.md) を見てください。
 
 ## 3分の紹介動画
-[![ソロプレナー紹介動画（3分）](docs/media/solo-preneur-intro.png)](docs/media/solo-preneur-intro.mp4)
+[![ソロプレナー紹介動画（3分）](docs/media/solo-preneur-intro.webp)](docs/media/solo-preneur-intro.mp4)
 
-使う人の置かれた状況、困りごと、このプラグインの解決策、使い方を3分にまとめた動画です。画像を押すと MP4（13MB、BGMあり・読み上げなし）が開きます。
+使う人の置かれた状況、困りごと、このプラグインの解決策、使い方を3分にまとめた動画です。上の画像はこのページの中でそのまま動きます（音なし）。音つき（BGM。読み上げはなし）で見るときは、画像を押すと MP4（13MB）が開きます。
 
 ## インストール
 
@@ -32,7 +32,7 @@ solo-preneur/
 ├── simulations/              # シミュレーション記録と回帰テスト用シナリオ
 ├── tools/                    # 参照を確かめるスクリプト（check-refs.py）
 ├── archive/                  # スコープから外した資料（インストールされない）
-├── docs/media/               # 紹介動画（MP4）とサムネイル（インストールされない）
+├── docs/media/               # 紹介動画（音つき MP4、README で動く WebP、サムネイル。インストールされない）
 ├── samples/                  # プラグインで通したプロダクトと、企画書（samples/solo-preneur/）
 └── README.md
 ```
