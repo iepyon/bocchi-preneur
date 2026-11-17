@@ -1,17 +1,17 @@
 ### 本人
-/solo-preneur:status
+/bocchi-preneur:status
 
-- TOOL Bash: cat <repo>/plugins/solo-preneur/skills/solo-preneur/SKILL.md; echo ======; cd G && ls -R docs
-- ERR This Bash command contains multiple operations. The following part requires approval: cat <repo>/plugins/solo-preneur/skills/solo-preneur/SKILL.md; echo ======; cd /tmp/claude-0/-home
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/SKILL.md
-- TOOL Glob: docs/solo/**/*
-- TOOL Read: G/docs/solo/state.md
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/references/phase-gates.md
+- TOOL Bash: cat <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/SKILL.md; echo ======; cd G && ls -R docs
+- ERR This Bash command contains multiple operations. The following part requires approval: cat <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/SKILL.md; echo ======; cd /tmp/claude-0/-home
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/SKILL.md
+- TOOL Glob: docs/bocchi/**/*
+- TOOL Read: G/docs/bocchi/state.md
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/phase-gates.md
 - TOOL Grep: ゲート|^#
 - TOOL Grep: 説明待ち|本人の説明|【推測】
 
 ### 伴走役
-**ソロプレナー 現在地** ［工程5 公開（社内展開）｜ステップ7 本番実装｜ゲート 0/6］
+**ぼっちプレナー 現在地** ［工程5 公開（社内展開）｜ステップ7 本番実装｜ゲート 0/6］
 
 **工程とステップの状態**
 | 工程 | ステップ | 状態 |
@@ -41,7 +41,7 @@
 - 層の対応表に表層（見た目）がまだない
 - 公開後に問題が起きたときの連絡先と、最初にすること（止める・知らせる）が決まっていない
 - 工程の判断の欄が空いている
-- 工程に共通する条件：`docs/solo/decisions/` と `docs/solo/report.md` がまだありません。工程1〜4も、意思決定ログと report.md なしで通過したことになっています
+- 工程に共通する条件：`docs/bocchi/decisions/` と `docs/bocchi/report.md` がまだありません。工程1〜4も、意思決定ログと report.md なしで通過したことになっています
 
 **工程の判断**
 - 1 調査：研修予算で新規事業担当の部下を研修に出した部長が、人事や役員から効果を聞かれたとき、部下の何が変わったかを示せずに困っている
@@ -50,7 +50,7 @@
 - 4 検証：進む。部長の了承で、今の3部署で今年度いっぱい続ける。30万円は今は使わない。8/31に基準へ届かなければやめる（基準は変えない）
 
 **本人が下した判断（意思決定ログ）**
-`docs/solo/decisions/` がないため、表示できるものはありません。state.md の「本人が下した重要な判断」には次の2件があります。
+`docs/bocchi/decisions/` がないため、表示できるものはありません。state.md の「本人が下した重要な判断」には次の2件があります。
 - 2027-03-末：「会う」をやめる形に作り直す。基準は変えない
 - 2026-12-07：撤退基準に当たったので、基準どおり切り替える
 

@@ -1,10 +1,10 @@
 {
   "extraKnownMarketplaces": {
-    "solo-preneur": {
-      "source": { "source": "github", "repo": "iepyon/solo-preneur" }
+    "bocchi-preneur": {
+      "source": { "source": "github", "repo": "iepyon/bocchi-preneur" }
     }
   },
   "enabledPlugins": {
-    "solo-preneur@solo-preneur": true
+    "bocchi-preneur@bocchi-preneur": true
   }
 }

@@ -1,20 +1,20 @@
 ### 本人
-/solo-preneur:start 社内の経費精算で、領収書と申請内容の食い違いを見つけるツールを作りたい。経理が毎月2日かけて目で照合している
+/bocchi-preneur:start 社内の経費精算で、領収書と申請内容の食い違いを見つけるツールを作りたい。経理が毎月2日かけて目で照合している
 
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/SKILL.md
-- TOOL Bash: ls -la && git status | head -5 && ls docs/solo 2>&1; cat <repo>/plugins/solo-preneur/skills/solo-preneur/references/00-setup.md
-- ERR This Bash command contains multiple operations. The following part requires approval: head -5 && ls docs/solo 2>&1; cat <repo>/plugins/solo-preneur/skills/solo-preneur/references/00-s
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/SKILL.md
+- TOOL Bash: ls -la && git status | head -5 && ls docs/bocchi 2>&1; cat <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/00-setup.md
+- ERR This Bash command contains multiple operations. The following part requires approval: head -5 && ls docs/bocchi 2>&1; cat <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/00-s
 - TOOL Bash: ls -la A
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/references/00-setup.md
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/templates/state.md
-- TOOL Bash: mkdir -p docs/solo/decisions && printf '.env\n.env.*\n*.key\n*.pem\nnode_modules/\n.DS_Store\n' > .gitignore && cp <repo>/plugins/solo-preneur/skills/solo-preneur/templates/state.md d
-- ERR This Bash command contains multiple operations. The following parts require approval: printf '.env\n.env.*\n*.key\n*.pem\nnode_modules/\n.DS_Store\n', cp <repo>/plugins/solo-preneur/s
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/00-setup.md
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/templates/state.md
+- TOOL Bash: mkdir -p docs/bocchi/decisions && printf '.env\n.env.*\n*.key\n*.pem\nnode_modules/\n.DS_Store\n' > .gitignore && cp <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/templates/state.md d
+- ERR This Bash command contains multiple operations. The following parts require approval: printf '.env\n.env.*\n*.key\n*.pem\nnode_modules/\n.DS_Store\n', cp <repo>/plugins/bocchi-preneur/s
 - TOOL Write: A/.gitignore
-- TOOL Write: A/docs/solo/state.md
-- TOOL Write: A/docs/solo/decisions/.gitkeep
+- TOOL Write: A/docs/bocchi/state.md
+- TOOL Write: A/docs/bocchi/decisions/.gitkeep
 
 ### 伴走役
-作業場所の準備ができました。このフォルダはすでに Git で変更履歴が残る状態だったので、秘密情報のファイルを履歴から外す設定（`.gitignore`）と、記録の置き場所（`docs/solo/state.md`）を作りました。
+作業場所の準備ができました。このフォルダはすでに Git で変更履歴が残る状態だったので、秘密情報のファイルを履歴から外す設定（`.gitignore`）と、記録の置き場所（`docs/bocchi/state.md`）を作りました。
 
 **進め方は3つです**
 - **決めるのはあなた**：誰のどんな課題か、価値があるか、続けるかやめるか。この判断をAIが代わりに書くことはありません。
@@ -53,14 +53,14 @@
 ### 本人
 社内ツール、日本、まずは作り切る修行、週5時間で試作品まで4週間
 
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/references/01-concept.md
-- TOOL Edit: A/docs/solo/state.md
-- TOOL Edit: A/docs/solo/state.md
-- TOOL Edit: A/docs/solo/state.md
-- TOOL Edit: A/docs/solo/state.md
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/01-concept.md
+- TOOL Edit: A/docs/bocchi/state.md
+- TOOL Edit: A/docs/bocchi/state.md
+- TOOL Edit: A/docs/bocchi/state.md
+- TOOL Edit: A/docs/bocchi/state.md
 
 ### 伴走役
-前提が決まり、`docs/solo/state.md` に記録しました。
+前提が決まり、`docs/bocchi/state.md` に記録しました。
 - 社内ツール
 - 日本
 - まずは作り切る修行
@@ -78,10 +78,10 @@
 ### 本人
 経理の佐藤さんたち3人が、月初に申請300件を1件ずつ領収書の画像と見比べていて、先月も金額の打ち間違いを2件見逃して差し戻しになった
 
-- TOOL Write: A/docs/solo/01-concept.md
+- TOOL Write: A/docs/bocchi/01-concept.md
 
 ### 伴走役
-対象の人物と困っている場面が、具体的に言えています。`docs/solo/01-concept.md` に下書きとして残しました。
+対象の人物と困っている場面が、具体的に言えています。`docs/bocchi/01-concept.md` に下書きとして残しました。
 この時点では、どれもあなたの認識なので【推測】を付けています。差し戻しの記録などが見つかれば、実際に起きたことの証拠として【行動】に上げられます。
 
 `［工程1 調査｜ステップ1 コンセプト｜ゲート 2/8］`

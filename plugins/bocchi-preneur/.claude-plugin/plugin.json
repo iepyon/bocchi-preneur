@@ -1,0 +1,15 @@
+{
+  "name": "bocchi-preneur",
+  "version": "0.15.0",
+  "description": "非エンジニアの経営者が、AIと二人三脚でプロダクトを課題検証からローンチ（リリース）まで作り切るための伴走プラグイン。米国と中国のプロの独立開発の基準を取り込んだ5工程・10ステップ＋届けるトラック。事業判断はGrillMe式に問い詰めて本人に決めさせ、実装・検証・素材づくりはAIが担う。",
+  "author": {
+    "name": "iepyon"
+  },
+  "keywords": [
+    "bocchi-preneur",
+    "grillme",
+    "ux-5-layers",
+    "non-engineer",
+    "product-development"
+  ]
+}

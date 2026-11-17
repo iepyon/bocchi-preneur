@@ -715,7 +715,7 @@ nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-co
     const where = ctx.hasLog ? `ステップ${ctx.step} ${STEPS[ctx.step - 1]}・${STATE_LABEL[ctx.state]}` : STATE_LABEL.none;
     return h('div', {},
       h('h1', {}, 'ヒント'),
-      h('p', { class: 'lead' }, 'いまやっていることに合わせて、1枚ずつ。このプロダクトが必要とされる背景、新規事業を進めるヒント、solo-preneur プラグインの使い方です。読み終えたら最初に戻るので、何度でも読めます。'),
+      h('p', { class: 'lead' }, 'いまやっていることに合わせて、1枚ずつ。このプロダクトが必要とされる背景、新規事業を進めるヒント、bocchi-preneur プラグインの使い方です。読み終えたら最初に戻るので、何度でも読めます。'),
       h('span', { class: 'learn-ctx' }, `いま：${where}`),
       next ? h('article', { class: 'learn-card' },
         h('div', { class: 'row wrap-row' }, h('span', { class: 'chip' + (next.kind === 'tip' ? ' ember' : next.kind === 'plugin' ? ' ok' : '') }, KIND_LABEL[next.kind]), next.steps ? h('span', { class: 'meta' }, `ステップ${next.steps.join('・')}`) : null, h('span', { class: 'grow' }), times ? h('span', { class: 'meta' }, `${times + 1}回目`) : null),

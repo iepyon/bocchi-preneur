@@ -1,9 +1,9 @@
 ### 本人
-/solo-preneur:next
+/bocchi-preneur:next
 
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/SKILL.md
-- TOOL Read: C/docs/solo/state.md
-- TOOL Read: C/docs/solo/04-prototype.md
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/SKILL.md
+- TOOL Read: C/docs/bocchi/state.md
+- TOOL Read: C/docs/bocchi/04-prototype.md
 - TOOL Grep: ゲート
 
 ### 伴走役
@@ -21,21 +21,21 @@
 
 **もう1人と一緒に試作品を触ってみて、条件1〜3のうち、最後まで通ったものと途中で止まったものはどれでしたか。止まったなら、どの画面で何が起きたかを、見たまま教えてください。**
 
-まだ触っていなければ、そう言っていただければ大丈夫です。触り方は `docs/solo/04-prototype.md` の「触り方」にあります。相手には「使える」以上の権限で共有してください。結果は `/solo-preneur:homework` からも報告できます。
+まだ触っていなければ、そう言っていただければ大丈夫です。触り方は `docs/bocchi/04-prototype.md` の「触り方」にあります。相手には「使える」以上の権限で共有してください。結果は `/bocchi-preneur:homework` からも報告できます。
 
 ### 本人
 触ってみた、動いた。次に進めて
 
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/references/explain-check.md
-- TOOL Edit: C/docs/solo/04-prototype.md
-- TOOL Edit: C/docs/solo/state.md
-- TOOL Edit: C/docs/solo/state.md
-- TOOL Edit: C/docs/solo/state.md
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/explain-check.md
+- TOOL Edit: C/docs/bocchi/04-prototype.md
+- TOOL Edit: C/docs/bocchi/state.md
+- TOOL Edit: C/docs/bocchi/state.md
+- TOOL Edit: C/docs/bocchi/state.md
 
 ### 伴走役
 ［工程3 試作｜ステップ4 プロトタイプ実装｜ゲート 2/3］
 
-確認ありがとうございます。「触ってみた、動いた」と、そのまま `docs/solo/04-prototype.md` に残しました。宿題も報告済みにしています。
+確認ありがとうございます。「触ってみた、動いた」と、そのまま `docs/bocchi/04-prototype.md` に残しました。宿題も報告済みにしています。
 
 まだ聞けていないことが1つあり、そのことも書き添えました。条件3（次に開くと「止まっていた一手、できましたか」と出る）まで通ったかどうかです。
 

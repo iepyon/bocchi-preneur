@@ -1,6 +1,6 @@
 # 意思決定ログ：<決めたことを一行で>
 
-> 形のもとはプラグインの `plugins/solo-preneur/skills/solo-preneur/templates/decision.md`。サンプルでは「プラグインの版」と「未検証の前提」を足して使う。新しいサンプルは、プラグインの形に合わせる。
+> 形のもとはプラグインの `plugins/bocchi-preneur/skills/bocchi-preneur/templates/decision.md`。サンプルでは「プラグインの版」と「未検証の前提」を足して使う。新しいサンプルは、プラグインの形に合わせる。
 
 - 日付：YYYY-MM-DD
 - 工程：<5工程のどれか>

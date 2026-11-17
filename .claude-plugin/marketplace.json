@@ -1,5 +1,5 @@
 {
-  "name": "solo-preneur",
+  "name": "bocchi-preneur",
   "owner": {
     "name": "iepyon"
   },
@@ -8,8 +8,8 @@
   },
   "plugins": [
     {
-      "name": "solo-preneur",
-      "source": "./plugins/solo-preneur",
+      "name": "bocchi-preneur",
+      "source": "./plugins/bocchi-preneur",
       "description": "非エンジニア経営者向け・課題検証からローンチまでのAI開発10ステップ伴走（GrillMe式）"
     }
   ]
