@@ -6,7 +6,7 @@
 
 | # | 候補 | 結果 | 確かめたところ |
 |---|---|---|---|
-| A1 | 対象のずれ | **確定**（方針決定済み：`samples/solo-preneur/decisions/01`） | `SKILL.md` 冒頭・`plugin.json`・README がすべて「非エンジニアの経営者」 |
+| A1 | 対象のずれ | **確定**（方針決定済み：`samples/bocchi-preneur/decisions/01`） | `SKILL.md` 冒頭・`plugin.json`・README がすべて「非エンジニアの経営者」 |
 | A3 | 意思決定ログをプラグインが作らない | **確定** | `plugins/` 全体で `decisions`・「意思決定ログ」が0件。`samples/README.md` にだけある |
 | A4 | 事業責任者に届く形がない | **確定** | 「事業責任者」「責任の記録」が `plugins/` で0件 |
 | A5 | 保守と企画書の差別化の食い違い | **確定**（方針決定済み：`decisions/02`）。企画書の直しが残る | `proposal.md` 差別化1・H2・ロードマップ |

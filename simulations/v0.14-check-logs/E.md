@@ -1,20 +1,20 @@
 ### 本人
 アプリを作りたい。町内会の回覧板をスマホで回せるやつ。プログラミングはできない
 
-- TOOL Skill: solo-preneur:solo-preneur
-- TOOL Bash: ls -la && ls docs/solo 2>&1; git log --oneline | head -5; cat <repo>/plugins/solo-preneur/skills/solo-preneur/references/00-setup.md
-- ERR This Bash command contains multiple operations. The following part requires approval: head -5; cat <repo>/plugins/solo-preneur/skills/solo-preneur/references/00-setup.md
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/references/00-setup.md
+- TOOL Skill: bocchi-preneur:bocchi-preneur
+- TOOL Bash: ls -la && ls docs/bocchi 2>&1; git log --oneline | head -5; cat <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/00-setup.md
+- ERR This Bash command contains multiple operations. The following part requires approval: head -5; cat <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/00-setup.md
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/00-setup.md
 - TOOL Glob: **/*
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/templates/state.md
-- TOOL Bash: mkdir -p docs/solo/decisions && printf '.env\n.env.*\n*.pem\n*.key\nnode_modules/\n.DS_Store\n' > .gitignore && sed -e 's/^- プロダクト名（仮）：$/- プロダクト名（仮）：スマホ回覧板/' -e 's/^- 開始日：$/- 開始日：2026-11-16/' /home/us
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/templates/state.md
+- TOOL Bash: mkdir -p docs/bocchi/decisions && printf '.env\n.env.*\n*.pem\n*.key\nnode_modules/\n.DS_Store\n' > .gitignore && sed -e 's/^- プロダクト名（仮）：$/- プロダクト名（仮）：スマホ回覧板/' -e 's/^- 開始日：$/- 開始日：2026-11-16/' /home/us
 - ERR This Bash command contains multiple operations. The following parts require approval: printf '.env\n.env.*\n*.pem\n*.key\nnode_modules/\n.DS_Store\n', sed -e 's/^- プロダクト名（仮）：$/- プロダクト名（仮）：スマホ回覧板/' -e 
 - TOOL Write: E/.gitignore
-- TOOL Write: E/docs/solo/state.md
-- TOOL Write: E/docs/solo/decisions/.gitkeep
+- TOOL Write: E/docs/bocchi/state.md
+- TOOL Write: E/docs/bocchi/decisions/.gitkeep
 
 ### 伴走役
-作業場所の準備ができました。このフォルダに記録用の場所 `docs/solo/` を作り、進み具合を残す `docs/solo/state.md` も置いてあります。
+作業場所の準備ができました。このフォルダに記録用の場所 `docs/bocchi/` を作り、進み具合を残す `docs/bocchi/state.md` も置いてあります。
 
 プログラミングができなくても大丈夫です。進め方は次の3つに分かれます。
 - **決めるのはあなた**：誰のための何か、作る価値があるか、続けるかどうか

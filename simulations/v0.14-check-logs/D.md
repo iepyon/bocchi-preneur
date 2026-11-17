@@ -1,8 +1,8 @@
 ### 本人
-/solo-preneur:step 11
+/bocchi-preneur:step 11
 
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/SKILL.md
-- TOOL Bash: ls -la && ls docs/solo 2>/dev/null && cat docs/solo/state.md 2>/dev/null
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/SKILL.md
+- TOOL Bash: ls -la && ls docs/bocchi 2>/dev/null && cat docs/bocchi/state.md 2>/dev/null
 
 ### 伴走役
 ［工程4 検証｜ステップ5 価値検証（2回目の準備）｜宿題待ち］
@@ -29,10 +29,10 @@
 4. **11は打ち間違いだった**：本当に行きたいステップの番号を教えてください
 
 ### 本人
-/solo-preneur:step 8
+/bocchi-preneur:step 8
 
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/references/08-design.md
-- TOOL Bash: ls -R docs/solo && ls docs/solo/decisions 2>/dev/null; git log --oneline | head
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/08-design.md
+- TOOL Bash: ls -R docs/bocchi && ls docs/bocchi/decisions 2>/dev/null; git log --oneline | head
 
 ### 伴走役
 ［工程5 公開｜ステップ8 デザイン（表層）に移動する前の確認］

@@ -1,4 +1,4 @@
-# サンプル：ひとりび（新規事業の種を作るソロが、ゆるくつながる場所）
+# サンプル：ひとりび（新規事業の種を作るぼっちが、ゆるくつながる場所）
 
 **架空のプロジェクト**でプラグインを通したシミュレーションです。登場する創業者、インタビュー、数字、見本データはすべて架空です。
 
@@ -8,7 +8,7 @@
 |---|---|
 | 使ったプラグインの版 | 0.9.0（試作中に 0.9.1 の変更を反映） |
 | 進んだ工程 | 1 調査（宿題待ち）→ 2 企画 → 3 試作（ステップ4は本人の確認待ち）→ 4 検証（基準の記録まで） |
-| 進行状況 | [docs/solo/state.md](docs/solo/state.md) |
+| 進行状況 | [docs/bocchi/state.md](docs/bocchi/state.md) |
 | 意思決定ログ | [decisions/](decisions/)（5件） |
 | 試作品 | [artifact/hitoribi.html](artifact/hitoribi.html)（Claudeアーティファクト。ヒントの中身は [artifact/lessons.js](artifact/lessons.js)） |
 | シミュレーションで見つけたプラグインの課題 | [simulations/round4-v0.9.md](../../simulations/round4-v0.9.md) |
@@ -37,7 +37,7 @@
 
 アーティファクトは claude.ai 上で動きます。手元でサーバーを立てる必要はありません。
 
-1. [04-prototype.md](docs/solo/04-prototype.md) にあるアーティファクトのリンクを開く（claude.ai にサインインしていること）
+1. [04-prototype.md](docs/bocchi/04-prototype.md) にあるアーティファクトのリンクを開く（claude.ai にサインインしていること）
 2. 試す相手には、共有メニューで「使える」（Contributor）以上の権限で共有する。「見るだけ」だと書き込めない
 3. 自分で一手を書き、もう1人に「15分相談」から応じてもらう
 
@@ -51,7 +51,7 @@
 samples/hitoribi/
 ├── README.md
 ├── decisions/                     意思決定ログ（5件）
-├── docs/solo/
+├── docs/bocchi/
 │   ├── state.md                   進行状況
 │   ├── 01-concept.md              コンセプト（課題検証は宿題待ち）
 │   ├── 02-spec.md                 戦略・要件・構造、データの重さ、層の対応表

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""solo-preneur プラグインの参照を確かめる。
+"""bocchi-preneur プラグインの参照を確かめる。
 
 確かめること：
 1. 本体 SKILL.md が指す references/・templates/ のファイルが実在する
@@ -10,8 +10,8 @@
 """
 import pathlib, re, sys
 
-root = pathlib.Path(__file__).resolve().parent.parent / "plugins" / "solo-preneur"
-main = root / "skills" / "solo-preneur"
+root = pathlib.Path(__file__).resolve().parent.parent / "plugins" / "bocchi-preneur"
+main = root / "skills" / "bocchi-preneur"
 refs = {p.name for p in (main / "references").glob("*.md")}
 tmpls = {p.name for p in (main / "templates").glob("*.md")}
 errors = []
@@ -26,7 +26,7 @@ mentioned = set()
 for s in code.findall(skill):
     for part in re.split(r"[・、]", s):
         part = part.strip()
-        if not part.endswith(".md") or is_pattern(part) or part.startswith("docs/solo/") or part == "SKILL.md":
+        if not part.endswith(".md") or is_pattern(part) or part.startswith("docs/bocchi/") or part == "SKILL.md":
             continue
         name = part.split("/")[-1]
         if part.startswith("templates/") or name in tmpls and name not in refs:
@@ -49,14 +49,14 @@ for d in ("references", "templates"):
         if "references/" in t:
             errors.append(f"{d}/{p.name}: references/ を指している（1段までにする）")
         for s in code.findall(t):
-            if not s.endswith(".md") or is_pattern(s) or s.startswith("docs/solo/") or s == "SKILL.md":
+            if not s.endswith(".md") or is_pattern(s) or s.startswith("docs/bocchi/") or s == "SKILL.md":
                 continue
             if s.startswith("templates/") and s.split("/")[-1] in tmpls:
                 continue
-            errors.append(f"{d}/{p.name}: `{s}` は本人の記録なら docs/solo/ を付け、references なら名前で呼ぶ")
+            errors.append(f"{d}/{p.name}: `{s}` は本人の記録なら docs/bocchi/ を付け、references なら名前で呼ぶ")
 
 # 4
-base = "${CLAUDE_PLUGIN_ROOT}/skills/solo-preneur/"
+base = "${CLAUDE_PLUGIN_ROOT}/skills/bocchi-preneur/"
 for p in sorted((root / "skills").glob("*/SKILL.md")):
     if p.parent == main:
         continue

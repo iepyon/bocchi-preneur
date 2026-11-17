@@ -1,11 +1,11 @@
 ### 本人
-/solo-preneur:start
+/bocchi-preneur:start
 
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/SKILL.md
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/SKILL.md
 - TOOL Bash: ls -la && ls -R docs 2>/dev/null | head -50 && git log --oneline | head
-- TOOL Read: B/docs/solo/state.md
-- TOOL Read: <repo>/plugins/solo-preneur/skills/solo-preneur/references/migrations.md
-- TOOL Read: B/docs/solo/04-prototype.md
+- TOOL Read: B/docs/bocchi/state.md
+- TOOL Read: <repo>/plugins/bocchi-preneur/skills/bocchi-preneur/references/migrations.md
+- TOOL Read: B/docs/bocchi/04-prototype.md
 
 ### 伴走役
 ［工程3 試作｜ステップ4 プロトタイプ実装｜ゲート：本人の確認待ち］

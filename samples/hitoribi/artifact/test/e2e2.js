@@ -35,8 +35,8 @@ console.log('出力先：' + dir);
 
   await shot(B, 'h-empty');
   await step('B: 一手を書く前の学びは、背景の1枚（GitHubへのリンクつき）', async () => {
-    await B.click('.tab[data-tab=learn]'); await B.waitForSelector('.learn-card h2:text-is("学習経路がなくなり、通しきる「ソロ」が必要になった")');
-    await B.waitForSelector('.learn-links a[href="https://github.com/iepyon/solo-preneur/blob/main/samples/solo-preneur/proposal.md"]');
+    await B.click('.tab[data-tab=learn]'); await B.waitForSelector('.learn-card h2:text-is("学習経路がなくなり、通しきる「ぼっち」が必要になった")');
+    await B.waitForSelector('.learn-links a[href="https://github.com/iepyon/bocchi-preneur/blob/main/samples/bocchi-preneur/proposal.md"]');
     await B.screenshot({ path: dir + '/h-learn-bg.png', fullPage: true });
     await B.click('.tab[data-tab=logs]');
   });
