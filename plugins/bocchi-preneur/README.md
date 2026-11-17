@@ -2,7 +2,7 @@
 
 [![ぼっちプレナー紹介動画（3分）](https://raw.githubusercontent.com/iepyon/bocchi-preneur/main/docs/media/bocchi-preneur-intro.webp)](https://github.com/iepyon/bocchi-preneur/raw/main/docs/media/bocchi-preneur-intro.mp4)
 
-**3分の紹介動画**：使う人の置かれた状況、困りごと、このプラグインの解決策、使い方を3分にまとめました。上の画像はこのページの中でそのまま動きます（音なし）。音つき（BGM。読み上げはなし）で見るときは、画像を押すと MP4（13MB）が開きます。
+**3分の紹介動画**：使う人の置かれた状況、困りごと、このプラグインの解決策、使い方を3分にまとめました。上の画像はこのページの中でそのまま動きます（音なし）。音つき（BGM。読み上げはなし）で見るときは、画像を押すと MP4（16MB）が開きます。
 
 非エンジニアの経営者が、Claude Code と一緒にプロダクトを課題検証からローンチ（リリース）まで作り切るためのプラグイン。計測・運用は、いまはスコープ外。
 
@@ -94,7 +94,7 @@ skills/
 シミュレーション記録と回帰テスト用シナリオは、利用者の環境に入らないようリポジトリ直下の `simulations/` に置いている。
 
 ## 変更履歴
-- v0.15.0：名前を「ソロプレナー（solo-preneur）」から「ぼっちプレナー（bocchi-preneur）」に変えた。リポジトリは `iepyon/bocchi-preneur`、マーケットプレイスとプラグインは `bocchi-preneur@bocchi-preneur`、呼び出しは `/bocchi-preneur:start` など、本人の記録の置き場所は `docs/bocchi/`（終えたプロダクトは `docs/bocchi-archive/`）になった。旧い名前で入れていた人は、上の「旧い名前（solo-preneur）から移る」の手順で入れ直す。`docs/solo/` で進めていたプロダクトは、再開時に本人に確認してから `docs/bocchi/` に付け替える（`migrations.md`）。紹介動画も新しい名前で作り直した
+- v0.15.0：名前を「ソロプレナー（solo-preneur）」から「ぼっちプレナー（bocchi-preneur）」に変えた。リポジトリは `iepyon/bocchi-preneur`、マーケットプレイスとプラグインは `bocchi-preneur@bocchi-preneur`、呼び出しは `/bocchi-preneur:start` など、本人の記録の置き場所は `docs/bocchi/`（終えたプロダクトは `docs/bocchi-archive/`）になった。旧い名前で入れていた人は、上の「旧い名前（solo-preneur）から移る」の手順で入れ直す。`docs/solo/` で進めていたプロダクトは、再開時に本人に確認してから `docs/bocchi/` に付け替える（`migrations.md`）。紹介動画（MP4・README で動く WebP・サムネイル）も、映像の中の名前と URL・コマンドを新しい名前に差し替えた
 - v0.14.2：セキュリティに強めの注意書きを入れた。AIのレビューとペネトレーションテストは専門家の診断の代わりにならないこと、公開前に専門家の助言を受けることを、ステップ9の冒頭で必ず本人に伝える。データの重さが「重」、または決済・ログインがあるなら、専門家の診断が済むまで公開工程のゲートを閉じない（受けずに公開すると本人が決めたなら、理由と残るリスクを意思決定ログと report.md に残す）。AIは「安全です」と言わない（`09-security.md`、SKILL.md、`phase-gates.md`、pentest、pentester、README）
 - v0.14.1：v0.14 の動作確認（`simulations/v0.14-check.md`）で見つかった、旧い版の記録の扱いを直した。`migrations.md` に v0.11〜v0.13 の付け替え（保守の行とステップ11、本人の説明、意思決定ログと report.md）を足し、旧い版で通ったゲートに新しい記録を遡って求めないようにした。status も同じ考え方で表示する
 - v0.14.0：構成を見直した。入口のスキル（start・next・status・step・homework）が本体の references を自分のフォルダから探して見つけられなかった問題を直した。入口は本体の SKILL.md を `${CLAUDE_PLUGIN_ROOT}` から読み込み、手順は本体の「セッション開始時」「ゲートを確かめて次へ進む」「ステップを移動する・飛ばしたいと言われたら」に1つにまとめた。スキル作成のベストプラクティスに合わせ、references は SKILL.md から1段にした（SKILL.md に references の一覧と、ステップごとの「読むもの」を置き、references どうしの参照をなくした）。本人の記録は `docs/bocchi/…` と書いて references と区別した。説明文を三人称にして使う場面を `when_to_use` に分け、SKILL.md の見出しから版番号を外し、旧い版の付け替えは `migrations.md` に、スコープ外の `11-metrics.md` はプラグインの外（リポジトリの `archive/`）に移した。工程ゲートに目次を付け、参照を確かめるスクリプト `tools/check-refs.py` を加えた
