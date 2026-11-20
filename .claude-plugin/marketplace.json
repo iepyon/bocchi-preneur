@@ -10,7 +10,7 @@
     {
       "name": "bocchi-preneur",
       "source": "./plugins/bocchi-preneur",
-      "description": "非エンジニア経営者向け・課題検証からローンチまでのAI開発10ステップ伴走（GrillMe式）"
+      "description": "社内のPM候補・事業責任者の候補向け・課題検証から新規事業化までのAI開発10ステップ伴走（GrillMe式）"
     }
   ]
 }
