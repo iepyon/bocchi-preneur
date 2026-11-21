@@ -63,11 +63,12 @@ AIによって、作るところは速くなった。一方で、次の3つは�
 | `references/explain-check.md` | 説明チェック | ゲートでAIが作ったものを受け入れるとき（ルール11） |
 | `references/decision-log.md` | 意思決定ログ | 本人が判断を引き受けたとき（ルール12） |
 | `references/manager-report.md` | 読み手への要約 | 工程ゲートを通るとき（ルール12） |
+| `references/proposal.md` | 企画書 | 本人が企画書を求めたとき（`/bocchi-preneur:proposal`） |
 | `references/phase-gates.md` | 工程ゲート | 工程の最後のステップのゲートを満たしたとき |
 | `references/track-distribution.md` | 届けるトラック | 外販で、ステップ1・4・6・10を終えるとき |
 | `references/research-basis.md` | 基準の出典 | 「なぜそうするのか」と聞かれたとき |
 | `references/migrations.md` | 旧い版の記録の付け替え | 再開時に state.md が旧い版の形だったとき、旧い置き場所 `docs/solo/` だけがあったとき |
-| `templates/state.md`・`decision.md`・`report.md` | 雛形 | 記録を新しく作るとき |
+| `templates/state.md`・`decision.md`・`report.md`・`proposal.md` | 雛形 | 記録を新しく作るとき |
 
 ## 開始時の分岐（ステップ1の前に必ず確定する）
 
@@ -190,6 +191,7 @@ AIによって、作るところは速くなった。一方で、次の3つは�
 - 成果物は `docs/bocchi/`。宿題の記録は `docs/bocchi/fieldwork/`。
 - 説明チェックの結果は、各成果物の末尾の「本人の説明」に、本人の言葉で残す（`references/explain-check.md`）。
 - 本人の判断は `docs/bocchi/decisions/` に1件ずつ残す（ルール12）。記号（「4-b」など）だけでは残さない。
+- 企画書は、本人が求めたときに `docs/bocchi/proposal.md` に書き出す（`references/proposal.md`）。ゲートではないので、作っても工程は進めない。
 - state.md は、冒頭の10行で現在地（工程・ステップ・撤退基準・次に決めること）が分かるように保つ。前提を書き直したら、古い版は変更履歴に移し、冒頭には今の版だけを置く。
 - 🔴の項目は本人の発言を「」で残す。AIの要約には「要約：」と付ける。
 - 各項目に証拠ラベル（推測／発言／行動／コミット）を付ける。

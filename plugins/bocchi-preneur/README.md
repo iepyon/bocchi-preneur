@@ -1,4 +1,4 @@
-# ぼっちプレナー（bocchi-preneur）v0.17.0
+# ぼっちプレナー（bocchi-preneur）v0.18.0
 
 [![ぼっちプレナー紹介動画（3分）](https://raw.githubusercontent.com/iepyon/bocchi-preneur/main/docs/media/bocchi-preneur-intro.webp)](https://github.com/iepyon/bocchi-preneur/raw/main/docs/media/bocchi-preneur-intro.mp4)
 
@@ -72,6 +72,7 @@ v0.15.0 で名前が変わったため、旧い名前で入れたものは更新
 | `/bocchi-preneur:status` | 進行状況・宿題・撤退基準を見る |
 | `/bocchi-preneur:step <番号>` | 指定ステップへ |
 | `/bocchi-preneur:homework [メモ]` | 現場の宿題の台本づくり／結果の記録 |
+| `/bocchi-preneur:proposal [読み手]` | これまでの記録を企画書にまとめて書き出す（`docs/bocchi/proposal.md`） |
 | `/bocchi-preneur:review` | 厳しめのコードレビュー |
 | `/bocchi-preneur:pentest` | 自分のアプリへのペネトレーションテスト（AIの自己点検。専門家の診断の代わりにはならない。下の「注意」を参照） |
 | `/bocchi-preneur:rca <症状>` | 根本原因分析（実装はしない） |
@@ -83,9 +84,9 @@ agents/              strict-reviewer, pentester, root-cause-analyst
 skills/
   bocchi-preneur/      本体
     SKILL.md         思想・絶対ルール・分岐・進め方・references の一覧（どのステップで何を読むか）
-    references/      ステップ別の詳細、phase-gates（工程ゲート）、explain-check（説明チェック）、decision-log（意思決定ログ）、manager-report（読み手への要約）、ux-layers（UXの5レイヤー）、interview-kit、disposable-html、track-distribution、research-basis、migrations（旧い版の付け替え）
-    templates/       state.md、decision.md（意思決定ログ）、report.md（読み手への要約）
-  start/ next/ status/ step/ homework/
+    references/      ステップ別の詳細、phase-gates（工程ゲート）、explain-check（説明チェック）、decision-log（意思決定ログ）、manager-report（読み手への要約）、proposal（企画書）、ux-layers（UXの5レイヤー）、interview-kit、disposable-html、track-distribution、research-basis、migrations（旧い版の付け替え）
+    templates/       state.md、decision.md（意思決定ログ）、report.md（読み手への要約）、proposal.md（企画書）
+  start/ next/ status/ step/ homework/ proposal/
                      / で呼び出す入口。本体の SKILL.md を ${CLAUDE_PLUGIN_ROOT} から読み込み、その手順に従う
   review/ pentest/ rca/
                      / で呼び出す入口。エージェントに任せる
@@ -96,6 +97,7 @@ skills/
 シミュレーション記録と回帰テスト用シナリオは、利用者の環境に入らないようリポジトリ直下の `simulations/` に置いている。
 
 ## 変更履歴
+- v0.18.0：企画書を書き出すスキル `/bocchi-preneur:proposal` を加えた。サンプル（`samples/identity-rebirth/proposal.md`）の構成を雛形にし、state.md・コンセプト・意思決定ログ・宿題の記録から `docs/bocchi/proposal.md` を書き出す。本人が決めた事業判断だけを書き、決めていない節は「（未決定）」として論点を並べる。市場と競合の机上調査は本人が選んだときだけ行い、すべて【推測】として出典を付ける。書き出したら、エグゼクティブサマリーの課題・解決策と読み手へのお願いを本人の言葉に直してもらう。企画書はゲートではなく、作っても工程は進まない（`proposal.md`、templates、SKILL.md、status、README）
 - v0.17.0：現場の宿題を消さず、「まとめて進めて」でも問い詰めを抜かないようにした（シミュレーション Round 5 の R5-6・R5-7、方針は `samples/bocchi-preneur/decisions/05`）。想定インタビューは1回目は断り、2回目に頼まれたら作る。作ったら、本物に聞く1人目と期限を本人に決めてもらい、state.md の宿題欄・意思決定ログ・Git のコミット・report.md に「未着手（想定で代用中）」として残し、再開のたびに示す。ステップ1の課題検証を本物の記録で満たすまでステップ5に、ステップ5を本物の結果で満たすまでステップ7に入れない（本人の押し切りでも入れない、唯一の例外）。「まとめて進めて」は公開に近いほど狭め、検証・公開では受け付けない（SKILL.md ルール4・9・13・14、`interview-kit.md`、`explain-check.md`、`05-value-test.md`、`07-build.md`、`decision-log.md`、`manager-report.md`、`migrations.md`、state.md の雛形、status、homework）
 - v0.16.0：対象を社内のPM候補・事業責任者の候補に合わせ、ゴールを新規事業化にした（シミュレーション Round 5 の R5-4・R5-18、方針は `samples/bocchi-preneur/decisions/01`・`02`）。開始時の分岐を「外販／社内の新規事業／社内ツール」の3つにし、社内の新規事業では最初の利用者（社外／社内）と承認者を聞く。上司から任された案件で外販を選んだら、社内の新規事業ではないかを1回だけ確かめる。ステップ1で撤退基準と対にして「事業化の印」（何をもって事業として認められたとするか）を本人に決めてもらい、ステップ6で承認者・予算とあわせて照らし直し、ローンチのあとに本人が達成・未達を判定して完了する。分岐の「目標」は事業化の印に置き換えた。説明文・エージェントの「非エンジニアの経営者」を直した（SKILL.md、`01-concept.md`、`05-value-test.md`、`06-pricing.md`、`10-launch.md`、`phase-gates.md`、`track-distribution.md`、`09-security.md`、`migrations.md`、state.md の雛形、status、agents、plugin.json、README）
 - v0.15.0：名前を「ソロプレナー（solo-preneur）」から「ぼっちプレナー（bocchi-preneur）」に変えた。リポジトリは `iepyon/bocchi-preneur`、マーケットプレイスとプラグインは `bocchi-preneur@bocchi-preneur`、呼び出しは `/bocchi-preneur:start` など、本人の記録の置き場所は `docs/bocchi/`（終えたプロダクトは `docs/bocchi-archive/`）になった。旧い名前で入れていた人は、上の「旧い名前（solo-preneur）から移る」の手順で入れ直す。`docs/solo/` で進めていたプロダクトは、再開時に本人に確認してから `docs/bocchi/` に付け替える（`migrations.md`）。紹介動画（MP4・README で動く WebP・サムネイル）も、映像の中の名前と URL・コマンドを新しい名前に差し替えた
