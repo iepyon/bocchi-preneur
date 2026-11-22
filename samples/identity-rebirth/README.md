@@ -9,11 +9,12 @@
 | 使ったプラグインの版 | 0.17.0（ステップ2から 0.19.1） |
 | 種類 | 社内の新規事業（最初の利用者は社外）・日本 |
 | 時間 | 週末（土日に1日ずつ）。試作品まで3週間（2026-12-12） |
-| 進んだ工程 | 2 企画（ステップ2 仕様設計を進行中）。1 調査は宿題待ち（前半ゲート 8/10。課題検証の1人目は 2026-11-30 まで） |
+| 進んだ工程 | 3 試作（ステップ4 の試作品を公開し、説明待ち）。2 企画と画面設計は本人の依頼でスキップ。1 調査は宿題待ち（課題検証の1人目は 2026-11-30 まで） |
+| 試作品 | [prototype/index.html](prototype/index.html)（Claude のアーティファクト。記録の扱いは [04-prototype.md](docs/bocchi/04-prototype.md)） |
 | 企画書 | [proposal.md](proposal.md)（ステップ1の答えと机上の市場調査をまとめ直したもの。2026-11-21 時点） |
 | 進行状況 | [docs/bocchi/state.md](docs/bocchi/state.md) |
 | コンセプト | [docs/bocchi/01-concept.md](docs/bocchi/01-concept.md) |
-| 意思決定ログ | [docs/bocchi/decisions/](docs/bocchi/decisions/)（2件） |
+| 意思決定ログ | [docs/bocchi/decisions/](docs/bocchi/decisions/)（4件） |
 | 宿題の台本 | [docs/bocchi/fieldwork/](docs/bocchi/fieldwork/) |
 
 フォルダ名 `identity-rebirth` は仮です。本人がプロダクト名を決めたら付け替えます。
