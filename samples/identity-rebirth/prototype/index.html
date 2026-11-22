@@ -245,7 +245,7 @@ button { cursor: pointer; }
         </div>
 
         <div id="view-map" style="display:flex;flex-direction:column;gap:20px">
-          <div class="trigger" id="trigger" hidden><span>きっかけの場</span><b id="trigger-place"></b></div>
+          <div class="trigger" id="trigger" hidden><span>今夜のきっかけ</span><b id="trigger-place"></b></div>
           <div>
             <div class="section-title">黒板：あなたの言葉で描く、喪失の地図</div>
             <p class="note" id="map-empty">対話が進むと、あなたが使った言葉がここに置かれていきます。</p>
@@ -280,7 +280,7 @@ button { cursor: pointer; }
   <div class="intro-inner">
     <svg class="master" viewBox="0 0 64 64" role="img" aria-label="マスター"><defs><clipPath id="mclip-intro"><circle cx="32" cy="32" r="30"/></clipPath></defs><circle cx="32" cy="32" r="30" fill="#2c221c"/><g clip-path="url(#mclip-intro)"><path d="M10 66 C12 51 21 45.5 32 45.5 C43 45.5 52 51 54 66 Z" fill="#3a2a18"/><path d="M25 45.8 L32 58 L39 45.8 Z" fill="#efe5d8"/><path d="M21 49 L27 46.5 L32 58 L29 64 Z M43 49 L37 46.5 L32 58 L35 64 Z" fill="#241a14"/><rect x="28.5" y="37" width="7" height="9.5" rx="2" fill="#c9a17e"/><ellipse cx="32" cy="27.5" rx="10.5" ry="12" fill="#ddb994"/><path d="M21.3 27 C20.5 14.5 43.5 14.5 42.7 27 C41.5 21 36 19.6 32 19.6 C27.5 19.6 22.5 21 21.3 27 Z" fill="#8f8378"/><path d="M26 28.2 q2.2 1.6 4.4 0 M33.6 28.2 q2.2 1.6 4.4 0" stroke="#3a2a1e" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M27 33.6 C29.3 31.9 31 32.4 32 33.5 C33 32.4 34.7 31.9 37 33.6 C34.8 35.3 33 34.8 32 34.1 C31 34.8 29.2 35.3 27 33.6 Z" fill="#8f8378"/><path d="M27.2 48.6 L32 50.6 L27.2 52.8 Z M36.8 48.6 L32 50.6 L36.8 52.8 Z" fill="#dba45c"/><circle cx="32" cy="50.7" r="1.2" fill="#dba45c"/></g><circle cx="32" cy="32" r="30.25" fill="none" stroke="#dba45c" stroke-width="1.5"/></svg>
     <h1>いらっしゃい。言えなかったことを、ひとりで言葉にする酒場です</h1>
-    <p>ふりかえりや1on1、コミュニティや飲み会で、AIとこれからの自分の役割が話題になったとき。うまく言葉にできなかったことを、カウンター越しのマスター（AI）と一緒に、ひとりで言葉にします。お酒は出てきません。最後に、喪失と再生の物語と、次の場で話すための下書きができます。</p>
+    <p>ふりかえりや1on1、コミュニティや飲み会で、人間関係やこれからのキャリア、AIとこれからの役割など、言葉にできなかったことがあったとき。うまく言葉にできなかったことを、カウンター越しのマスター（AI）と一緒に、ひとりで言葉にします。お酒は出てきません。最後に、喪失と再生の物語と、次の場で話すための下書きができます。</p>
     <div class="card">
       <label>残るもの・残らないもの</label>
       <ul>
@@ -299,6 +299,7 @@ button { cursor: pointer; }
 
 <script>
 (() => {
+  const TOPICS = ["人間関係", "これからのキャリア", "仕事内容の悩み", "AIとこれからの役割", "前の強みが活きない", "新しく学ぶのにすくむ", "つい守ってしまう", "その他"];
   const PLACES = ["ふりかえり", "1on1", "コミュニティ", "飲み会", "その他"];
   const STATIONS = [
     { key: "lost", name: "失ったもの", hint: "出番がなくなったこと、大切にしていたこと" },
@@ -398,14 +399,15 @@ button { cursor: pointer; }
     try {
       const ref = db.doc("usage/" + uid);
       const snap = await ref.get();
-      const cur = snap.exists ? snap.data() : { firstSeen: new Date().toISOString(), sessions: 0, aiCalls: 0, storiesSaved: 0, confided: 0, days: [], triggerPlaces: {}, confidedLog: [] };
+      const cur = snap.exists ? snap.data() : { firstSeen: new Date().toISOString(), sessions: 0, aiCalls: 0, storiesSaved: 0, confided: 0, days: [], triggerPlaces: {}, triggerTopics: {}, confidedLog: [] };
       const next = { ...cur };
       next.lastSeen = new Date().toISOString();
       const days = Array.isArray(cur.days) ? cur.days.slice() : [];
       if (!days.includes(today())) days.push(today());
       next.days = days;
       for (const [k, v] of Object.entries(patch)) {
-        if (k === "triggerPlace") { const t = { ...(cur.triggerPlaces || {}) }; t[v] = (t[v] || 0) + 1; next.triggerPlaces = t; }
+        if (k === "triggerTopic") { const t = { ...(cur.triggerTopics || {}) }; t[v] = (t[v] || 0) + 1; next.triggerTopics = t; }
+        else if (k === "triggerPlace") { const t = { ...(cur.triggerPlaces || {}) }; t[v] = (t[v] || 0) + 1; next.triggerPlaces = t; }
         else if (k === "confidedEntry") { next.confidedLog = [...(cur.confidedLog || []), v]; }
         else if (typeof v === "number") { next[k] = (cur[k] || 0) + v; }
       }
@@ -442,21 +444,33 @@ button { cursor: pointer; }
     addNotice("<strong>ここで一度、手を止めませんか。</strong><br>つらさが強いときは、このアプリより、専門の窓口で人と話すほうが助けになります。例：よりそいホットライン 0120-279-338（24時間・無料）。続けたいときは、そのまま書いても大丈夫です。", true);
   }
 
-  function opening() {
+  function chipRow(items, onPick) {
     const chips = el("div", "chips");
-    PLACES.forEach((p) => {
+    items.forEach((p) => {
       const b = el("button", "chip", p);
       b.setAttribute("aria-pressed", "false");
-      b.addEventListener("click", () => {
-        state.place = p;
-        chips.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", String(c === b)));
-        $("trigger").hidden = false; $("trigger-place").textContent = p; $("draft-place").textContent = p === "その他" ? "次の場" : "次の" + p;
-        $("input").focus();
-      });
+      b.addEventListener("click", () => { chips.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", String(c === b))); onPick(p); });
       chips.appendChild(b);
     });
-    addMsg("ai", "いらっしゃい。ここは、言えなかったことを、ひとりで言葉にする酒場です。\nAIとこれからの自分の役割が話題になった場で、言葉にできなかったことがあったんですね。それは、どの場でしたか。", chips);
-    addMsg("ai", "場を選んだら、その場で言えなかったことを、下にそのまま書いてみてください。まとまっていなくて大丈夫です。");
+    return chips;
+  }
+  function showTrigger() {
+    const parts = [state.topic, state.place && state.place !== "その他" ? state.place : null].filter(Boolean);
+    $("trigger").hidden = parts.length === 0; $("trigger-place").textContent = parts.join("・");
+  }
+  let placeAsked = false;
+  function opening() {
+    addMsg("ai", "いらっしゃい。ここは、言えなかったことを、ひとりで言葉にする酒場です。\n今夜、言葉にできなかったのは、どんなことでしたか。近いものを選んでください。", chipRow(TOPICS, (t) => {
+      state.topic = t; showTrigger();
+      if (placeAsked) { $("input").focus(); return; }
+      placeAsked = true;
+      addMsg("ai", "それは、どの場でのことでしたか。", chipRow(PLACES, (p) => {
+        state.place = p; showTrigger();
+        $("draft-place").textContent = p === "その他" ? "次の場" : "次の" + p;
+        if (!state.placeHinted) { state.placeHinted = true; addMsg("ai", "では、その場で言えなかったことを、下にそのまま書いてみてください。まとまっていなくて大丈夫です。"); }
+        $("input").focus();
+      }));
+    }));
   }
 
   function updateTurnInfo() {
@@ -488,7 +502,7 @@ button { cursor: pointer; }
   }
 
   // ---------- AI ----------
-  const ROLE = `あなたは「喪失と再生の酒場」というアプリの、カウンターの向こうにいる寡黙なマスターです。このアプリは、打ち明ける前の準備運動の場です。口調は落ち着いた丁寧語で、短く。お酒を勧めたり、お酒の話をしたりはしない。相手は、プロダクト開発に関わる仕事（アジャイルコーチ、スクラムマスター、エンジニア、PM、デザイナーなど）をしていて、AIが入ってきたことで、自分が仕事で大切にしていたことの出番を失った人です。ふりかえり・1on1・コミュニティ・飲み会などの場で、戸惑いを言葉にできなかった、その直後に来ています。
+  const ROLE = `あなたは「喪失と再生の酒場」というアプリの、カウンターの向こうにいる寡黙なマスターです。このアプリは、打ち明ける前の準備運動の場です。口調は落ち着いた丁寧語で、短く。お酒を勧めたり、お酒の話をしたりはしない。相手は、プロダクト開発に関わる仕事（アジャイルコーチ、スクラムマスター、エンジニア、PM、デザイナーなど）をしていて、AIの登場や、それ以外の仕事の変化（人間関係、キャリア、仕事内容など）で、自分が仕事で大切にしていたことを失った人です。ふりかえり・1on1・コミュニティ・飲み会などの場で、戸惑いを言葉にできなかった、その直後に来ています。最初に、相手が選んだ「言えなかったことの種類」と「きっかけの場」が渡されます。それを決めつけず、相手の言葉から入ります。
 目的は、相手が喪失をその過程ごと受け入れ、防衛的なポジショントークから降り、自分を一歩引いて見て、次の場で誰かに話す準備ができることです。考えるとは自分自身との声のない対話だ、という考えに立ち、言葉はあくまで相手のものにします。
 
 あなたの役は「問い」と「言い換え」だけです。
@@ -538,10 +552,10 @@ button { cursor: pointer; }
     if (!sample) { addNotice("このページでAIと話すには、Claude にサインインした状態でページを開いてください。"); return; }
     input.value = ""; autoGrow();
     addMsg("me", text);
-    if (state.userTurns === 0 && state.place) state.turns.push({ role: "user", content: `（きっかけの場：${state.place}）` });
+    if (state.userTurns === 0 && (state.place || state.topic)) state.turns.push({ role: "user", content: `（言えなかったことの種類：${state.topic || "未選択"}／きっかけの場：${state.place || "未選択"}）` });
     state.turns.push({ role: "user", content: text });
     state.userTurns++;
-    if (!state.sessionCounted) { state.sessionCounted = true; bumpUsage({ sessions: 1, ...(state.place ? { triggerPlace: state.place } : {}) }); leaveTrace("talk"); setStage("talking"); }
+    if (!state.sessionCounted) { state.sessionCounted = true; bumpUsage({ sessions: 1, ...(state.place ? { triggerPlace: state.place } : {}), ...(state.topic ? { triggerTopic: state.topic } : {}) }); leaveTrace("talk"); setStage("talking"); }
     state.busy = true; updateTurnInfo();
     const thinking = addMsg("ai thinking", "考えています…");
     try {
@@ -608,7 +622,7 @@ ${transcript()}`;
     if (!db || !uid) { $("save-status").textContent = "保存できない状態です。「下書きをコピー」で手元に残してください。"; return; }
     $("save").disabled = true; $("save-status").textContent = "保存しています…";
     try {
-      await db.collection("data/users/" + uid + "/stories").add({ story, draft, place: state.place || "", createdAt: new Date().toISOString(), confidedAt: null, confidedPlace: null });
+      await db.collection("data/users/" + uid + "/stories").add({ story, draft, topic: state.topic || "", place: state.place || "", createdAt: new Date().toISOString(), confidedAt: null, confidedPlace: null });
       bumpUsage({ storiesSaved: 1 });
       leaveTrace("story");
       $("save-status").textContent = "ボトルに残しました。「ボトルキープ」から、いつでも読めます。";
@@ -638,7 +652,7 @@ ${transcript()}`;
       const v = d.data() || {};
       const r = el("div", "rec");
       const head = el("div", "rec-head");
-      head.appendChild(el("span", null, `${fmt(v.createdAt)} 作成${v.place ? "・きっかけ：" + v.place : ""}`));
+      head.appendChild(el("span", null, `${fmt(v.createdAt)} 作成${v.topic ? "・" + v.topic : ""}${v.place ? "・" + v.place : ""}`));
       if (v.confidedAt) head.appendChild(el("span", "badge", `${fmt(v.confidedAt)} ${v.confidedPlace || ""}で打ち明けた`));
       r.appendChild(head);
       r.appendChild(el("div", "rec-draft", v.draft || "（下書きなし）"));
