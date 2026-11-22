@@ -1,4 +1,4 @@
-# ぼっちプレナー（bocchi-preneur）v0.19.0
+# ぼっちプレナー（bocchi-preneur）v0.19.1
 
 [![ぼっちプレナー紹介動画（3分）](https://raw.githubusercontent.com/iepyon/bocchi-preneur/main/docs/media/bocchi-preneur-intro.webp)](https://github.com/iepyon/bocchi-preneur/raw/main/docs/media/bocchi-preneur-intro.mp4)
 
@@ -99,6 +99,7 @@ skills/
 シミュレーション記録と回帰テスト用シナリオは、利用者の環境に入らないようリポジトリ直下の `simulations/` に置いている。
 
 ## 変更履歴
+- v0.19.1：v0.19 の動作確認（`simulations/v0.19-check.md`）で見つかった2点を直した。(1) 試作を Web にすると勧めるとき、面談で見せるだけのデモならアーティファクトでもよいことを必ず1行添える。(2) アーティファクトで作るとき、持ち主や編集者が何を読めるかを、試してもらう前に参加者にも伝える文面を用意する（`04-prototype.md`）
 - v0.19.0：試作（ステップ4）は、まず Claude のアーティファクトで「動くアプリ」として作ることを勧め、だめなら Web にするようにした（方針は `samples/bocchi-preneur/decisions/06`）。社外向けでも先にアーティファクトを勧める。選ぶ前に、参加者が Claude を使っているか、記録を書き込める立場で招けるか、本物のお金を受け取るか・不特定の人に公開するかを確かめる。アーティファクトの機能は、仮説検証で【行動】と【コミット】を記録する役目から選び直した（原則いつも：記録が残る・誰が使ったか分かる。場面に応じて：AIと話せる・今いる人とやりとりできる・画面に感想を書き込める・いつもの道具のデータを使う、など）。試作品の中のAIは使う人の Claude の利用枠を使うので、呼び出した回数を記録してステップ6の試算に回す。価値検証ではAIが試作品の記録を直接読んで集計し、本番実装では Web に作り直すときの置き換えと記録の引き継ぎを決めた。画面設計では、使い捨てHTMLを標準のまま、アーティファクトの種類「Design」を選択肢に加えた（`04-prototype.md`、`02-spec.md`、`03-wireframe.md`、`05-value-test.md`、`07-build.md`、SKILL.md、`research-basis.md`）
 - v0.18.1：企画書（`/bocchi-preneur:proposal`）を identity-rebirth で試して見つかった2点を直した。(1) 読み手への要約（report.md）がない、または「何がほしいか」が空のとき、「読み手にお願いしたいこと」を空のまま残さず、書き出したあとの最初の問いとして本人に聞く。(2) `docs/bocchi/` の外などに前の企画書があるとき、作り直す・`docs/bocchi/proposal.md` に移してから作り直す・前の企画書を直すだけ、のどれにするかを本人に選んでもらう。前の企画書にあって元の記録にないもの（予定、合格ラインなど）はそのまま引き継がない（`proposal.md`、templates）
 - v0.18.0：企画書を書き出すスキル `/bocchi-preneur:proposal` を加えた。サンプル（`samples/identity-rebirth/proposal.md`）の構成を雛形にし、state.md・コンセプト・意思決定ログ・宿題の記録から `docs/bocchi/proposal.md` を書き出す。本人が決めた事業判断だけを書き、決めていない節は「（未決定）」として論点を並べる。市場と競合の机上調査は本人が選んだときだけ行い、すべて【推測】として出典を付ける。書き出したら、エグゼクティブサマリーの課題・解決策と読み手へのお願いを本人の言葉に直してもらう。企画書はゲートではなく、作っても工程は進まない（`proposal.md`、templates、SKILL.md、status、README）
