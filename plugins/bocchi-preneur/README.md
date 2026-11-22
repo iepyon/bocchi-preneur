@@ -42,6 +42,8 @@
 ローカルで試すだけなら、リポジトリのルートで `claude --plugin-dir ./plugins/bocchi-preneur`。
 
 ## 始め方
+はじめて使う人向けに、インストールから最初のステップまでを順に説明した [チュートリアル](https://github.com/iepyon/bocchi-preneur/blob/main/docs/tutorial.md) があります。
+
 1. プロダクト専用の空のフォルダを1つ作り、そこで Claude Code を開く（1プロダクトに1フォルダ）。
 2. `/bocchi-preneur:start 作りたいもの` と入力する。フォルダの準備（変更履歴を残すGitの用意、記録の置き場所 `docs/bocchi/` の作成）はAIが確かめて行う。
 3. 中断はいつでもよい。再開は同じフォルダで `/bocchi-preneur:start`。
