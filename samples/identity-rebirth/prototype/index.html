@@ -359,7 +359,7 @@ button { cursor: pointer; }
         <li>AIは、あなた自身の Claude の利用枠を使います。最初に許可を求める画面が出ます。</li>
       </ul>
     </div>
-    <div class="notice warn"><strong>つらさが強いときは</strong><br>眠れない、仕事に行けない、消えてしまいたいと感じるときは、このアプリではなく専門の窓口に相談してください。例：よりそいホットライン 0120-279-338（24時間・無料）。</div>
+    <div class="notice warn"><strong>つらさが強いときは</strong><br>眠れない、仕事に行けない、消えてしまいたいと感じるときは、このアプリではなく専門の窓口に相談してください。</div>
     <div><button class="btn" id="start">カウンターに座る</button></div>
   </div>
 </div>
@@ -518,7 +518,7 @@ button { cursor: pointer; }
   function crisisNotice() {
     if (state.concernShown) return;
     state.concernShown = true;
-    addNotice("<strong>ここで一度、手を止めませんか。</strong><br>つらさが強いときは、このアプリより、専門の窓口で人と話すほうが助けになります。例：よりそいホットライン 0120-279-338（24時間・無料）。続けたいときは、そのまま書いても大丈夫です。", true);
+    addNotice("<strong>ここで一度、手を止めませんか。</strong><br>つらさが強いときは、このアプリより、専門の窓口で人と話すほうが助けになります。続けたいときは、そのまま書いても大丈夫です。", true);
   }
 
   function chipRow(items, onPick) {
