@@ -15,6 +15,7 @@
 | 進行状況 | [docs/bocchi/state.md](docs/bocchi/state.md) |
 | コンセプト | [docs/bocchi/01-concept.md](docs/bocchi/01-concept.md) |
 | 意思決定ログ | [docs/bocchi/decisions/](docs/bocchi/decisions/)（7件） |
+| ADR（技術の判断） | [docs/adr/](docs/adr/)（8件。試作品の作りの判断を git log から起こした） |
 | 宿題の台本 | [docs/bocchi/fieldwork/](docs/bocchi/fieldwork/) |
 
 フォルダ名 `identity-rebirth` は仮のままです（プロダクト名は「喪失と再生の酒場」に決まった）。
