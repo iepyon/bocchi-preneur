@@ -1,0 +1,1010 @@
+<title>喪失と再生の酒場</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* 夜の酒場：左はカウンター越しのマスターとの対話（主役）、右は黒板（喪失の地図）とボトルキープ。胡桃色の暗がりに琥珀の灯り、再生だけ淡い緑。意図して夜の一色で作る */
+:root {
+  --bg: #16110e;
+  --surface: #211915;
+  --sunken: #2c221c;
+  --wood: #2a1d15;
+  --board: #19201c;
+  --fg: #efe5d8;
+  --muted: #a99a8b;
+  --line: #3b2f27;
+  --accent: #dba45c;
+  --accent-soft: #3a2a18;
+  --dawn: #a9cfa4;
+  --dawn-soft: #22302a;
+  --chalk: #e8e4da;
+  --warn: #f0a596;
+  --warn-soft: #3d2420;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --font-story: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --radius: 10px;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body);
+  font-size: 15px; line-height: 1.75;
+}
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app { height: 100%; display: flex; flex-direction: column; }
+.bar {
+  display: flex; align-items: center; gap: 12px; justify-content: space-between;
+  padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  border-bottom: 1px solid var(--line); background: linear-gradient(180deg, var(--wood), var(--bg));
+}
+.brand { font-family: var(--font-story); font-weight: 600; font-size: 18px; letter-spacing: .12em; color: var(--accent); text-shadow: 0 0 12px rgba(219, 164, 92, .45), 0 0 2px rgba(219, 164, 92, .6); }
+.brand small { font-family: var(--font-body); font-weight: 400; font-size: 12px; color: var(--muted); margin-left: 8px; letter-spacing: 0; }
+.mtabs { display: none; gap: 4px; }
+.mtabs button, .ptabs button {
+  border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 12px; font-size: 13px; color: var(--muted);
+}
+.mtabs button[aria-selected="true"], .ptabs button[aria-selected="true"] { background: var(--accent-soft); color: var(--accent); border-color: transparent; font-weight: 500; }
+
+.main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+.chat { min-height: 0; display: flex; flex-direction: column; border-right: 1px solid var(--line); }
+.log {
+  flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 18px;
+  padding-block: 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: 16px;
+}
+.log > * { max-width: 640px; width: 100%; margin-inline: auto; }
+.msg { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.msg .who { font-size: 12px; color: var(--muted); letter-spacing: .04em; display: flex; align-items: center; gap: 8px; }
+.master { width: 40px; height: 40px; flex: none; display: block; }
+.intro .master { width: 104px; height: 104px; }
+.msg .text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.me { align-items: flex-end; }
+.msg.me .text { background: var(--sunken); padding: 10px 14px; border-radius: 14px 14px 4px 14px; max-width: 85%; }
+.msg.ai .text { padding-inline: 2px; }
+.msg.thinking .text { color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 14px; font-size: 14px;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.note { font-size: 13px; color: var(--muted); }
+.notice { border-radius: var(--radius); padding: 12px 14px; font-size: 14px; background: var(--accent-soft); }
+.notice.warn { background: var(--warn-soft); color: var(--fg); }
+.notice.warn strong { color: var(--warn); }
+
+.composer {
+  border-top: 1px solid var(--line); background: var(--surface);
+  padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: 16px;
+}
+.composer-inner { max-width: 640px; margin-inline: auto; display: flex; flex-direction: column; gap: 8px; }
+.inputrow { display: flex; gap: 8px; align-items: flex-end; }
+.inputrow textarea {
+  flex: 1; min-width: 0; resize: none; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+  background: var(--bg); min-height: 46px; max-height: 180px; line-height: 1.6;
+}
+.btn {
+  border: 1px solid transparent; background: var(--accent); color: var(--surface); border-radius: 10px; padding: 9px 16px; font-weight: 500; white-space: nowrap;
+}
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.ghost { background: transparent; color: var(--accent); border-color: var(--line); }
+.btn.dawn { background: var(--dawn); }
+.btn.small { padding: 5px 12px; font-size: 13px; }
+.composer-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+
+.panel { min-height: 0; overflow-y: auto; background: var(--board); }
+.panel-inner {
+  display: flex; flex-direction: column; gap: 20px; max-width: 520px; margin-inline: auto;
+  padding-block: 20px 32px; padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.ptabs { display: flex; gap: 6px; }
+.section-title { font-size: 12px; letter-spacing: .12em; color: var(--muted); }
+
+/* 喪失の地図：4つの駅を縦の線でつなぐ */
+.map { display: flex; flex-direction: column; }
+.station { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; }
+.rail { display: flex; flex-direction: column; align-items: center; }
+.dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(232, 228, 218, .3); background: var(--board); margin-top: 5px; flex: none; transition: background .4s, border-color .4s; }
+.line { flex: 1; width: 0; border-left: 2px dashed rgba(232, 228, 218, .2); margin-block: 4px; }
+.station:last-child .line { display: none; }
+.station.on .dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px rgba(219, 164, 92, .5); }
+.station.next.on .dot { background: var(--dawn); border-color: var(--dawn); }
+.station-body { padding-bottom: 18px; min-width: 0; }
+.station-name { font-weight: 700; font-size: 14px; }
+.station-hint { font-size: 12px; color: var(--muted); }
+.words { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.word {
+  font-family: var(--font-story); font-size: 14px; color: var(--chalk); background: transparent; border: 1px dashed rgba(232, 228, 218, .35);
+  border-radius: 4px; padding: 2px 9px; overflow-wrap: anywhere; animation: rise .5s ease both;
+}
+.station.next .word { color: var(--dawn); border-color: rgba(169, 207, 164, .5); }
+@keyframes rise { from { transform: translateY(4px); opacity: .4; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .word { animation: none; } .dot { transition: none; } }
+
+.scene-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.scene-card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); font-size: 13px; }
+.scene-card:hover { border-color: var(--accent); }
+.scene-card[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.scene-card svg, .scene-sketch svg { width: 40px; height: 40px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.scene-sketch { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; align-items: start; padding: 14px; border: 1px dashed rgba(232, 228, 218, .3); border-radius: var(--radius); color: var(--chalk); }
+.scene-sketch .pic { display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; border: 1px dashed rgba(232, 228, 218, .3); }
+.scene-sketch .pic svg { width: 44px; height: 44px; }
+.scene-rows { display: flex; flex-direction: column; gap: 4px; font-size: 13px; min-width: 0; }
+.scene-rows div { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 8px; }
+.scene-rows dt, .scene-rows span:first-child { color: var(--muted); }
+.scene-rows b { font-family: var(--font-story); font-weight: 500; overflow-wrap: anywhere; }
+.scene-rows .blank { color: var(--muted); opacity: .6; font-weight: 400; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.card label { font-size: 12px; letter-spacing: .08em; color: var(--muted); }
+.card textarea {
+  width: 100%; resize: vertical; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--bg);
+  line-height: 1.85;
+}
+#story { font-family: var(--font-story); font-size: 15px; min-height: 200px; }
+#draft { min-height: 130px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.rec { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.rec-head { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rec-draft { white-space: pre-wrap; overflow-wrap: anywhere; }
+.rec details summary { font-size: 13px; color: var(--accent); cursor: pointer; }
+.rec .story-text { font-family: var(--font-story); white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 6px; }
+.badge { display: inline-block; font-size: 12px; border-radius: 999px; padding: 1px 10px; background: var(--dawn-soft); color: var(--dawn); font-weight: 500; }
+.confide-form { display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.confide-form input[type="date"] { border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; background: var(--bg); }
+/* 気配：名前も言葉も出さず、誰かがいる・いたことだけを灯りで見せる */
+.aura { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); min-width: 0; }
+.lights { display: inline-flex; gap: 4px; }
+.light { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); opacity: .85; animation: breathe 3.2s ease-in-out infinite; }
+.light.typing { background: var(--dawn); box-shadow: 0 0 8px var(--dawn); animation-duration: 1.4s; }
+@keyframes breathe { 0%, 100% { opacity: .35; transform: scale(.85); } 50% { opacity: .95; transform: scale(1); } }
+.presence { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.presence .section-title + .section-title { margin-top: 4px; }
+.presence-live { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.counter { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 6px; border-top: 3px solid var(--wood); }
+.stool { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: var(--muted); }
+.stool i { width: 18px; height: 6px; border-radius: 3px; background: var(--line); display: block; }
+.stool b { width: 2px; height: 12px; background: var(--line); display: block; }
+.stool.on i { background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: breathe 3.2s ease-in-out infinite; }
+.stool.on.typing i { background: var(--dawn); box-shadow: 0 0 10px var(--dawn); animation-duration: 1.4s; }
+.stool.me i { background: var(--fg); opacity: .7; }
+@media (prefers-reduced-motion: reduce) { .stool.on i { animation: none; } }
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; align-items: end; }
+.day { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.day-dots { display: flex; flex-wrap: wrap-reverse; justify-content: center; align-content: flex-start; gap: 3px; min-height: 40px; width: 100%; }
+.tdot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--accent); }
+.tdot.talk { opacity: .4; }
+.tdot.story, .tdot.reach { box-shadow: 0 0 6px rgba(219, 164, 92, .5); }
+.tdot.confided { border-color: var(--dawn); background: var(--dawn-soft); box-shadow: 0 0 6px rgba(169, 207, 164, .5); }
+.day-label { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.day.today .day-label { color: var(--fg); font-weight: 700; }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 4px; }
+.trace-line { font-size: 13px; font-family: var(--font-story); }
+@media (prefers-reduced-motion: reduce) { .light { animation: none; } }
+.empty { text-align: center; color: var(--muted); padding: 28px 8px; font-size: 14px; }
+
+/* はじめに */
+.intro { position: fixed; inset: 0; background: var(--bg); overflow-y: auto; z-index: 20; }
+.intro-inner {
+  max-width: 560px; margin-inline: auto; display: flex; flex-direction: column; gap: 18px;
+  padding-block: calc(env(safe-area-inset-top, 0px) + 40px) calc(env(safe-area-inset-bottom, 0px) + 40px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.intro h1 { font-family: var(--font-story); font-weight: 600; font-size: 26px; margin: 0; text-wrap: balance; letter-spacing: .04em; }
+.intro p { margin: 0; }
+.intro .lead { font-size: 16px; }
+.intro h1, .about h2 { word-break: auto-phrase; }
+@media (max-width: 520px) { .intro h1 { font-size: 22px; } }
+.about { display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid var(--line); }
+.about h2 { margin: 0; font-family: var(--font-story); font-weight: 600; font-size: 18px; color: var(--accent); letter-spacing: .04em; text-wrap: balance; }
+.keep-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.keep { border-radius: var(--radius); padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.keep p { font-size: 14px; }
+.keep-tag { font-weight: 700; font-size: 14px; }
+.keep.none .keep-tag { color: var(--fg); }
+.keep.mine { border-color: var(--dawn); }
+.keep.mine .keep-tag { color: var(--dawn); }
+.keep.count .keep-tag, .keep.seen .keep-tag { color: var(--accent); }
+.fine { margin: 0; padding-left: 1.2em; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.linkish { background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; font-size: 12px; }
+.linkish:hover { color: var(--accent); }
+.flow { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 8px; }
+.flow b { display: block; font-weight: 700; }
+.aboutbtn { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 12px; font-size: 12px; color: var(--muted); }
+.aboutbtn .short-hide { display: none; }
+@media (max-width: 820px) { .aboutbtn .short-hide { display: inline; } .aboutbtn { padding: 4px 10px; } }
+.aboutbtn:hover { color: var(--accent); border-color: var(--accent); }
+.barright { display: flex; align-items: center; gap: 10px; }
+.intro ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+
+@media (max-width: 820px) {
+  .mtabs { display: flex; }
+  .main { grid-template-columns: minmax(0, 1fr); }
+  .chat { border-right: 0; }
+  .main[data-view="chat"] .panel { display: none; }
+  .main[data-view="panel"] .chat { display: none; }
+  .brand small { display: none; }
+  .aura #aura-text { display: none; }
+  .brand { font-size: 16px; letter-spacing: .06em; white-space: nowrap; }
+  .mtabs button, .aboutbtn { white-space: nowrap; }
+  .aboutbtn .long { display: none; }
+  .bar { gap: 8px; }
+  .barright { gap: 6px; }
+  .strip { display: flex; }
+}
+.strip {
+  display: none; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 11px; color: var(--muted);
+  padding-block: 6px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  border: 0; border-bottom: 1px solid var(--line); background: var(--bg); width: 100%; text-align: left; flex-wrap: nowrap; overflow: hidden; white-space: nowrap;
+}
+.strip .st { display: inline-flex; align-items: center; gap: 3px; }
+.strip .st i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--muted); display: inline-block; }
+.strip .st.on i { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.strip .st.on.next i { background: var(--dawn); border-color: var(--dawn); box-shadow: 0 0 6px var(--dawn); }
+.strip .go { margin-left: auto; color: var(--accent); }
+.msg.hint .text { color: var(--muted); font-size: 14px; }
+@media (max-width: 820px) { .strip { display: flex; } }
+</style>
+
+<div class="app">
+  <header class="bar">
+    <div class="brand">喪失と再生の酒場<small>試作品</small></div>
+    <div class="aura" id="aura-bar" hidden title="いまここにいる、ほかの人の気配"><span class="lights" id="aura-lights"></span><span id="aura-text"></span></div>
+    <div class="barright">
+    <button class="aboutbtn" id="about"><span class="long">この酒場について</span><span class="short-hide">？</span></button>
+    <div class="mtabs" role="tablist" aria-label="表示の切り替え">
+      <button id="mt-chat" role="tab" aria-selected="true">対話</button>
+      <button id="mt-panel" role="tab" aria-selected="false">黒板</button>
+    </div>
+    </div>
+  </header>
+
+  <div class="main" id="main" data-view="chat">
+    <section class="chat" aria-label="ひとり対話">
+      <button class="strip" id="strip" aria-label="喪失の地図を見る"></button>
+      <div class="log" id="log" aria-live="polite"></div>
+      <div class="composer">
+        <div class="composer-inner">
+          <div class="inputrow">
+            <textarea id="input" rows="1" placeholder="その場で言えなかったことを、そのまま書いてみてください" aria-label="あなたの言葉"></textarea>
+            <button class="btn" id="send">送る</button>
+          </div>
+          <div class="composer-meta">
+            <span><span id="turninfo">対話の中身は、どこにも保存されません</span> <button class="linkish" id="whatkept">何が残る？</button></span>
+            <button class="btn dawn small" id="tostory" disabled>物語にする</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel" aria-label="地図と記録">
+      <div class="panel-inner">
+        <div class="presence" id="presence" hidden>
+          <div class="section-title">この7日間のグラスの跡</div>
+          <div class="trace-line" id="trace-line" hidden></div>
+          <div class="week" id="week" aria-label="この7日間の気配"></div>
+          <div class="legend"><span><i class="tdot talk"></i>ひとり対話</span><span><i class="tdot story"></i>物語・受け止め</span><span><i class="tdot confided"></i>打ち明けた</span></div>
+          <div class="section-title">今夜のカウンター</div>
+          <div class="presence-live"><div class="counter" id="live-lights" aria-hidden="true"></div><span id="live-text">いまは、あなただけがここにいます。</span></div>
+          <div class="note">名前も言葉も、ほかの客には見えません。残るのは日付だけです。</div>
+        </div>
+        <div class="ptabs" role="tablist" aria-label="右側の表示">
+          <button id="pt-map" role="tab" aria-selected="true">黒板</button>
+          <button id="pt-rec" role="tab" aria-selected="false">ボトルキープ</button>
+        </div>
+
+        <div id="view-map" style="display:flex;flex-direction:column;gap:20px">
+          <div>
+            <div class="section-title">黒板：今夜、話せなかった場面</div>
+          </div>
+          <div class="scene-sketch" id="scene-sketch">
+            <div class="pic" id="scene-pic" aria-hidden="true"></div>
+            <div class="scene-rows">
+              <div><span>場</span><b id="sc-place" class="blank">まだ</b></div>
+              <div><span>そこにいた</span><b id="sc-who" class="blank">まだ</b></div>
+              <div><span>話題</span><b id="sc-topic" class="blank">まだ</b></div>
+              <div><span>飲み込んだ</span><b id="sc-moment" class="blank">まだ</b></div>
+            </div>
+          </div>
+          <div>
+            <div class="section-title">黒板：あなたの言葉で描く、喪失の地図</div>
+            <p class="note" id="map-empty">対話が進むと、あなたが使った言葉がここに置かれていきます。</p>
+          </div>
+          <div class="map" id="map"></div>
+
+          <div class="card" id="story-card" hidden>
+            <label for="story">今夜の物語：喪失と再生（あなたの言葉から。直せます）</label>
+            <textarea id="story"></textarea>
+            <label for="draft">打ち明けの下書き（<span id="draft-place">次の場</span>で話すとき）</label>
+            <textarea id="draft"></textarea>
+            <div class="row">
+              <button class="btn" id="save">自分だけのボトルに残す</button>
+              <button class="btn ghost" id="copy">下書きをコピー</button>
+              <span class="note" id="save-status"></span>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-rec" hidden>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <p class="note">ボトルに残した物語と下書きは、あなただけが読めます。次の場で話せたら「打ち明けた」を押してください。</p>
+            <div id="records" style="display:flex;flex-direction:column;gap:12px"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="intro" id="intro" hidden>
+  <div class="intro-inner">
+    <svg class="master" viewBox="0 0 64 64" role="img" aria-label="マスター" fill="none" stroke="#f4efe6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="30"/><ellipse cx="32" cy="27" rx="10.5" ry="10.5"/><path d="M21.7 25 C22 15.5 42 15.5 42.3 25"/><path d="M27 17.6 C30 20 35 20.5 40 21"/><path d="M26 27.5 q2.2 1.6 4.4 0 M33.6 27.5 q2.2 1.6 4.4 0"/><path d="M25.5 31.5 C27 34.2 30.5 34.2 32 32.4 C33.5 34.2 37 34.2 38.5 31.5"/><path d="M29.5 37.2 V43.5 M34.5 37.2 V43.5"/><path d="M17 56 C18.5 49 23 45.2 29 44.5 M47 56 C45.5 49 41 45.2 35 44.5"/><path d="M29 44.5 L32 51 L35 44.5"/><path d="M27.6 47.2 L32 49.2 L27.6 51.2 Z M36.4 47.2 L32 49.2 L36.4 51.2 Z"/><path d="M23.5 47.5 L32 58 L40.5 47.5"/></svg>
+    <h1>いらっしゃい。<br>ここは、喪失を受け入れ、もう一度歩き出すための酒場です</h1>
+    <p class="lead">AIの登場や、役割や仕事の変化で、自分が仕事で大切にしていたものの出番がなくなることがあります。この酒場は、そのとき言葉にできなかったことを、カウンター越しのマスターと一緒に、ひとりで言葉にする場所です。お酒は出てきません。</p>
+
+    <section class="about">
+      <h2>喪失を、過程ごと受け入れる</h2>
+      <p>大切にしていたものを失ったとき、戸惑いをすぐには受け止められません。AIが出てきてから、「人にしかできないことは〇〇だ」という言説をよく耳にします。そう言い切りたくなる気持ちの奥には、「自分にはまだ優位なところがある」と確かめたい思いがあるのかもしれません。前のやり方にこだわるのも、そうした言説で張り合うのも、守りたいものがあったからです。ここでは、その戸惑いや守りを、なかったことにしません。失ったもの、そのときの気持ち、守ろうとしたものを、順に言葉にしていきます。ここで言う「受け入れる」は、失った過程ごと、自分の物語にすることです。</p>
+    </section>
+
+    <section class="about">
+      <h2>異なる他者と話す前に、まず自分自身と</h2>
+      <p>哲学者ハンナ・アーレントは、人が自分とは異なる他者のあいだで言葉を交わし、ともに何かを始めることを「活動」と呼びました。ふりかえりも、1on1も、コミュニティも、飲み会も、その活動の場です。けれど、異なる他者の前では、どうしても構えてしまいます。喪失を抱えたままなら、なおさらです。</p>
+      <p>アーレントはまた、考えることを「私と私自身との、声のない対話」だと言いました。この酒場は、他者との活動の前に、まず自分自身と対話するための場所です。ここにいるのは、あなたとマスターだけです。マスターは、励ましも助言もしません。あなたの言葉を「こういうことでしょうか」と言い換えて確かめ、問いを一つ返すだけの聞き手です。言葉は、最後まであなたのものです。</p>
+    </section>
+
+    <section class="about">
+      <h2>再生は、いつもの場で話せること</h2>
+      <p>話すうちに、黒板に、あなたの言葉で喪失の地図が描かれていきます。失ったもの、戸惑いと防衛、受け止めたこと、これからの自分。自分を一歩引いて眺められたら、喪失と再生の物語と、次に話すための下書きを持ち帰れます。打ち明けるのは、この酒場の中ではありません。開発中、新規の企画、ふりかえり、1on1、コミュニティ、飲み会。いつもの場に戻り、異なる他者のあいだで、もう一度ありのままに話し始めること。この酒場では、それを再生と呼んでいます。ここは、そのための準備運動の場所です。</p>
+    </section>
+
+    <section class="about">
+      <h2>喪失と再生の物語というモチーフ</h2>
+      <p>この酒場の「喪失と再生の物語」というモチーフは、村上春樹の作品から着想を得ています。大切なものを失った人が、その喪失をすぐには埋めず、抱えたまま自分の内側と向き合い、やがてもう一度、他者のいる世界へ歩き出していく。そういう物語を、ここではあなた自身の言葉で紡ぎます。</p>
+    </section>
+
+    <section class="about">
+      <h2>今夜の流れ</h2>
+      <ol class="flow">
+        <li><b>話せなかった場面を思い出す</b>どんな場で、誰がいて、何の話のときに、言葉を飲み込んだか。</li>
+        <li><b>マスターと、ひとりで話す</b>言い換えと問いに答えながら、黒板に喪失の地図ができていきます。</li>
+        <li><b>物語と下書きを受け取る</b>あなたの言葉から組み立てたものを、あなたの言葉に直して、自分だけのボトルに残せます。</li>
+        <li><b>話せたら「打ち明けた」</b>いつもの場で話せたら、ボトルキープから記録します。</li>
+      </ol>
+    </section>
+
+    <section class="about">
+      <h2>ほかの客の気配</h2>
+      <p>カウンターには、ほかの客もいます。名前も言葉も見えませんが、いま誰かが座っていること、この7日間に誰かがここで言葉を探し、打ち明けたことが、灯りとグラスの跡で分かります。言葉にできずにいるのは、あなただけではありません。</p>
+    </section>
+
+    <section class="about" id="safety">
+      <h2>安心して話せるように：残るもの、残らないもの</h2>
+      <div class="keep-grid">
+        <div class="keep none">
+          <div class="keep-tag">どこにも残らない</div>
+          <p>マスターとの対話、思い出した場面のメモ（飲み込んだ瞬間）。画面を閉じると消えます。</p>
+        </div>
+        <div class="keep mine">
+          <div class="keep-tag">あなただけに残る</div>
+          <p>「自分だけのボトルに残す」を押した物語と下書きだけ。持ち主にも、ほかの客にも読めない設定です。ボトルキープから、いつでも消せます。</p>
+        </div>
+        <div class="keep count">
+          <div class="keep-tag">持ち主が数える（回数と日付だけ）</div>
+          <p>来た日、対話の回数、マスターを呼んだ回数、選んだ場・そこにいた人・話題ごとの回数、「打ち明けた」の場と日付。言葉や名前は含みません。</p>
+        </div>
+        <div class="keep seen">
+          <div class="keep-tag">ほかの客に見える（灯りだけ）</div>
+          <p>いまカウンターに誰かがいること、この7日間に対話・物語・打ち明けがあったこと。名前も言葉も時刻も見えません。</p>
+        </div>
+      </div>
+      <ul class="fine">
+        <li>マスターの返事を作るため、対話はあなた自身の Claude に送られ、あなたの Claude の設定のとおりに扱われます。最初に許可を求める画面が出ます。</li>
+        <li>このアプリの持ち主は、アプリを作り変えられる立場にあります。作り変えれば、いま読めないものを読めるようにすることも、仕組みの上ではできます。このことは知っておいてください。</li>
+      </ul>
+    </section>
+    <div class="notice warn"><strong>つらさが強いときは</strong><br>眠れない、仕事に行けない、消えてしまいたいと感じるときは、このアプリではなく専門の窓口に相談してください。</div>
+    <div><button class="btn" id="start">カウンターに座る</button></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const TOPICS = ["AIとこれからの役割", "これからのキャリア", "仕事内容の悩み", "前の強みが活きない", "新しく学ぶのにすくむ", "つい守ってしまう", "人間関係", "その他"];
+  const PLACES = ["開発中", "新規の企画", "ふりかえり", "1on1", "コミュニティ", "飲み会", "その他"];
+  const WHO = ["上司", "チームの仲間", "同じ職種の人", "ほかの職種の人", "社外の人", "その他"];
+  const SCENES = [
+    { label: "開発中", svg: '<svg viewBox="0 0 40 40"><rect x="8" y="9" width="24" height="15" rx="1.5"/><path d="M4 29 H36 L33 25 H7 Z"/><path d="M14 14 H22 M14 18 H26"/></svg>' },
+    { label: "新規の企画", svg: '<svg viewBox="0 0 40 40"><path d="M14 22 C10 19 10 11 15 8 C18 6 22 6 25 8 C30 11 30 19 26 22 C24.5 23.5 24 25 24 27 H16 C16 25 15.5 23.5 14 22 Z"/><path d="M16 30.5 H24 M17.5 34 H22.5"/><path d="M20 27 V19 M17.5 16.5 L20 19 L22.5 16.5"/><path d="M6 13 L3 12 M7 7 L5 5 M34 13 L37 12 M33 7 L35 5"/></svg>' },
+    { label: "ふりかえり", svg: '<svg viewBox="0 0 40 40"><rect x="5" y="7" width="30" height="20" rx="1.5"/><rect x="9" y="11" width="6" height="5"/><rect x="17" y="11" width="6" height="5"/><rect x="25" y="11" width="6" height="5"/><rect x="13" y="19" width="6" height="5"/><path d="M14 27 L11 34 M26 27 L29 34"/></svg>' },
+    { label: "1on1", svg: '<svg viewBox="0 0 40 40"><circle cx="11" cy="13" r="4"/><circle cx="29" cy="13" r="4"/><path d="M5 27 C5 21 17 21 17 27 M23 27 C23 21 35 21 35 27"/><path d="M8 31 H32"/></svg>' },
+    { label: "コミュニティ", svg: '<svg viewBox="0 0 40 40"><circle cx="20" cy="8" r="3"/><circle cx="32" cy="17" r="3"/><circle cx="27" cy="31" r="3"/><circle cx="13" cy="31" r="3"/><circle cx="8" cy="17" r="3"/><circle cx="20" cy="20" r="5" stroke-dasharray="2 2.5"/></svg>' },
+    { label: "飲み会", svg: '<svg viewBox="0 0 40 40"><path d="M8 9 H18 L16.5 22 C16 25 10 25 9.5 22 Z"/><path d="M13 25 V32 M10 32 H16"/><path d="M22 9 H32 L30.5 22 C30 25 24 25 23.5 22 Z"/><path d="M27 25 V32 M24 32 H30"/><path d="M19 5 L20 2 M16 6 L14 3 M22 6 L24 3"/></svg>' },
+    { label: "その他", svg: '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="13" stroke-dasharray="3 3"/><path d="M16 16 C16 12 24 12 24 16 C24 19 20 19 20 22"/><circle cx="20" cy="27" r=".8"/></svg>' },
+  ];
+  const STATIONS = [
+    { key: "lost", name: "失ったもの", hint: "出番がなくなったこと、大切にしていたこと" },
+    { key: "confusion", name: "戸惑いと防衛", hint: "そのときの気持ち、守ろうとしたもの" },
+    { key: "accepted", name: "受け止めたこと", hint: "そうだったと認められたこと" },
+    { key: "next", name: "これからの自分", hint: "持っていくもの、新しく試すこと" },
+  ];
+  const STORY_MIN_TURNS = 3;
+
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const today = () => { const d = new Date(); const p = (x) => String(x).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+
+  const state = {
+    place: null, turns: [], map: { lost: [], confusion: [], accepted: [], next: [] },
+    busy: false, userTurns: 0, sessionCounted: false, concernShown: false, story: null,
+  };
+  let sample = null, db = null, uid = null, room = null;
+  let peers = [], traces = [];
+  const myTraceIds = new Set();
+  const reached = new Set();
+  const STAGE_TEXT = { typing: "いま書いています", talking: "言葉を探しています", story: "物語を整えています", records: "記録を読み返しています", here: "ここにいます" };
+
+  // ---------- 気配 ----------
+  let myStage = "here", typingTimer = null;
+  function setStage(stage) { myStage = stage; if (room) room.presence({ stage: myStage, typing: false }).catch(() => {}); }
+  function setTyping() {
+    if (!room) return;
+    room.presence({ stage: myStage, typing: true }).catch(() => {});
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(() => room && room.presence({ typing: false }).catch(() => {}), 3000);
+  }
+  function others() { return peers.filter((p) => !p.isMe && p.kind === "viewer"); }
+  function lightsInto(box, list) {
+    box.textContent = "";
+    list.slice(0, 12).forEach((p, i) => { const l = el("span", "light" + (p.presence && p.presence.typing ? " typing" : "")); l.style.animationDelay = (i * 0.45) + "s"; box.appendChild(l); });
+  }
+  function stoolsInto(box, list) {
+    box.textContent = "";
+    const seats = Math.max(7, list.length + 1);
+    for (let i = 0; i < seats; i++) {
+      const p = i === 0 ? null : list[i - 1];
+      const st = el("div", "stool" + (i === 0 ? " me" : p ? " on" + (p.presence && p.presence.typing ? " typing" : "") : ""));
+      st.appendChild(el("i")); st.appendChild(el("b"));
+      if (i === 0) st.appendChild(el("span", null, "あなた"));
+      if (p) st.querySelector("i").style.animationDelay = (i * 0.45) + "s";
+      box.appendChild(st);
+    }
+  }
+  function renderAura() {
+    const os = others();
+    lightsInto($("aura-lights"), os); stoolsInto($("live-lights"), os);
+    $("aura-bar").hidden = os.length === 0;
+    $("aura-text").textContent = os.length ? `ほかに${os.length}人` : "";
+    if (!os.length) { $("live-text").textContent = "いまは、あなただけがここにいます。"; return; }
+    const counts = {};
+    os.forEach((p) => { const st = p.presence && p.presence.typing ? "typing" : (p.presence && STAGE_TEXT[p.presence.stage] ? p.presence.stage : "here"); counts[st] = (counts[st] || 0) + 1; });
+    const parts = ["typing", "talking", "story", "records", "here"].filter((k) => counts[k]).map((k) => `${counts[k]}人が${STAGE_TEXT[k]}`);
+    $("live-text").textContent = `いま、カウンターにほかに${os.length}人。` + (parts.length ? parts.join("、") + "。" : "");
+  }
+  function dayStr(d) { const p = (x) => String(x).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
+  function renderTraces() {
+    const week = $("week"); week.textContent = "";
+    const W = ["日", "月", "火", "水", "木", "金", "土"];
+    const now = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      const ds = dayStr(d);
+      const col = el("div", "day" + (i === 0 ? " today" : ""));
+      const dots = el("div", "day-dots");
+      const list = traces.filter((t) => t.day === ds);
+      const order = { talk: 0, reach: 1, story: 2, confided: 3 };
+      list.sort((a, b) => (order[a.kind] ?? 0) - (order[b.kind] ?? 0)).slice(0, 18).forEach((t) => dots.appendChild(el("span", "tdot " + (order[t.kind] != null ? t.kind : "talk"))));
+      col.appendChild(dots);
+      col.appendChild(el("div", "day-label", i === 0 ? "今日" : W[d.getDay()]));
+      week.appendChild(col);
+    }
+    const todays = traces.filter((t) => t.day === dayStr(now) && !myTraceIds.has(t.id));
+    const pick = todays.find((t) => t.kind === "confided") || todays.find((t) => t.kind === "reach" && t.station === "next") || todays.find((t) => t.kind === "reach") || todays.find((t) => t.kind === "story") || todays.find((t) => t.kind === "talk");
+    const line = $("trace-line");
+    if (!pick) { line.hidden = true; return; }
+    const STN = { accepted: "「受け止めたこと」", next: "「これからの自分」" };
+    line.textContent = pick.kind === "confided" ? "今日、誰かが、どこかの場で打ち明けたそうです。"
+      : pick.kind === "reach" ? `今日、誰かが${STN[pick.station] || "地図の先"}にたどり着きました。`
+      : pick.kind === "story" ? "今日、誰かが自分の物語をボトルに残していきました。"
+      : "今日も、誰かがこのカウンターで言葉を探していました。";
+    line.hidden = false;
+  }
+  async function leaveTrace(kind, extra) {
+    if (!db) return;
+    try { const ref = await db.collection("traces").add({ kind, day: today(), ...(extra || {}) }); myTraceIds.add(ref.id); } catch (e) {}
+  }
+
+  // ---------- 記録（回数だけ。中身は残さない） ----------
+  // 数える書き込みは、同時に走ると前の分を上書きしてしまうので、1件ずつ順番に行う
+  let usageQueue = Promise.resolve();
+  function bumpUsage(patch) { usageQueue = usageQueue.then(() => bumpUsageNow(patch)); return usageQueue; }
+  async function bumpUsageNow(patch) {
+    if (!db || !uid) return;
+    try {
+      const ref = db.doc("usage/" + uid);
+      const snap = await ref.get();
+      const cur = snap.exists ? snap.data() : { firstSeen: new Date().toISOString(), sessions: 0, aiCalls: 0, storiesSaved: 0, confided: 0, days: [], triggerPlaces: {}, triggerTopics: {}, confidedLog: [] };
+      const next = { ...cur };
+      next.lastSeen = new Date().toISOString();
+      const days = Array.isArray(cur.days) ? cur.days.slice() : [];
+      if (!days.includes(today())) days.push(today());
+      next.days = days;
+      for (const [k, v] of Object.entries(patch)) {
+        if (k === "triggerWho") { const t = { ...(cur.triggerWho || {}) }; (Array.isArray(v) ? v : [v]).forEach((x) => { t[x] = (t[x] || 0) + 1; }); next.triggerWho = t; }
+        else if (k === "triggerTopic") { const t = { ...(cur.triggerTopics || {}) }; t[v] = (t[v] || 0) + 1; next.triggerTopics = t; }
+        else if (k === "triggerPlace") { const t = { ...(cur.triggerPlaces || {}) }; t[v] = (t[v] || 0) + 1; next.triggerPlaces = t; }
+        else if (k === "confidedEntry") { next.confidedLog = [...(cur.confidedLog || []), v]; }
+        else if (typeof v === "number") { next[k] = (cur[k] || 0) + v; }
+      }
+      await ref.set(next);
+    } catch (e) { /* 数えられなくても、使う人の流れは止めない */ }
+  }
+
+  // ---------- 対話の表示 ----------
+  const log = $("log");
+  const MASTER_SVG = `<svg class="master" viewBox="0 0 64 64" role="img" aria-label="マスター" fill="none" stroke="#f4efe6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="30"/><ellipse cx="32" cy="27" rx="10.5" ry="10.5"/><path d="M21.7 25 C22 15.5 42 15.5 42.3 25"/><path d="M27 17.6 C30 20 35 20.5 40 21"/><path d="M26 27.5 q2.2 1.6 4.4 0 M33.6 27.5 q2.2 1.6 4.4 0"/><path d="M25.5 31.5 C27 34.2 30.5 34.2 32 32.4 C33.5 34.2 37 34.2 38.5 31.5"/><path d="M29.5 37.2 V43.5 M34.5 37.2 V43.5"/><path d="M17 56 C18.5 49 23 45.2 29 44.5 M47 56 C45.5 49 41 45.2 35 44.5"/><path d="M29 44.5 L32 51 L35 44.5"/><path d="M27.6 47.2 L32 49.2 L27.6 51.2 Z M36.4 47.2 L32 49.2 L36.4 51.2 Z"/><path d="M23.5 47.5 L32 58 L40.5 47.5"/></svg>`;
+  let masterN = 0;
+  function addMsg(who, text, extra) {
+    const m = el("div", "msg " + who);
+    const w = el("div", "who");
+    if (who !== "me") { const a = el("span"); a.innerHTML = MASTER_SVG; w.appendChild(a.firstChild); }
+    w.appendChild(el("span", null, who === "me" ? "あなた" : "マスター"));
+    m.appendChild(w);
+    const t = el("div", "text", text);
+    m.appendChild(t);
+    if (extra) m.appendChild(extra);
+    log.appendChild(m);
+    log.scrollTop = log.scrollHeight;
+    return m;
+  }
+  function addNotice(html, warn) {
+    const n = el("div", "notice" + (warn ? " warn" : ""));
+    n.innerHTML = html;
+    log.appendChild(n);
+    log.scrollTop = log.scrollHeight;
+  }
+  function crisisNotice() {
+    if (state.concernShown) return;
+    state.concernShown = true;
+    addNotice("<strong>ここで一度、手を止めませんか。</strong><br>つらさが強いときは、このアプリより、専門の窓口で人と話すほうが助けになります。続けたいときは、そのまま書いても大丈夫です。", true);
+  }
+
+  function chipRow(items, onPick) {
+    const chips = el("div", "chips");
+    items.forEach((p) => {
+      const b = el("button", "chip", p);
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", () => { chips.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", String(c === b))); onPick(p); });
+      chips.appendChild(b);
+    });
+    return chips;
+  }
+  function multiChipRow(items, onChange, onDone) {
+    const wrap = el("div", "chips");
+    const picked = new Set();
+    const next = el("button", "btn small", "これで次へ");
+    next.disabled = true;
+    items.forEach((p) => {
+      const b = el("button", "chip", p);
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", () => {
+        if (picked.has(p)) picked.delete(p); else picked.add(p);
+        b.setAttribute("aria-pressed", String(picked.has(p)));
+        const list = items.filter((x) => picked.has(x));
+        next.disabled = list.length === 0;
+        onChange(list);
+      });
+      wrap.appendChild(b);
+    });
+    next.addEventListener("click", () => { next.hidden = true; onDone(); });
+    wrap.appendChild(next);
+    return wrap;
+  }
+  function sceneCards(onPick) {
+    const box = el("div", "scene-cards");
+    SCENES.forEach((sc) => {
+      const b = el("button", "scene-card");
+      b.setAttribute("aria-pressed", "false");
+      b.innerHTML = sc.svg;
+      b.appendChild(el("span", null, sc.label));
+      b.addEventListener("click", () => { box.querySelectorAll(".scene-card").forEach((c) => c.setAttribute("aria-pressed", String(c === b))); onPick(sc); });
+      box.appendChild(b);
+    });
+    return box;
+  }
+  function setRow(id, v) { const n = $(id); if (v) { n.textContent = v; n.classList.remove("blank"); } else { n.textContent = "まだ"; n.classList.add("blank"); } }
+  function showTrigger() {
+    const sc = SCENES.find((x) => x.label === state.place);
+    $("scene-pic").innerHTML = sc ? sc.svg : SCENES[SCENES.length - 1].svg;
+    setRow("sc-place", state.place); setRow("sc-who", state.who); setRow("sc-topic", state.topic);
+    setRow("sc-moment", state.moment ? (state.moment.length > 40 ? state.moment.slice(0, 40) + "…" : state.moment) : null);
+  }
+  const asked = {};
+  function opening() {
+    addMsg("ai", "いらっしゃい。ここは、言えなかったことを、ひとりで言葉にする酒場です。\nまず、今夜話せなかった場面を思い出してみましょう。それは、どんな場でしたか。", sceneCards((sc) => {
+      state.place = sc.label; showTrigger();
+      $("draft-place").textContent = sc.label === "その他" ? "次の場" : sc.label === "開発中" ? "開発の中" : sc.label === "新規の企画" ? "次の企画の場" : "次の" + sc.label;
+      if (asked.who) return; asked.who = true;
+      addMsg("ai", "その場には、誰がいましたか。当てはまるものを、いくつでも選んでください。", multiChipRow(WHO, (list) => {
+        state.who = list.join("・"); state.whoList = list; showTrigger();
+      }, () => {
+        if (asked.topic) return; asked.topic = true;
+        addMsg("ai", "何の話をしているときでしたか。近いものを選んでください。", chipRow(TOPICS, (t) => {
+          state.topic = t; showTrigger();
+          if (asked.moment) { $("input").focus(); return; } asked.moment = true;
+          addMsg("ai", "その話の中で、言葉を飲み込んだのは、どんな瞬間でしたか。誰が何を言ったとき、あなたは何を言いかけていましたか。下にそのまま書いてみてください。");
+          $("input").placeholder = "整えなくて大丈夫です。思い出した順に書いてください";
+          $("input").focus();
+        }));
+      }));
+    }));
+  }
+
+  function updateTurnInfo() {
+    const n = state.userTurns;
+    $("turninfo").textContent = n === 0 ? "対話の中身は、どこにも保存されません" : `${n}往復目。対話の中身は保存されません`;
+    $("tostory").disabled = state.busy || n < STORY_MIN_TURNS;
+    $("tostory").title = n < STORY_MIN_TURNS ? `${STORY_MIN_TURNS}往復すると、物語にできます` : "";
+    $("send").disabled = state.busy;
+  }
+
+  // ---------- 地図 ----------
+  function renderStrip() {
+    const box = $("strip"); box.textContent = "";
+    STATIONS.forEach((st) => {
+      const on = (state.map[st.key] || []).length > 0;
+      const sp = el("span", "st" + (on ? " on" : "") + (st.key === "next" ? " next" : ""));
+      sp.appendChild(el("i")); sp.appendChild(el("span", null, ({ lost: "失ったもの", confusion: "戸惑い", accepted: "受け止め", next: "これから" })[st.key]));
+      box.appendChild(sp);
+    });
+    box.appendChild(el("span", "go", "黒板 →"));
+  }
+  function renderMap() {
+    renderStrip();
+    const map = $("map");
+    map.textContent = "";
+    let any = false;
+    STATIONS.forEach((s) => {
+      const words = state.map[s.key] || [];
+      if (words.length) any = true;
+      const st = el("div", "station" + (s.key === "next" ? " next" : "") + (words.length ? " on" : ""));
+      const rail = el("div", "rail"); rail.appendChild(el("div", "dot")); rail.appendChild(el("div", "line"));
+      const body = el("div", "station-body");
+      body.appendChild(el("div", "station-name", s.name));
+      body.appendChild(el("div", "station-hint", s.hint));
+      if (words.length) { const w = el("div", "words"); words.forEach((x) => w.appendChild(el("span", "word", x))); body.appendChild(w); }
+      st.appendChild(rail); st.appendChild(body);
+      map.appendChild(st);
+    });
+    $("map-empty").hidden = any;
+  }
+
+  // ---------- AI ----------
+  const ROLE = `あなたは「喪失と再生の酒場」というアプリの、カウンターの向こうにいる寡黙なマスターです。このアプリは、打ち明ける前の準備運動の場です。口調は落ち着いた丁寧語で、短く。お酒を勧めたり、お酒の話をしたりはしない。
+相手は、プロダクト開発に関わる仕事（アジャイルコーチ、スクラムマスター、エンジニア、PM、デザイナーなど）をしていて、AIの登場や、それ以外の仕事の変化で、自分が仕事で大切にしていたことを失った人です。開発中・新規の企画・ふりかえり・1on1・コミュニティ・飲み会などの場で、戸惑いを言葉にできず、そのあとここに来ています。
+目的は、相手が喪失をその過程ごと受け入れ、防衛的なポジショントークから降り、自分を一歩引いて見て、次の場で誰かに話す準備ができることです。ハンナ・アーレントの考えに立ちます。異なる他者のあいだで言葉を交わす「活動」の前に、まず「私と私自身との声のない対話」として考える場を開く。言葉はあくまで相手のものにします。哲学の解説はしない。
+
+# 返事の作り方
+- 返事は「受け止め」＋「問い1つ」。受け止めは40字以内で、相手の言葉を1〜2語だけ拾って置き直すだけでもよい（例：「十年、なのですね。」）。語尾は毎回変える（〜なのですね／〜と。／〜ということでしょうか、など）。問いは40字以内。全体で80字前後、120字を上限にする。
+- 一般論の励まし、助言、評価、AIについての解説、「大丈夫です」「素晴らしい」は使わない。
+- 「〜は何ですか」と詰める問いを続けない。ときどき「もしよければ」「答えにくければ飛ばしてください」を添える。
+- 相手を責めない。言い直しや矛盾を指摘しない。両方の言葉を並べて返すまでにとどめ、どちらから話すかは相手に選んでもらう（例：「居場所、と、チームのため。どちらから話しますか。」）。
+- 防衛的な言葉も、その人が守ろうとしたものとして受け止める。たとえば「人にしかできないことは〇〇だ」という言説が出たら、その是非を議論せず、そう言いたくなったときに守りたかったものを尋ねる。
+- 相手がアプリや問いそのものに疑問を言ったら（「これ何の意味あるの」など）、言い換えずに「ここは、誰かに話す前に、自分の言葉を確かめておく場です。」と1文で答え、一語でも答えられる問いを出す。選択肢を2〜3個示してよい（例：「近いのは、悔しい・寂しい・腹が立つ、のどれですか。」）。このときだけは選択肢を出すことを先回りとみなさない。
+- 返事が一語や「別に」「特に」のときは、なぞらずに、具体的な場面に戻る短い問いにする。
+
+# 進め方（「# いま」に往復の数が書いてある）
+- 1〜2往復目：場面を具体的にする（誰が何を言ったか、自分は何を言いかけたか）。体の反応を聞くのは2往復目以降に、ときどきだけ。
+- 3往復目以降：相手が答えられそうなら、失ったもの → それでも残っているもの、へ一段ずつ進める。
+- 5往復目前後で一度、「次の場で、誰に、どの一言なら言えそうか」を尋ねる。相手が止まっていれば、前の段に戻ってよい。急がない。
+- 「# 場面メモ」は相手が選択肢から選んだもの。参考にするだけで、なぞったり言い換えたりしない。
+
+# 強い落ち込みのサイン
+- concern は、直前の相手の発言に強い落ち込みのサイン（眠れない日が続く、仕事に行けない、消えたい等）があるときだけ true にする。
+- そのターンの reply は、受け止める1文と「続けるか、ここで止めるかは、あなたが決めて大丈夫です。」の1文にする（問いは出さない）。
+- 次のターンで相手が続けたら concern は false に戻し、相手が戻った話題から再開する。
+
+# 喪失の地図
+4つの欄に、相手の発言から連続した部分をそのまま切り出した断片を入れる（20字以内。語尾も変えない。長ければ途中で切るだけで、要約や言い換えをしない）。相手以外の人のセリフは入れない。一度入れた断片は消さない。各欄は最大5つ。地図は毎回、全体を返す。
+- lost：失ったもの、出番がなくなったこと
+- confusion：戸惑い、防衛、守ろうとしたもの
+- accepted：相手が自分で認める言い方（「事実」「認めたくないけど」「かも」など）をした断片だけ
+- next：これから持っていくもの、試したいこと、言いたい一言
+
+出力は次の JSON だけ（前後に文章を付けない）：
+{"reply": "受け止め＋問い1つ（concern のときは受け止め＋止めてよい旨）", "map": {"lost": [], "confusion": [], "accepted": [], "next": []}, "concern": false}`;
+
+  function transcript() {
+    return state.turns.map((t) => (t.role === "user" ? "相手：" : "マスター：") + t.content).join("\n");
+  }
+  function sceneMemo() {
+    return `場：${state.place || "未選択"}／そこにいた人：${state.who || "未選択"}／話題：${state.topic || "未選択"}`;
+  }
+  function userText() { return state.turns.filter((t) => t.role === "user").map((t) => t.content).join("\n"); }
+  function placeLabel() {
+    const p = state.place;
+    return !p || p === "その他" ? "次に話せそうな場" : p === "開発中" ? "開発の中" : p === "新規の企画" ? "次の企画の場" : "次の" + p;
+  }
+  function cleanMap(m) {
+    const out = { lost: [], confusion: [], accepted: [], next: [] };
+    const norm = (x) => x.replace(/[\s、。，．,.!！?？「」『』…・]/g, "");
+    const said = norm(userText());
+    for (const k of Object.keys(out)) {
+      const prev = (state.map && state.map[k]) || [];
+      const fresh = m && typeof m === "object" && Array.isArray(m[k]) ? m[k] : [];
+      const all = [...prev, ...fresh].filter((x) => typeof x === "string" && x.trim()).map((x) => x.trim().replace(/^[「『]|[」』]$/g, "").slice(0, 20));
+      // 相手が実際に書いた言葉の一部だけを残す（言い換えは捨てる）。一度置いた言葉は消さない
+      out[k] = [...new Set(all)].filter((x) => norm(x) && said.includes(norm(x))).slice(0, 5);
+    }
+    return out;
+  }
+  function explainError(e) {
+    const code = e && e.code;
+    if (code === "not_granted") return "AIの利用が許可されていません。ページの権限のメニューから許可すると、対話できます。";
+    if (code === "rate_limited" && e.reason === "usage_limit") return "Claude の利用枠を使い切りました。今日はここまでにしましょう。書いた言葉は、この画面に残っています。";
+    if (code === "rate_limited") return "いま混んでいます。少し待ってから、もう一度送ってください。";
+    if (code === "refused") return "この内容には、AIが応えられませんでした。言い方を変えて、もう一度書いてみてください。";
+    return "AIにつながりませんでした。少し待ってから、もう一度送ってください。";
+  }
+
+  async function askAI(prompt) {
+    if (!sample) throw { code: "unavailable" };
+    bumpUsage({ aiCalls: 1 });
+    return await sample.json(prompt, { cache: false });
+  }
+
+  async function send() {
+    const input = $("input");
+    const text = input.value.trim();
+    if (!text || state.busy) return;
+    if (!sample) { addNotice("このページでAIと話すには、Claude にサインインした状態でページを開いてください。"); return; }
+    input.value = ""; autoGrow();
+    addMsg("me", text);
+    if (state.userTurns === 0) { state.moment = text; showTrigger(); }
+    state.turns.push({ role: "user", content: text });
+    state.userTurns++;
+    if (!state.sessionCounted) { state.sessionCounted = true; bumpUsage({ sessions: 1, ...(state.place ? { triggerPlace: state.place } : {}), ...(state.topic ? { triggerTopic: state.topic } : {}), ...(state.whoList && state.whoList.length ? { triggerWho: state.whoList } : {}) }); leaveTrace("talk"); setStage("talking"); }
+    state.busy = true; updateTurnInfo();
+    const thinking = addMsg("ai thinking", "考えています…");
+    try {
+      const res = await askAI(`${ROLE}\n\n# 場面メモ（相手が選択肢から選んだもの。なぞらない）\n${sceneMemo()}\n\n# いま\n${state.userTurns}往復目（3往復目から物語にできる）\n\n# これまでの対話\n${transcript()}`);
+      thinking.remove();
+      const reply = (res && typeof res.reply === "string" && res.reply.trim()) || "いま書いてくれたことを、もう少し聞かせてください。";
+      state.turns.push({ role: "assistant", content: reply });
+      addMsg("ai", reply);
+      state.map = cleanMap(res && res.map);
+      renderMap();
+      ["accepted", "next"].forEach((k) => { if (state.map[k].length && !reached.has(k)) { reached.add(k); leaveTrace("reach", { station: k }); } });
+      if (res && res.concern === true) crisisNotice();
+      if (state.userTurns === STORY_MIN_TURNS && !state.storyHinted) {
+        state.storyHinted = true;
+        addMsg("ai hint", "ここまでの言葉で、物語と下書きにすることもできます（下の「物語にする」）。もう少し話してからでも大丈夫です。");
+      }
+    } catch (e) {
+      thinking.remove();
+      state.turns.pop(); state.userTurns--;
+      input.value = text; autoGrow();
+      addNotice(explainError(e));
+    } finally {
+      state.busy = false; updateTurnInfo();
+    }
+  }
+
+  async function makeStory() {
+    if (state.busy || state.userTurns < STORY_MIN_TURNS) return;
+    state.busy = true; updateTurnInfo();
+    const thinking = addMsg("ai thinking", "あなたの言葉から、物語と下書きを組み立てています…");
+    const prompt = `あなたは「喪失と再生の酒場」というアプリで、ひとり対話を終えた人のために、2つの文章を組み立てます。
+材料は、下の対話の「相手：」の言葉だけです。「マスター：」の言い換えや問いの言葉は材料にしません。相手が言っていないこと、一般論、励まし、教訓、自己評価、AIについての解説は足しません。
+- 相手の語彙と言い回しをそのまま使う。並べ替えてよいが、断定を強めない（「言えたらよかった」を「寂しかった」にしない）。
+- つなぎに使ってよいのは「そして」「でも」「いまは」などの接続語だけ。「〜なのだと思う」「〜かもしれない」は相手が言った場合だけ使う。
+- 一人称は相手が使ったもの（俺／私／自分など）。相手が使っていなければ省く。
+- 字数を満たすために足さない。材料が少なければ短くてよい。
+
+1. story：喪失と再生の物語。失ったもの → そのときの戸惑いと防衛 → 受け止めたこと → これからの自分、の順。材料の量に応じて100〜400字。まだ語られていない段があれば、最後に1回だけ「その先は、まだ言葉になっていない。」と書く。
+2. draft：打ち明けの下書き。${placeLabel()}で、${state.who ? state.who + "のうちの誰か" : "周りの誰か"}に話すときの話し言葉。60〜200字。立派に聞こえるより、ありのままに聞こえることを優先する。防衛的な言葉（「人にしかできないのは〜」など）は主張として書かず、「〜と言ってしまった」「〜にしがみついてたのかも」のように、そう言った自分として書く。眠れないなど体調や落ち込みの話は、draft には入れない（打ち明けるかは本人が決める）。
+
+強い落ち込みのサイン（眠れない日が続く、仕事に行けない、消えたい等）が対話にあれば concern を true にする。
+出力は次の JSON だけ：{"story": "", "draft": "", "concern": false}
+
+# 場面メモ（相手が選択肢から選んだもの。文章の材料にはしない）
+${sceneMemo()}
+
+# 対話
+${transcript()}`;
+    try {
+      const res = await askAI(prompt);
+      thinking.remove();
+      $("story").value = (res && res.story) || "";
+      $("draft").value = (res && res.draft) || "";
+      $("story-card").hidden = false;
+      $("save-status").textContent = "";
+      setStage("story");
+      addMsg("ai", "黒板に、あなたの言葉から組み立てた物語と下書きを置きました。違うところは、あなたの言葉に直してください。直したら、自分だけのボトルに残せます。");
+      if (res && res.concern === true) crisisNotice();
+      showPanel("map");
+      if (matchMedia("(max-width: 820px)").matches) setMobile("panel");
+      $("story-card").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    } catch (e) {
+      thinking.remove();
+      addNotice(explainError(e));
+    } finally {
+      state.busy = false; updateTurnInfo();
+    }
+  }
+
+  // ---------- 保存と記録 ----------
+  async function save() {
+    const story = $("story").value.trim(), draft = $("draft").value.trim();
+    if (!story && !draft) { $("save-status").textContent = "物語か下書きを書いてから保存してください。"; return; }
+    if (!db || !uid) { $("save-status").textContent = "保存できない状態です。「下書きをコピー」で手元に残してください。"; return; }
+    $("save").disabled = true; $("save-status").textContent = "保存しています…";
+    try {
+      await db.collection("data/users/" + uid + "/stories").add({ story, draft, topic: state.topic || "", place: state.place || "", createdAt: new Date().toISOString(), confidedAt: null, confidedPlace: null });
+      bumpUsage({ storiesSaved: 1 });
+      leaveTrace("story");
+      $("save-status").textContent = "ボトルに残しました。「ボトルキープ」から、いつでも読めます。";
+    } catch (e) {
+      $("save-status").textContent = "保存できませんでした。「下書きをコピー」で手元に残してください。";
+    } finally { $("save").disabled = false; }
+  }
+
+  async function copyText(text, statusEl) {
+    try { await navigator.clipboard.writeText(text); statusEl.textContent = "コピーしました。"; }
+    catch (e) { statusEl.textContent = "コピーできませんでした。文章を選んでコピーしてください。"; }
+  }
+
+  function fmt(iso) { if (!iso) return ""; const d = new Date(iso); return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`; }
+
+  function renderRecords(docs) {
+    const box = $("records");
+    box.textContent = "";
+    if (!docs.length) {
+      const e = el("div", "empty");
+      e.appendChild(el("div", null, "まだ記録はありません。"));
+      e.appendChild(el("div", null, "左の対話で言葉にして、物語にしたら保存できます。"));
+      box.appendChild(e);
+      return;
+    }
+    docs.forEach((d) => {
+      const v = d.data() || {};
+      const r = el("div", "rec");
+      const head = el("div", "rec-head");
+      head.appendChild(el("span", null, `${fmt(v.createdAt)} 作成${v.topic ? "・" + v.topic : ""}${v.place ? "・" + v.place : ""}`));
+      if (v.confidedAt) head.appendChild(el("span", "badge", `${fmt(v.confidedAt)} ${v.confidedPlace || ""}で打ち明けた`));
+      r.appendChild(head);
+      r.appendChild(el("div", "rec-draft", v.draft || "（下書きなし）"));
+      if (v.story) { const det = el("details"); det.appendChild(el("summary", null, "物語を読む")); det.appendChild(el("div", "story-text", v.story)); r.appendChild(det); }
+      const status = el("span", "note");
+      const row = el("div", "row");
+      const cp = el("button", "btn ghost small", "下書きをコピー");
+      cp.addEventListener("click", () => copyText(v.draft || "", status));
+      row.appendChild(cp);
+      if (!v.confidedAt) {
+        const cb = el("button", "btn dawn small", "打ち明けた");
+        cb.addEventListener("click", () => openConfide(r, d.id, v, cb));
+        row.appendChild(cb);
+      }
+      const del = el("button", "btn ghost small", "消す");
+      del.addEventListener("click", () => {
+        if (del.dataset.confirm) {
+          db.doc("data/users/" + uid + "/stories/" + d.id).delete().catch(() => { status.textContent = "消せませんでした。"; });
+        } else { del.dataset.confirm = "1"; del.textContent = "本当に消す"; status.textContent = "もう一度押すと消えます。元に戻せません。"; }
+      });
+      row.appendChild(del);
+      row.appendChild(status);
+      r.appendChild(row);
+      box.appendChild(r);
+    });
+  }
+
+  function openConfide(card, id, v, trigger) {
+    if (card.querySelector(".confide-form")) return;
+    trigger.disabled = true;
+    const f = el("div", "confide-form");
+    f.appendChild(el("div", "note", "どの場で打ち明けましたか。"));
+    const chips = el("div", "chips");
+    let chosen = null;
+    PLACES.forEach((p) => {
+      const b = el("button", "chip", p);
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", () => { chosen = p; chips.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", String(c === b))); ok.disabled = false; });
+      chips.appendChild(b);
+    });
+    f.appendChild(chips);
+    const row = el("div", "row");
+    const lab = el("label", "note", "日付"); lab.htmlFor = "date-" + id;
+    const date = el("input"); date.type = "date"; date.id = "date-" + id; date.value = today(); date.max = today();
+    const ok = el("button", "btn dawn small", "記録する"); ok.disabled = true;
+    const cancel = el("button", "btn ghost small", "やめる");
+    cancel.addEventListener("click", () => { f.remove(); trigger.disabled = false; });
+    ok.addEventListener("click", async () => {
+      ok.disabled = true;
+      const when = new Date(date.value + "T12:00:00").toISOString();
+      try {
+        await db.doc("data/users/" + uid + "/stories/" + id).update({ confidedAt: when, confidedPlace: chosen });
+        bumpUsage({ confided: 1, confidedEntry: { place: chosen, date: date.value, storyCreatedAt: v.createdAt || null } });
+        leaveTrace("confided");
+      } catch (e) { ok.disabled = false; f.appendChild(el("div", "note", "記録できませんでした。少し待ってから、もう一度押してください。")); }
+    });
+    row.appendChild(lab); row.appendChild(date); row.appendChild(ok); row.appendChild(cancel);
+    f.appendChild(row);
+    card.appendChild(f);
+  }
+
+  // ---------- 表示の切り替え ----------
+  function showPanel(which) {
+    $("view-map").style.display = which === "map" ? "flex" : "none";
+    $("view-rec").hidden = which !== "rec";
+    $("pt-map").setAttribute("aria-selected", String(which === "map"));
+    $("pt-rec").setAttribute("aria-selected", String(which === "rec"));
+  }
+  function setMobile(view) {
+    $("main").dataset.view = view;
+    $("mt-chat").setAttribute("aria-selected", String(view === "chat"));
+    $("mt-panel").setAttribute("aria-selected", String(view === "panel"));
+  }
+  function autoGrow() { const t = $("input"); t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 180) + "px"; }
+
+  $("pt-map").addEventListener("click", () => { showPanel("map"); setStage(!$("story-card").hidden ? "story" : state.sessionCounted ? "talking" : "here"); });
+  $("pt-rec").addEventListener("click", () => { showPanel("rec"); setStage("records"); });
+  $("mt-chat").addEventListener("click", () => setMobile("chat"));
+  $("strip").addEventListener("click", () => { setMobile("panel"); showPanel("map"); });
+  $("mt-panel").addEventListener("click", () => setMobile("panel"));
+  $("send").addEventListener("click", send);
+  $("tostory").addEventListener("click", makeStory);
+  $("save").addEventListener("click", save);
+  $("copy").addEventListener("click", () => copyText($("draft").value, $("save-status")));
+  $("input").addEventListener("input", () => { autoGrow(); setTyping(); });
+  $("input").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send(); } });
+  $("start").addEventListener("click", () => { $("intro").hidden = true; $("input").focus(); });
+  $("about").addEventListener("click", () => { $("intro").hidden = false; $("intro").scrollTop = 0; });
+  $("whatkept").addEventListener("click", () => { $("intro").hidden = false; $("safety").scrollIntoView({ block: "start" }); });
+
+  // ---------- 起動 ----------
+  opening(); renderMap(); updateTurnInfo(); renderRecords([]); renderAura(); showTrigger();
+
+  (async () => {
+    const use = window.claude && window.claude.use;
+    if (!use) { $("intro").hidden = false; return; }
+    const [s, d, u, r] = await Promise.all([use("sample"), use("db"), use("user"), use("room")]);
+    sample = s; db = d; room = r;
+    if (room) {
+      room.onPeers((change) => { peers = change.peers.slice(); renderAura(); });
+      room.presence({ stage: myStage, typing: false }).catch(() => {});
+    }
+    if (db) {
+      $("presence").hidden = false;
+      const since = new Date(); since.setDate(since.getDate() - 6);
+      db.collection("traces").where("day", ">=", dayStr(since)).onSnapshot(
+        (snap) => { traces = snap.docs.map((x) => ({ id: x.id, ...(x.data() || {}) })); renderTraces(); },
+        () => {}
+      );
+      renderTraces();
+    } else if (room) { $("presence").hidden = false; renderTraces(); }
+    if (u) { try { uid = await u.id(); } catch (e) { uid = null; } }
+    let firstTime = true;
+    if (db && uid) {
+      try { const snap = await db.doc("usage/" + uid).get(); firstTime = !snap.exists; } catch (e) {}
+      const timer = setTimeout(() => { if (!$("records").children.length) renderRecords([]); }, 10000);
+      db.collection("data/users/" + uid + "/stories").orderBy("createdAt", "desc").onSnapshot(
+        (snap) => { clearTimeout(timer); renderRecords(snap.docs); },
+        () => { clearTimeout(timer); $("records").textContent = ""; $("records").appendChild(el("div", "empty", "記録を読み込めませんでした。")); }
+      );
+    } else {
+      $("records").textContent = "";
+      $("records").appendChild(el("div", "empty", "記録を残すには、Claude にサインインした状態でページを開いてください。物語と下書きは、コピーして手元に残せます。"));
+    }
+    if (firstTime) $("intro").hidden = false;
+    else { const first = log.querySelector(".msg.ai .text"); if (first) first.textContent = first.textContent.replace("いらっしゃい。", "おかえりなさい。"); }
+    if (!sample) addNotice("このページでAIと話すには、Claude にサインインした状態でページを開いてください。");
+  })();
+})();
+</script>
