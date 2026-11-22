@@ -204,6 +204,17 @@ button { cursor: pointer; }
 @media (max-width: 520px) { .intro h1 { font-size: 22px; } }
 .about { display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid var(--line); }
 .about h2 { margin: 0; font-family: var(--font-story); font-weight: 600; font-size: 18px; color: var(--accent); letter-spacing: .04em; text-wrap: balance; }
+.keep-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.keep { border-radius: var(--radius); padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.keep p { font-size: 14px; }
+.keep-tag { font-weight: 700; font-size: 14px; }
+.keep.none .keep-tag { color: var(--fg); }
+.keep.mine { border-color: var(--dawn); }
+.keep.mine .keep-tag { color: var(--dawn); }
+.keep.count .keep-tag, .keep.seen .keep-tag { color: var(--accent); }
+.fine { margin: 0; padding-left: 1.2em; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.linkish { background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; font-size: 12px; }
+.linkish:hover { color: var(--accent); }
 .flow { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 8px; }
 .flow b { display: block; font-weight: 700; }
 .aboutbtn { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 12px; font-size: 12px; color: var(--muted); }
@@ -245,7 +256,7 @@ button { cursor: pointer; }
             <button class="btn" id="send">送る</button>
           </div>
           <div class="composer-meta">
-            <span id="turninfo">対話の中身は、どこにも保存されません</span>
+            <span><span id="turninfo">対話の中身は、どこにも保存されません</span> <button class="linkish" id="whatkept">何が残る？</button></span>
             <button class="btn dawn small" id="tostory" disabled>物語にする</button>
           </div>
         </div>
@@ -348,17 +359,31 @@ button { cursor: pointer; }
       <p>カウンターには、ほかの客もいます。名前も言葉も見えませんが、いま誰かが座っていること、この7日間に誰かがここで言葉を探し、打ち明けたことが、灯りとグラスの跡で分かります。言葉にできずにいるのは、あなただけではありません。</p>
     </section>
 
-    <div class="card">
-      <label>残るもの・残らないもの</label>
-      <ul>
-        <li>対話の中身は、どこにも保存しません。画面を閉じると消えます。</li>
-        <li>あなたが保存した物語と下書きは、あなただけが読める場所に残ります。このアプリの持ち主も読めない設定です。</li>
-        <li>ただし、持ち主はアプリを作り変えられる立場にあります。作り変えれば読めるようになる、ということは知っておいてください。</li>
-        <li>ほかの客には、いま誰かがカウンターにいることと、この7日間に対話・物語・打ち明けがあったことだけが、名前も言葉もない灯りとして見えます。時刻は残さず、日付だけです。</li>
-        <li>持ち主が数えるのは、使った日・回数・AIを呼んだ回数・「打ち明けた」を押した場と日付だけです。</li>
-        <li>AIは、あなた自身の Claude の利用枠を使います。最初に許可を求める画面が出ます。</li>
+    <section class="about" id="safety">
+      <h2>安心して話せるように：残るもの、残らないもの</h2>
+      <div class="keep-grid">
+        <div class="keep none">
+          <div class="keep-tag">どこにも残らない</div>
+          <p>マスターとの対話、思い出した場面のメモ（飲み込んだ瞬間）。画面を閉じると消えます。</p>
+        </div>
+        <div class="keep mine">
+          <div class="keep-tag">あなただけに残る</div>
+          <p>「自分だけのボトルに残す」を押した物語と下書きだけ。持ち主にも、ほかの客にも読めない設定です。ボトルキープから、いつでも消せます。</p>
+        </div>
+        <div class="keep count">
+          <div class="keep-tag">持ち主が数える（回数と日付だけ）</div>
+          <p>来た日、対話の回数、マスターを呼んだ回数、選んだ場・そこにいた人・話題ごとの回数、「打ち明けた」の場と日付。言葉や名前は含みません。</p>
+        </div>
+        <div class="keep seen">
+          <div class="keep-tag">ほかの客に見える（灯りだけ）</div>
+          <p>いまカウンターに誰かがいること、この7日間に対話・物語・打ち明けがあったこと。名前も言葉も時刻も見えません。</p>
+        </div>
+      </div>
+      <ul class="fine">
+        <li>マスターの返事を作るため、対話はあなた自身の Claude に送られ、あなたの Claude の設定のとおりに扱われます。最初に許可を求める画面が出ます。</li>
+        <li>このアプリの持ち主は、アプリを作り変えられる立場にあります。作り変えれば、いま読めないものを読めるようにすることも、仕組みの上ではできます。このことは知っておいてください。</li>
       </ul>
-    </div>
+    </section>
     <div class="notice warn"><strong>つらさが強いときは</strong><br>眠れない、仕事に行けない、消えてしまいたいと感じるときは、このアプリではなく専門の窓口に相談してください。</div>
     <div><button class="btn" id="start">カウンターに座る</button></div>
   </div>
@@ -861,6 +886,7 @@ ${transcript()}`;
   $("input").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send(); } });
   $("start").addEventListener("click", () => { $("intro").hidden = true; $("input").focus(); });
   $("about").addEventListener("click", () => { $("intro").hidden = false; $("intro").scrollTop = 0; });
+  $("whatkept").addEventListener("click", () => { $("intro").hidden = false; $("safety").scrollIntoView({ block: "start" }); });
 
   // ---------- 起動 ----------
   opening(); renderMap(); updateTurnInfo(); renderRecords([]); renderAura(); showTrigger();
