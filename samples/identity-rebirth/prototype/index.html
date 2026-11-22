@@ -218,6 +218,8 @@ button { cursor: pointer; }
 .flow { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 8px; }
 .flow b { display: block; font-weight: 700; }
 .aboutbtn { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 12px; font-size: 12px; color: var(--muted); }
+.aboutbtn .short-hide { display: none; }
+@media (max-width: 820px) { .aboutbtn .short-hide { display: inline; } .aboutbtn { padding: 4px 10px; } }
 .aboutbtn:hover { color: var(--accent); border-color: var(--accent); }
 .barright { display: flex; align-items: center; gap: 10px; }
 .intro ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
@@ -230,7 +232,25 @@ button { cursor: pointer; }
   .main[data-view="panel"] .chat { display: none; }
   .brand small { display: none; }
   .aura #aura-text { display: none; }
+  .brand { font-size: 16px; letter-spacing: .06em; white-space: nowrap; }
+  .mtabs button, .aboutbtn { white-space: nowrap; }
+  .aboutbtn .long { display: none; }
+  .bar { gap: 8px; }
+  .barright { gap: 6px; }
+  .strip { display: flex; }
 }
+.strip {
+  display: none; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 11px; color: var(--muted);
+  padding-block: 6px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  border: 0; border-bottom: 1px solid var(--line); background: var(--bg); width: 100%; text-align: left; flex-wrap: nowrap; overflow: hidden; white-space: nowrap;
+}
+.strip .st { display: inline-flex; align-items: center; gap: 3px; }
+.strip .st i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--muted); display: inline-block; }
+.strip .st.on i { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.strip .st.on.next i { background: var(--dawn); border-color: var(--dawn); box-shadow: 0 0 6px var(--dawn); }
+.strip .go { margin-left: auto; color: var(--accent); }
+.msg.hint .text { color: var(--muted); font-size: 14px; }
+@media (max-width: 820px) { .strip { display: flex; } }
 </style>
 
 <div class="app">
@@ -238,16 +258,17 @@ button { cursor: pointer; }
     <div class="brand">喪失と再生の酒場<small>試作品</small></div>
     <div class="aura" id="aura-bar" hidden title="いまここにいる、ほかの人の気配"><span class="lights" id="aura-lights"></span><span id="aura-text"></span></div>
     <div class="barright">
-    <button class="aboutbtn" id="about">この酒場について</button>
+    <button class="aboutbtn" id="about"><span class="long">この酒場について</span><span class="short-hide">？</span></button>
     <div class="mtabs" role="tablist" aria-label="表示の切り替え">
       <button id="mt-chat" role="tab" aria-selected="true">対話</button>
-      <button id="mt-panel" role="tab" aria-selected="false">地図と記録</button>
+      <button id="mt-panel" role="tab" aria-selected="false">黒板</button>
     </div>
     </div>
   </header>
 
   <div class="main" id="main" data-view="chat">
     <section class="chat" aria-label="ひとり対話">
+      <button class="strip" id="strip" aria-label="喪失の地図を見る"></button>
       <div class="log" id="log" aria-live="polite"></div>
       <div class="composer">
         <div class="composer-inner">
@@ -635,7 +656,18 @@ button { cursor: pointer; }
   }
 
   // ---------- 地図 ----------
+  function renderStrip() {
+    const box = $("strip"); box.textContent = "";
+    STATIONS.forEach((st) => {
+      const on = (state.map[st.key] || []).length > 0;
+      const sp = el("span", "st" + (on ? " on" : "") + (st.key === "next" ? " next" : ""));
+      sp.appendChild(el("i")); sp.appendChild(el("span", null, ({ lost: "失ったもの", confusion: "戸惑い", accepted: "受け止め", next: "これから" })[st.key]));
+      box.appendChild(sp);
+    });
+    box.appendChild(el("span", "go", "黒板 →"));
+  }
   function renderMap() {
+    renderStrip();
     const map = $("map");
     map.textContent = "";
     let any = false;
@@ -655,32 +687,62 @@ button { cursor: pointer; }
   }
 
   // ---------- AI ----------
-  const ROLE = `あなたは「喪失と再生の酒場」というアプリの、カウンターの向こうにいる寡黙なマスターです。このアプリは、打ち明ける前の準備運動の場です。口調は落ち着いた丁寧語で、短く。お酒を勧めたり、お酒の話をしたりはしない。相手は、プロダクト開発に関わる仕事（アジャイルコーチ、スクラムマスター、エンジニア、PM、デザイナーなど）をしていて、AIの登場や、それ以外の仕事の変化（人間関係、キャリア、仕事内容など）で、自分が仕事で大切にしていたことを失った人です。ふりかえり・1on1・コミュニティ・飲み会などの場で、戸惑いを言葉にできなかった、その直後に来ています。最初に、相手が思い出した「話せなかった場面」（場、そこにいた人、話題）が渡され、続けて相手が、言葉を飲み込んだ瞬間を書きます。最初の何往復かは、その場面を具体的に思い出す手伝いをする（そのとき誰が何を言ったか、自分は何を言いかけたか、体はどうなっていたか）。場面を決めつけず、相手の言葉から入ります。
+  const ROLE = `あなたは「喪失と再生の酒場」というアプリの、カウンターの向こうにいる寡黙なマスターです。このアプリは、打ち明ける前の準備運動の場です。口調は落ち着いた丁寧語で、短く。お酒を勧めたり、お酒の話をしたりはしない。
+相手は、プロダクト開発に関わる仕事（アジャイルコーチ、スクラムマスター、エンジニア、PM、デザイナーなど）をしていて、AIの登場や、それ以外の仕事の変化で、自分が仕事で大切にしていたことを失った人です。開発中・新規の企画・ふりかえり・1on1・コミュニティ・飲み会などの場で、戸惑いを言葉にできず、そのあとここに来ています。
 目的は、相手が喪失をその過程ごと受け入れ、防衛的なポジショントークから降り、自分を一歩引いて見て、次の場で誰かに話す準備ができることです。ハンナ・アーレントの考えに立ちます。異なる他者のあいだで言葉を交わす「活動」の前に、まず「私と私自身との声のない対話」として考える場を開く。言葉はあくまで相手のものにします。哲学の解説はしない。
 
-あなたの役は「問い」と「言い換え」だけです。
-- 毎回、相手の直前の言葉を、相手の語彙をできるだけ残して1文で言い換えて確かめ（「〜ということでしょうか」）、そのあと短い問いを1つだけ出す。
-- 問いは、起きた出来事・そのときの気持ち・守ろうとしたもの・失ったもの・それでも残っているもの・これから持っていくもの、の順に、相手のペースで少しずつ進める。急がない。
-- 一般論の励まし、助言、評価、AIについての解説、「大丈夫です」「素晴らしい」などの言葉は使わない。答えを先回りしない。
-- 相手を責めず、防衛的な言葉も、その人が守ろうとしたものとして受け止める。たとえば「人にしかできないことは〇〇だ」という言説が出たら、その是非を議論せず、そう言いたくなったときに守りたかったものを尋ねる。
-- 返事は日本語で、全体で120字以内。
-- 眠れない、仕事に行けない、消えたい、など強い落ち込みのサインがあれば concern を true にし、reply では問いを止めて、話してくれたことを受け止める1文だけにする。
+# 返事の作り方
+- 返事は「受け止め」＋「問い1つ」。受け止めは40字以内で、相手の言葉を1〜2語だけ拾って置き直すだけでもよい（例：「十年、なのですね。」）。語尾は毎回変える（〜なのですね／〜と。／〜ということでしょうか、など）。問いは40字以内。全体で80字前後、120字を上限にする。
+- 一般論の励まし、助言、評価、AIについての解説、「大丈夫です」「素晴らしい」は使わない。
+- 「〜は何ですか」と詰める問いを続けない。ときどき「もしよければ」「答えにくければ飛ばしてください」を添える。
+- 相手を責めない。言い直しや矛盾を指摘しない。両方の言葉を並べて返すまでにとどめ、どちらから話すかは相手に選んでもらう（例：「居場所、と、チームのため。どちらから話しますか。」）。
+- 防衛的な言葉も、その人が守ろうとしたものとして受け止める。たとえば「人にしかできないことは〇〇だ」という言説が出たら、その是非を議論せず、そう言いたくなったときに守りたかったものを尋ねる。
+- 相手がアプリや問いそのものに疑問を言ったら（「これ何の意味あるの」など）、言い換えずに「ここは、誰かに話す前に、自分の言葉を確かめておく場です。」と1文で答え、一語でも答えられる問いを出す。選択肢を2〜3個示してよい（例：「近いのは、悔しい・寂しい・腹が立つ、のどれですか。」）。このときだけは選択肢を出すことを先回りとみなさない。
+- 返事が一語や「別に」「特に」のときは、なぞらずに、具体的な場面に戻る短い問いにする。
 
-あわせて「喪失の地図」を更新します。4つの欄に、相手がこれまでに実際に使った言葉の断片（各20字以内、相手の言葉そのまま、言い換えない）を入れます。まだ出ていない欄は空の配列にします。各欄は最大5つ。地図は毎回、全体を返します。
+# 進め方（「# いま」に往復の数が書いてある）
+- 1〜2往復目：場面を具体的にする（誰が何を言ったか、自分は何を言いかけたか）。体の反応を聞くのは2往復目以降に、ときどきだけ。
+- 3往復目以降：相手が答えられそうなら、失ったもの → それでも残っているもの、へ一段ずつ進める。
+- 5往復目前後で一度、「次の場で、誰に、どの一言なら言えそうか」を尋ねる。相手が止まっていれば、前の段に戻ってよい。急がない。
+- 「# 場面メモ」は相手が選択肢から選んだもの。参考にするだけで、なぞったり言い換えたりしない。
+
+# 強い落ち込みのサイン
+- concern は、直前の相手の発言に強い落ち込みのサイン（眠れない日が続く、仕事に行けない、消えたい等）があるときだけ true にする。
+- そのターンの reply は、受け止める1文と「続けるか、ここで止めるかは、あなたが決めて大丈夫です。」の1文にする（問いは出さない）。
+- 次のターンで相手が続けたら concern は false に戻し、相手が戻った話題から再開する。
+
+# 喪失の地図
+4つの欄に、相手の発言から連続した部分をそのまま切り出した断片を入れる（20字以内。語尾も変えない。長ければ途中で切るだけで、要約や言い換えをしない）。相手以外の人のセリフは入れない。一度入れた断片は消さない。各欄は最大5つ。地図は毎回、全体を返す。
 - lost：失ったもの、出番がなくなったこと
 - confusion：戸惑い、防衛、守ろうとしたもの
-- accepted：受け止めたこと、認められたこと
-- next：これから持っていくもの、試すこと
+- accepted：相手が自分で認める言い方（「事実」「認めたくないけど」「かも」など）をした断片だけ
+- next：これから持っていくもの、試したいこと、言いたい一言
 
 出力は次の JSON だけ（前後に文章を付けない）：
-{"reply": "言い換え1文＋問い1つ", "map": {"lost": [], "confusion": [], "accepted": [], "next": []}, "concern": false}`;
+{"reply": "受け止め＋問い1つ（concern のときは受け止め＋止めてよい旨）", "map": {"lost": [], "confusion": [], "accepted": [], "next": []}, "concern": false}`;
 
   function transcript() {
-    return state.turns.map((t) => (t.role === "user" ? "相手：" : "あなた：") + t.content).join("\n");
+    return state.turns.map((t) => (t.role === "user" ? "相手：" : "マスター：") + t.content).join("\n");
+  }
+  function sceneMemo() {
+    return `場：${state.place || "未選択"}／そこにいた人：${state.who || "未選択"}／話題：${state.topic || "未選択"}`;
+  }
+  function userText() { return state.turns.filter((t) => t.role === "user").map((t) => t.content).join("\n"); }
+  function placeLabel() {
+    const p = state.place;
+    return !p || p === "その他" ? "次に話せそうな場" : p === "開発中" ? "開発の中" : p === "新規の企画" ? "次の企画の場" : "次の" + p;
   }
   function cleanMap(m) {
     const out = { lost: [], confusion: [], accepted: [], next: [] };
-    if (m && typeof m === "object") for (const k of Object.keys(out)) if (Array.isArray(m[k])) out[k] = m[k].filter((x) => typeof x === "string" && x.trim()).slice(0, 5).map((x) => x.trim().slice(0, 30));
+    const norm = (x) => x.replace(/[\s、。，．,.!！?？「」『』…・]/g, "");
+    const said = norm(userText());
+    for (const k of Object.keys(out)) {
+      const prev = (state.map && state.map[k]) || [];
+      const fresh = m && typeof m === "object" && Array.isArray(m[k]) ? m[k] : [];
+      const all = [...prev, ...fresh].filter((x) => typeof x === "string" && x.trim()).map((x) => x.trim().replace(/^[「『]|[」』]$/g, "").slice(0, 20));
+      // 相手が実際に書いた言葉の一部だけを残す（言い換えは捨てる）。一度置いた言葉は消さない
+      out[k] = [...new Set(all)].filter((x) => norm(x) && said.includes(norm(x))).slice(0, 5);
+    }
     return out;
   }
   function explainError(e) {
@@ -705,7 +767,6 @@ button { cursor: pointer; }
     if (!sample) { addNotice("このページでAIと話すには、Claude にサインインした状態でページを開いてください。"); return; }
     input.value = ""; autoGrow();
     addMsg("me", text);
-    if (state.userTurns === 0 && (state.place || state.topic || state.who)) state.turns.push({ role: "user", content: `（話せなかった場面：場＝${state.place || "未選択"}／そこにいた人＝${state.who || "未選択"}／話題＝${state.topic || "未選択"}）` });
     if (state.userTurns === 0) { state.moment = text; showTrigger(); }
     state.turns.push({ role: "user", content: text });
     state.userTurns++;
@@ -713,7 +774,7 @@ button { cursor: pointer; }
     state.busy = true; updateTurnInfo();
     const thinking = addMsg("ai thinking", "考えています…");
     try {
-      const res = await askAI(`${ROLE}\n\n# これまでの対話\n${transcript()}`);
+      const res = await askAI(`${ROLE}\n\n# 場面メモ（相手が選択肢から選んだもの。なぞらない）\n${sceneMemo()}\n\n# いま\n${state.userTurns}往復目（3往復目から物語にできる）\n\n# これまでの対話\n${transcript()}`);
       thinking.remove();
       const reply = (res && typeof res.reply === "string" && res.reply.trim()) || "いま書いてくれたことを、もう少し聞かせてください。";
       state.turns.push({ role: "assistant", content: reply });
@@ -722,6 +783,10 @@ button { cursor: pointer; }
       renderMap();
       ["accepted", "next"].forEach((k) => { if (state.map[k].length && !reached.has(k)) { reached.add(k); leaveTrace("reach", { station: k }); } });
       if (res && res.concern === true) crisisNotice();
+      if (state.userTurns === STORY_MIN_TURNS && !state.storyHinted) {
+        state.storyHinted = true;
+        addMsg("ai hint", "ここまでの言葉で、物語と下書きにすることもできます（下の「物語にする」）。もう少し話してからでも大丈夫です。");
+      }
     } catch (e) {
       thinking.remove();
       state.turns.pop(); state.userTurns--;
@@ -736,15 +801,21 @@ button { cursor: pointer; }
     if (state.busy || state.userTurns < STORY_MIN_TURNS) return;
     state.busy = true; updateTurnInfo();
     const thinking = addMsg("ai thinking", "あなたの言葉から、物語と下書きを組み立てています…");
-    const place = state.place && state.place !== "その他" ? state.place : "次に話せそうな場";
     const prompt = `あなたは「喪失と再生の酒場」というアプリで、ひとり対話を終えた人のために、2つの文章を組み立てます。
-材料は、下の対話の中の「相手」の言葉だけです。相手が言っていないこと、一般論、励まし、教訓、AIについての解説は足しません。相手の語彙と言い回しをできるだけそのまま使い、つなぎの言葉だけを補います。
+材料は、下の対話の「相手：」の言葉だけです。「マスター：」の言い換えや問いの言葉は材料にしません。相手が言っていないこと、一般論、励まし、教訓、自己評価、AIについての解説は足しません。
+- 相手の語彙と言い回しをそのまま使う。並べ替えてよいが、断定を強めない（「言えたらよかった」を「寂しかった」にしない）。
+- つなぎに使ってよいのは「そして」「でも」「いまは」などの接続語だけ。「〜なのだと思う」「〜かもしれない」は相手が言った場合だけ使う。
+- 一人称は相手が使ったもの（俺／私／自分など）。相手が使っていなければ省く。
+- 字数を満たすために足さない。材料が少なければ短くてよい。
 
-1. story：喪失と再生の物語。一人称（わたし）。失ったもの → そのときの戸惑いと防衛 → 受け止めたこと → これからの自分、の順。250〜400字。まだ語られていない部分は、無理に作らず「まだ言葉になっていない」と正直に書く。
-2. draft：打ち明けの下書き。${place}で、相手が周りの人に話すときの話し言葉。100〜200字。立派に聞こえるより、ありのままに聞こえることを優先する。ポジショントーク（自分にはまだ優位な所がある、という主張）にならないようにする。
+1. story：喪失と再生の物語。失ったもの → そのときの戸惑いと防衛 → 受け止めたこと → これからの自分、の順。材料の量に応じて100〜400字。まだ語られていない段があれば、最後に1回だけ「その先は、まだ言葉になっていない。」と書く。
+2. draft：打ち明けの下書き。${placeLabel()}で、${state.who ? state.who + "のうちの誰か" : "周りの誰か"}に話すときの話し言葉。60〜200字。立派に聞こえるより、ありのままに聞こえることを優先する。防衛的な言葉（「人にしかできないのは〜」など）は主張として書かず、「〜と言ってしまった」「〜にしがみついてたのかも」のように、そう言った自分として書く。眠れないなど体調や落ち込みの話は、draft には入れない（打ち明けるかは本人が決める）。
 
-強い落ち込みのサイン（眠れない、仕事に行けない、消えたい等）が対話にあれば concern を true にする。
+強い落ち込みのサイン（眠れない日が続く、仕事に行けない、消えたい等）が対話にあれば concern を true にする。
 出力は次の JSON だけ：{"story": "", "draft": "", "concern": false}
+
+# 場面メモ（相手が選択肢から選んだもの。文章の材料にはしない）
+${sceneMemo()}
 
 # 対話
 ${transcript()}`;
@@ -885,6 +956,7 @@ ${transcript()}`;
   $("pt-map").addEventListener("click", () => { showPanel("map"); setStage(!$("story-card").hidden ? "story" : state.sessionCounted ? "talking" : "here"); });
   $("pt-rec").addEventListener("click", () => { showPanel("rec"); setStage("records"); });
   $("mt-chat").addEventListener("click", () => setMobile("chat"));
+  $("strip").addEventListener("click", () => { setMobile("panel"); showPanel("map"); });
   $("mt-panel").addEventListener("click", () => setMobile("panel"));
   $("send").addEventListener("click", send);
   $("tostory").addEventListener("click", makeStory);
@@ -931,6 +1003,7 @@ ${transcript()}`;
       $("records").appendChild(el("div", "empty", "記録を残すには、Claude にサインインした状態でページを開いてください。物語と下書きは、コピーして手元に残せます。"));
     }
     if (firstTime) $("intro").hidden = false;
+    else { const first = log.querySelector(".msg.ai .text"); if (first) first.textContent = first.textContent.replace("いらっしゃい。", "おかえりなさい。"); }
     if (!sample) addNotice("このページでAIと話すには、Claude にサインインした状態でページを開いてください。");
   })();
 })();
