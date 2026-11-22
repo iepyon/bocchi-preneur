@@ -101,7 +101,7 @@ AIによって、作るところは速くなった。一方で、次の3つは�
 | 1 調査 | 1 | コンセプトと課題検証 | 🔴＋現場の宿題 | `01-concept.md`、`interview-kit.md` |
 | 2 企画 | 2 | 仕様設計（UXの5レイヤー下3層＋データの重さ） | 🔴/🟡 | `02-spec.md`、`ux-layers.md` |
 | 3 試作 | 3 | 画面設計（骨格） | 🟡 | `03-wireframe.md`、`ux-layers.md`、`disposable-html.md` |
-| | 4 | プロトタイプ実装（Web かアーティファクトを先に） | 🟢 | `04-prototype.md` |
+| | 4 | プロトタイプ実装（まずアーティファクトで動くアプリに。だめなら Web） | 🟢 | `04-prototype.md` |
 | 4 検証 | 5 | 価値検証（行動とコミットで判定） | 🔴＋現場の宿題 | `05-value-test.md`、`interview-kit.md` |
 | | 6 | 価格設計 | 🔴 | `06-pricing.md` |
 | 5 公開 | 7 | 本番実装 | 🟢 | `07-build.md` |
