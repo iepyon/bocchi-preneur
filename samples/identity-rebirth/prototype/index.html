@@ -501,7 +501,10 @@ button { cursor: pointer; }
   }
 
   // ---------- 記録（回数だけ。中身は残さない） ----------
-  async function bumpUsage(patch) {
+  // 数える書き込みは、同時に走ると前の分を上書きしてしまうので、1件ずつ順番に行う
+  let usageQueue = Promise.resolve();
+  function bumpUsage(patch) { usageQueue = usageQueue.then(() => bumpUsageNow(patch)); return usageQueue; }
+  async function bumpUsageNow(patch) {
     if (!db || !uid) return;
     try {
       const ref = db.doc("usage/" + uid);
