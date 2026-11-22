@@ -436,7 +436,7 @@ button { cursor: pointer; }
       if (!days.includes(today())) days.push(today());
       next.days = days;
       for (const [k, v] of Object.entries(patch)) {
-        if (k === "triggerWho") { const t = { ...(cur.triggerWho || {}) }; t[v] = (t[v] || 0) + 1; next.triggerWho = t; }
+        if (k === "triggerWho") { const t = { ...(cur.triggerWho || {}) }; (Array.isArray(v) ? v : [v]).forEach((x) => { t[x] = (t[x] || 0) + 1; }); next.triggerWho = t; }
         else if (k === "triggerTopic") { const t = { ...(cur.triggerTopics || {}) }; t[v] = (t[v] || 0) + 1; next.triggerTopics = t; }
         else if (k === "triggerPlace") { const t = { ...(cur.triggerPlaces || {}) }; t[v] = (t[v] || 0) + 1; next.triggerPlaces = t; }
         else if (k === "confidedEntry") { next.confidedLog = [...(cur.confidedLog || []), v]; }
@@ -485,6 +485,27 @@ button { cursor: pointer; }
     });
     return chips;
   }
+  function multiChipRow(items, onChange, onDone) {
+    const wrap = el("div", "chips");
+    const picked = new Set();
+    const next = el("button", "btn small", "これで次へ");
+    next.disabled = true;
+    items.forEach((p) => {
+      const b = el("button", "chip", p);
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", () => {
+        if (picked.has(p)) picked.delete(p); else picked.add(p);
+        b.setAttribute("aria-pressed", String(picked.has(p)));
+        const list = items.filter((x) => picked.has(x));
+        next.disabled = list.length === 0;
+        onChange(list);
+      });
+      wrap.appendChild(b);
+    });
+    next.addEventListener("click", () => { next.hidden = true; onDone(); });
+    wrap.appendChild(next);
+    return wrap;
+  }
   function sceneCards(onPick) {
     const box = el("div", "scene-cards");
     SCENES.forEach((sc) => {
@@ -510,8 +531,9 @@ button { cursor: pointer; }
       state.place = sc.label; showTrigger();
       $("draft-place").textContent = sc.label === "その他" ? "次の場" : "次の" + sc.label;
       if (asked.who) return; asked.who = true;
-      addMsg("ai", "その場には、誰がいましたか。", chipRow(WHO, (w) => {
-        state.who = w; showTrigger();
+      addMsg("ai", "その場には、誰がいましたか。当てはまるものを、いくつでも選んでください。", multiChipRow(WHO, (list) => {
+        state.who = list.join("・"); state.whoList = list; showTrigger();
+      }, () => {
         if (asked.topic) return; asked.topic = true;
         addMsg("ai", "何の話をしているときでしたか。近いものを選んでください。", chipRow(TOPICS, (t) => {
           state.topic = t; showTrigger();
@@ -607,7 +629,7 @@ button { cursor: pointer; }
     if (state.userTurns === 0) { state.moment = text; showTrigger(); }
     state.turns.push({ role: "user", content: text });
     state.userTurns++;
-    if (!state.sessionCounted) { state.sessionCounted = true; bumpUsage({ sessions: 1, ...(state.place ? { triggerPlace: state.place } : {}), ...(state.topic ? { triggerTopic: state.topic } : {}), ...(state.who ? { triggerWho: state.who } : {}) }); leaveTrace("talk"); setStage("talking"); }
+    if (!state.sessionCounted) { state.sessionCounted = true; bumpUsage({ sessions: 1, ...(state.place ? { triggerPlace: state.place } : {}), ...(state.topic ? { triggerTopic: state.topic } : {}), ...(state.whoList && state.whoList.length ? { triggerWho: state.whoList } : {}) }); leaveTrace("talk"); setStage("talking"); }
     state.busy = true; updateTurnInfo();
     const thinking = addMsg("ai thinking", "考えています…");
     try {
