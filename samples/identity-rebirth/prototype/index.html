@@ -153,6 +153,27 @@ button { cursor: pointer; }
 .badge { display: inline-block; font-size: 12px; border-radius: 999px; padding: 1px 10px; background: var(--dawn-soft); color: var(--dawn); font-weight: 500; }
 .confide-form { display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed var(--line); padding-top: 10px; }
 .confide-form input[type="date"] { border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; background: var(--bg); }
+/* 気配：名前も言葉も出さず、誰かがいる・いたことだけを灯りで見せる */
+.aura { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); min-width: 0; }
+.lights { display: inline-flex; gap: 4px; }
+.light { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); opacity: .85; animation: breathe 3.2s ease-in-out infinite; }
+.light.typing { background: var(--dawn); animation-duration: 1.4s; }
+@keyframes breathe { 0%, 100% { opacity: .35; transform: scale(.85); } 50% { opacity: .95; transform: scale(1); } }
+.presence { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.presence-live { display: flex; gap: 10px; align-items: center; font-size: 14px; }
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; align-items: end; }
+.day { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.day-dots { display: flex; flex-wrap: wrap-reverse; justify-content: center; align-content: flex-start; gap: 3px; min-height: 40px; width: 100%; }
+.tdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; }
+.tdot.talk { background: var(--accent); opacity: .35; }
+.tdot.story, .tdot.reach { background: var(--accent); }
+.tdot.confided { background: var(--dawn); }
+.day-label { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.day.today .day-label { color: var(--fg); font-weight: 700; }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 4px; }
+.trace-line { font-size: 13px; font-family: var(--font-story); }
+@media (prefers-reduced-motion: reduce) { .light { animation: none; } }
 .empty { text-align: center; color: var(--muted); padding: 28px 8px; font-size: 14px; }
 
 /* はじめに */
@@ -173,12 +194,14 @@ button { cursor: pointer; }
   .main[data-view="chat"] .panel { display: none; }
   .main[data-view="panel"] .chat { display: none; }
   .brand small { display: none; }
+  .aura #aura-text { display: none; }
 }
 </style>
 
 <div class="app">
   <header class="bar">
     <div class="brand">打ち明けの準備運動<small>試作品</small></div>
+    <div class="aura" id="aura-bar" hidden title="いまここにいる、ほかの人の気配"><span class="lights" id="aura-lights"></span><span id="aura-text"></span></div>
     <div class="mtabs" role="tablist" aria-label="表示の切り替え">
       <button id="mt-chat" role="tab" aria-selected="true">対話</button>
       <button id="mt-panel" role="tab" aria-selected="false">地図と記録</button>
@@ -204,6 +227,14 @@ button { cursor: pointer; }
 
     <aside class="panel" aria-label="地図と記録">
       <div class="panel-inner">
+        <div class="presence" id="presence" hidden>
+          <div class="section-title">ほかの人の気配</div>
+          <div class="presence-live"><span class="lights" id="live-lights"></span><span id="live-text">いまは、あなただけがここにいます。</span></div>
+          <div class="trace-line" id="trace-line" hidden></div>
+          <div class="week" id="week" aria-label="この7日間の気配"></div>
+          <div class="legend"><span><i class="tdot talk"></i>対話</span><span><i class="tdot story"></i>物語・受け止め</span><span><i class="tdot confided"></i>打ち明けた</span></div>
+          <div class="note">名前も言葉も、ほかの人には見えません。残るのは日付だけです。</div>
+        </div>
         <div class="ptabs" role="tablist" aria-label="右側の表示">
           <button id="pt-map" role="tab" aria-selected="true">喪失の地図</button>
           <button id="pt-rec" role="tab" aria-selected="false">わたしの記録</button>
@@ -251,6 +282,7 @@ button { cursor: pointer; }
         <li>対話の中身は、どこにも保存しません。画面を閉じると消えます。</li>
         <li>あなたが保存した物語と下書きは、あなただけが読める場所に残ります。このアプリの持ち主も読めない設定です。</li>
         <li>ただし、持ち主はアプリを作り変えられる立場にあります。作り変えれば読めるようになる、ということは知っておいてください。</li>
+        <li>ほかの人には、いま誰かがいることと、この7日間に対話・物語・打ち明けがあったことだけが、名前も言葉もない灯りとして見えます。時刻は残さず、日付だけです。</li>
         <li>持ち主が数えるのは、使った日・回数・AIを呼んだ回数・「打ち明けた」を押した場と日付だけです。</li>
         <li>AIは、あなた自身の Claude の利用枠を使います。最初に許可を求める画面が出ます。</li>
       </ul>
@@ -279,7 +311,69 @@ button { cursor: pointer; }
     place: null, turns: [], map: { lost: [], confusion: [], accepted: [], next: [] },
     busy: false, userTurns: 0, sessionCounted: false, concernShown: false, story: null,
   };
-  let sample = null, db = null, uid = null;
+  let sample = null, db = null, uid = null, room = null;
+  let peers = [], traces = [];
+  const myTraceIds = new Set();
+  const reached = new Set();
+  const STAGE_TEXT = { typing: "いま書いています", talking: "言葉を探しています", story: "物語を整えています", records: "記録を読み返しています", here: "ここにいます" };
+
+  // ---------- 気配 ----------
+  let myStage = "here", typingTimer = null;
+  function setStage(stage) { myStage = stage; if (room) room.presence({ stage: myStage, typing: false }).catch(() => {}); }
+  function setTyping() {
+    if (!room) return;
+    room.presence({ stage: myStage, typing: true }).catch(() => {});
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(() => room && room.presence({ typing: false }).catch(() => {}), 3000);
+  }
+  function others() { return peers.filter((p) => !p.isMe && p.kind === "viewer"); }
+  function lightsInto(box, list) {
+    box.textContent = "";
+    list.slice(0, 12).forEach((p, i) => { const l = el("span", "light" + (p.presence && p.presence.typing ? " typing" : "")); l.style.animationDelay = (i * 0.45) + "s"; box.appendChild(l); });
+  }
+  function renderAura() {
+    const os = others();
+    lightsInto($("aura-lights"), os); lightsInto($("live-lights"), os);
+    $("aura-bar").hidden = os.length === 0;
+    $("aura-text").textContent = os.length ? `ほかに${os.length}人` : "";
+    if (!os.length) { $("live-text").textContent = "いまは、あなただけがここにいます。"; return; }
+    const counts = {};
+    os.forEach((p) => { const st = p.presence && p.presence.typing ? "typing" : (p.presence && STAGE_TEXT[p.presence.stage] ? p.presence.stage : "here"); counts[st] = (counts[st] || 0) + 1; });
+    const parts = ["typing", "talking", "story", "records", "here"].filter((k) => counts[k]).map((k) => `${counts[k]}人が${STAGE_TEXT[k]}`);
+    $("live-text").textContent = `いま、ほかに${os.length}人がここにいます。` + (parts.length ? parts.join("、") + "。" : "");
+  }
+  function dayStr(d) { const p = (x) => String(x).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
+  function renderTraces() {
+    const week = $("week"); week.textContent = "";
+    const W = ["日", "月", "火", "水", "木", "金", "土"];
+    const now = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      const ds = dayStr(d);
+      const col = el("div", "day" + (i === 0 ? " today" : ""));
+      const dots = el("div", "day-dots");
+      const list = traces.filter((t) => t.day === ds);
+      const order = { talk: 0, reach: 1, story: 2, confided: 3 };
+      list.sort((a, b) => (order[a.kind] ?? 0) - (order[b.kind] ?? 0)).slice(0, 18).forEach((t) => dots.appendChild(el("span", "tdot " + (order[t.kind] != null ? t.kind : "talk"))));
+      col.appendChild(dots);
+      col.appendChild(el("div", "day-label", i === 0 ? "今日" : W[d.getDay()]));
+      week.appendChild(col);
+    }
+    const todays = traces.filter((t) => t.day === dayStr(now) && !myTraceIds.has(t.id));
+    const pick = todays.find((t) => t.kind === "confided") || todays.find((t) => t.kind === "reach" && t.station === "next") || todays.find((t) => t.kind === "reach") || todays.find((t) => t.kind === "story") || todays.find((t) => t.kind === "talk");
+    const line = $("trace-line");
+    if (!pick) { line.hidden = true; return; }
+    const STN = { accepted: "「受け止めたこと」", next: "「これからの自分」" };
+    line.textContent = pick.kind === "confided" ? "今日、誰かが、どこかの場で打ち明けました。"
+      : pick.kind === "reach" ? `今日、誰かが${STN[pick.station] || "地図の先"}にたどり着きました。`
+      : pick.kind === "story" ? "今日、誰かが自分の物語を書き残しました。"
+      : "今日も、誰かがここで言葉を探していました。";
+    line.hidden = false;
+  }
+  async function leaveTrace(kind, extra) {
+    if (!db) return;
+    try { const ref = await db.collection("traces").add({ kind, day: today(), ...(extra || {}) }); myTraceIds.add(ref.id); } catch (e) {}
+  }
 
   // ---------- 記録（回数だけ。中身は残さない） ----------
   async function bumpUsage(patch) {
@@ -425,7 +519,7 @@ button { cursor: pointer; }
     if (state.userTurns === 0 && state.place) state.turns.push({ role: "user", content: `（きっかけの場：${state.place}）` });
     state.turns.push({ role: "user", content: text });
     state.userTurns++;
-    if (!state.sessionCounted) { state.sessionCounted = true; bumpUsage({ sessions: 1, ...(state.place ? { triggerPlace: state.place } : {}) }); }
+    if (!state.sessionCounted) { state.sessionCounted = true; bumpUsage({ sessions: 1, ...(state.place ? { triggerPlace: state.place } : {}) }); leaveTrace("talk"); setStage("talking"); }
     state.busy = true; updateTurnInfo();
     const thinking = addMsg("ai thinking", "考えています…");
     try {
@@ -436,6 +530,7 @@ button { cursor: pointer; }
       addMsg("ai", reply);
       state.map = cleanMap(res && res.map);
       renderMap();
+      ["accepted", "next"].forEach((k) => { if (state.map[k].length && !reached.has(k)) { reached.add(k); leaveTrace("reach", { station: k }); } });
       if (res && res.concern === true) crisisNotice();
     } catch (e) {
       thinking.remove();
@@ -470,6 +565,7 @@ ${transcript()}`;
       $("draft").value = (res && res.draft) || "";
       $("story-card").hidden = false;
       $("save-status").textContent = "";
+      setStage("story");
       addMsg("ai", "右側に、あなたの言葉から組み立てた物語と下書きを置きました。違うところは、あなたの言葉に直してください。直したら、自分だけの記録に保存できます。");
       if (res && res.concern === true) crisisNotice();
       showPanel("map");
@@ -492,6 +588,7 @@ ${transcript()}`;
     try {
       await db.collection("data/users/" + uid + "/stories").add({ story, draft, place: state.place || "", createdAt: new Date().toISOString(), confidedAt: null, confidedPlace: null });
       bumpUsage({ storiesSaved: 1 });
+      leaveTrace("story");
       $("save-status").textContent = "保存しました。「わたしの記録」から、いつでも読めます。";
     } catch (e) {
       $("save-status").textContent = "保存できませんでした。「下書きをコピー」で手元に残してください。";
@@ -573,6 +670,7 @@ ${transcript()}`;
       try {
         await db.doc("data/users/" + uid + "/stories/" + id).update({ confidedAt: when, confidedPlace: chosen });
         bumpUsage({ confided: 1, confidedEntry: { place: chosen, date: date.value, storyCreatedAt: v.createdAt || null } });
+        leaveTrace("confided");
       } catch (e) { ok.disabled = false; f.appendChild(el("div", "note", "記録できませんでした。少し待ってから、もう一度押してください。")); }
     });
     row.appendChild(lab); row.appendChild(date); row.appendChild(ok); row.appendChild(cancel);
@@ -594,15 +692,15 @@ ${transcript()}`;
   }
   function autoGrow() { const t = $("input"); t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 180) + "px"; }
 
-  $("pt-map").addEventListener("click", () => showPanel("map"));
-  $("pt-rec").addEventListener("click", () => showPanel("rec"));
+  $("pt-map").addEventListener("click", () => { showPanel("map"); setStage(!$("story-card").hidden ? "story" : state.sessionCounted ? "talking" : "here"); });
+  $("pt-rec").addEventListener("click", () => { showPanel("rec"); setStage("records"); });
   $("mt-chat").addEventListener("click", () => setMobile("chat"));
   $("mt-panel").addEventListener("click", () => setMobile("panel"));
   $("send").addEventListener("click", send);
   $("tostory").addEventListener("click", makeStory);
   $("save").addEventListener("click", save);
   $("copy").addEventListener("click", () => copyText($("draft").value, $("save-status")));
-  $("input").addEventListener("input", autoGrow);
+  $("input").addEventListener("input", () => { autoGrow(); setTyping(); });
   $("input").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send(); } });
   $("start").addEventListener("click", () => { $("intro").hidden = true; $("input").focus(); });
 
@@ -612,8 +710,21 @@ ${transcript()}`;
   (async () => {
     const use = window.claude && window.claude.use;
     if (!use) { $("intro").hidden = false; return; }
-    const [s, d, u] = await Promise.all([use("sample"), use("db"), use("user")]);
-    sample = s; db = d;
+    const [s, d, u, r] = await Promise.all([use("sample"), use("db"), use("user"), use("room")]);
+    sample = s; db = d; room = r;
+    if (room) {
+      room.onPeers((change) => { peers = change.peers.slice(); renderAura(); });
+      room.presence({ stage: myStage, typing: false }).catch(() => {});
+    }
+    if (db) {
+      $("presence").hidden = false;
+      const since = new Date(); since.setDate(since.getDate() - 6);
+      db.collection("traces").where("day", ">=", dayStr(since)).onSnapshot(
+        (snap) => { traces = snap.docs.map((x) => ({ id: x.id, ...(x.data() || {}) })); renderTraces(); },
+        () => {}
+      );
+      renderTraces();
+    } else if (room) { $("presence").hidden = false; renderTraces(); }
     if (u) { try { uid = await u.id(); } catch (e) { uid = null; } }
     let firstTime = true;
     if (db && uid) {
