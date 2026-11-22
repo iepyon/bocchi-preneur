@@ -199,6 +199,16 @@ button { cursor: pointer; }
 }
 .intro h1 { font-family: var(--font-story); font-weight: 600; font-size: 26px; margin: 0; text-wrap: balance; letter-spacing: .04em; }
 .intro p { margin: 0; }
+.intro .lead { font-size: 16px; }
+.intro h1, .about h2 { word-break: auto-phrase; }
+@media (max-width: 520px) { .intro h1 { font-size: 22px; } }
+.about { display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid var(--line); }
+.about h2 { margin: 0; font-family: var(--font-story); font-weight: 600; font-size: 18px; color: var(--accent); letter-spacing: .04em; text-wrap: balance; }
+.flow { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 8px; }
+.flow b { display: block; font-weight: 700; }
+.aboutbtn { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 12px; font-size: 12px; color: var(--muted); }
+.aboutbtn:hover { color: var(--accent); border-color: var(--accent); }
+.barright { display: flex; align-items: center; gap: 10px; }
 .intro ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
 
 @media (max-width: 820px) {
@@ -216,9 +226,12 @@ button { cursor: pointer; }
   <header class="bar">
     <div class="brand">喪失と再生の酒場<small>試作品</small></div>
     <div class="aura" id="aura-bar" hidden title="いまここにいる、ほかの人の気配"><span class="lights" id="aura-lights"></span><span id="aura-text"></span></div>
+    <div class="barright">
+    <button class="aboutbtn" id="about">この酒場について</button>
     <div class="mtabs" role="tablist" aria-label="表示の切り替え">
       <button id="mt-chat" role="tab" aria-selected="true">対話</button>
       <button id="mt-panel" role="tab" aria-selected="false">地図と記録</button>
+    </div>
     </div>
   </header>
 
@@ -301,8 +314,39 @@ button { cursor: pointer; }
 <div class="intro" id="intro" hidden>
   <div class="intro-inner">
     <svg class="master" viewBox="0 0 64 64" role="img" aria-label="マスター" fill="none" stroke="#f4efe6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="30"/><ellipse cx="32" cy="27" rx="10.5" ry="10.5"/><path d="M21.7 25 C22 15.5 42 15.5 42.3 25"/><path d="M27 17.6 C30 20 35 20.5 40 21"/><path d="M26 27.5 q2.2 1.6 4.4 0 M33.6 27.5 q2.2 1.6 4.4 0"/><path d="M25.5 31.5 C27 34.2 30.5 34.2 32 32.4 C33.5 34.2 37 34.2 38.5 31.5"/><path d="M29.5 37.2 V43.5 M34.5 37.2 V43.5"/><path d="M17 56 C18.5 49 23 45.2 29 44.5 M47 56 C45.5 49 41 45.2 35 44.5"/><path d="M29 44.5 L32 51 L35 44.5"/><path d="M27.6 47.2 L32 49.2 L27.6 51.2 Z M36.4 47.2 L32 49.2 L36.4 51.2 Z"/><path d="M23.5 47.5 L32 58 L40.5 47.5"/></svg>
-    <h1>いらっしゃい。言えなかったことを、ひとりで言葉にする酒場です</h1>
-    <p>ふりかえりや1on1、コミュニティや飲み会で、人間関係やこれからのキャリア、AIとこれからの役割など、言葉にできなかったことがあったとき。うまく言葉にできなかったことを、カウンター越しのマスター（AI）と一緒に、ひとりで言葉にします。お酒は出てきません。最後に、喪失と再生の物語と、次の場で話すための下書きができます。</p>
+    <h1>いらっしゃい。<br>ここは、喪失を受け入れ、もう一度歩き出すための酒場です</h1>
+    <p class="lead">AIの登場や、役割や仕事の変化で、自分が仕事で大切にしていたものの出番がなくなることがあります。この酒場は、そのとき言葉にできなかったことを、カウンター越しのマスターと一緒に、ひとりで言葉にする場所です。お酒は出てきません。</p>
+
+    <section class="about">
+      <h2>喪失を、過程ごと受け入れる</h2>
+      <p>大切にしていたものを失ったとき、戸惑いをすぐには受け止められません。前のやり方にこだわったり、「自分にはまだ優位なところがある」とつい張り合ったりするのは、守りたいものがあったからです。ここでは、その戸惑いや守りを、なかったことにしません。失ったもの、そのときの気持ち、守ろうとしたものを、順に言葉にしていきます。ここで言う「受け入れる」は、失った過程ごと、自分の物語にすることです。</p>
+    </section>
+
+    <section class="about">
+      <h2>ひとりだから、構えを降ろせる</h2>
+      <p>集団の中では、どうしても構えてしまいます。ここにいるのは、あなたとマスターだけです。マスターは、励ましも助言もしません。あなたの言葉を「こういうことでしょうか」と言い換えて確かめ、問いを一つ返すだけです。考えるとは、自分自身との声のない対話だ、という考えに立っています。言葉は、最後まであなたのものです。</p>
+    </section>
+
+    <section class="about">
+      <h2>再生は、いつもの場で話せること</h2>
+      <p>話すうちに、黒板に、あなたの言葉で喪失の地図が描かれていきます。失ったもの、戸惑いと防衛、受け止めたこと、これからの自分。自分を一歩引いて眺められたら、喪失と再生の物語と、次に話すための下書きを持ち帰れます。打ち明けるのは、この酒場の中ではありません。仕事中、ふりかえり、1on1、コミュニティ、飲み会。いつもの場で、ありのままを話すための準備運動です。</p>
+    </section>
+
+    <section class="about">
+      <h2>今夜の流れ</h2>
+      <ol class="flow">
+        <li><b>話せなかった場面を思い出す</b>どんな場で、誰がいて、何の話のときに、言葉を飲み込んだか。</li>
+        <li><b>マスターと、ひとりで話す</b>言い換えと問いに答えながら、黒板に喪失の地図ができていきます。</li>
+        <li><b>物語と下書きを受け取る</b>あなたの言葉から組み立てたものを、あなたの言葉に直して、自分だけのボトルに残せます。</li>
+        <li><b>話せたら「打ち明けた」</b>いつもの場で話せたら、ボトルキープから記録します。</li>
+      </ol>
+    </section>
+
+    <section class="about">
+      <h2>ほかの客の気配</h2>
+      <p>カウンターには、ほかの客もいます。名前も言葉も見えませんが、いま誰かが座っていること、この7日間に誰かがここで言葉を探し、打ち明けたことが、灯りとグラスの跡で分かります。言葉にできずにいるのは、あなただけではありません。</p>
+    </section>
+
     <div class="card">
       <label>残るもの・残らないもの</label>
       <ul>
@@ -315,7 +359,7 @@ button { cursor: pointer; }
       </ul>
     </div>
     <div class="notice warn"><strong>つらさが強いときは</strong><br>眠れない、仕事に行けない、消えてしまいたいと感じるときは、このアプリではなく専門の窓口に相談してください。例：よりそいホットライン 0120-279-338（24時間・無料）。</div>
-    <div><button class="btn" id="start">始める</button></div>
+    <div><button class="btn" id="start">カウンターに座る</button></div>
   </div>
 </div>
 
@@ -814,6 +858,7 @@ ${transcript()}`;
   $("input").addEventListener("input", () => { autoGrow(); setTyping(); });
   $("input").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send(); } });
   $("start").addEventListener("click", () => { $("intro").hidden = true; $("input").focus(); });
+  $("about").addEventListener("click", () => { $("intro").hidden = false; $("intro").scrollTop = 0; });
 
   // ---------- 起動 ----------
   opening(); renderMap(); updateTurnInfo(); renderRecords([]); renderAura(); showTrigger();
