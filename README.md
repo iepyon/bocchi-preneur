@@ -8,7 +8,7 @@
 
 **まだ作っている途中の段階です（v0.x）。** 手順や中身は、試しながらこれからも変えていきます。うまくいかない場面もあると思って使ってください。
 
-プラグインの使い方は [plugins/bocchi-preneur/README.md](plugins/bocchi-preneur/README.md) を見てください。
+プラグインの使い方は [plugins/bocchi-preneur/README.md](plugins/bocchi-preneur/README.md) を見てください。はじめて使う人は、インストールから最初のステップまでを順に説明した [チュートリアル](docs/tutorial.md) から読んでください。
 
 > [!WARNING]
 > **セキュリティはAIの点検だけで済ませないでください。** このプラグインのレビューと攻撃テストは最低限の自己点検で、専門家の診断の代わりにはなりません。個人情報・決済・ログイン・健康情報を扱うなら、公開前に専門家の診断を受けてください（[詳しく](plugins/bocchi-preneur/README.md#注意)）。
@@ -38,6 +38,7 @@ bocchi-preneur/
 ├── simulations/              # シミュレーション記録と回帰テスト用シナリオ
 ├── tools/                    # 参照を確かめるスクリプト（check-refs.py）
 ├── archive/                  # スコープから外した資料（インストールされない）
+├── docs/tutorial.md          # 初心者向けの使い方チュートリアル（インストールされない）
 ├── docs/media/               # 紹介動画（音つき MP4、README で動く WebP、サムネイル。インストールされない）
 ├── samples/                  # プラグインで通したプロダクトと、企画書（samples/bocchi-preneur/）
 └── README.md
