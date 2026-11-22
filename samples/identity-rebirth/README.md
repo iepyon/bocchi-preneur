@@ -1,4 +1,4 @@
-# サンプル：（名前は未定）AIで大切にしていたことを失った人の、自己開示の準備運動
+# サンプル：喪失と再生の物語（AIで大切にしていたことを失った人の、自己開示の準備運動）
 
 **本人（このリポジトリの持ち主）が答えて**、プラグインを通しているサンプルです。AIが架空の本人を演じた hitoribi と違い、事業判断はすべて本人の言葉です。途中段階で、進むたびに更新します。
 
@@ -14,10 +14,10 @@
 | 企画書 | [proposal.md](proposal.md)（ステップ1の答えと机上の市場調査をまとめ直したもの。2026-11-21 時点） |
 | 進行状況 | [docs/bocchi/state.md](docs/bocchi/state.md) |
 | コンセプト | [docs/bocchi/01-concept.md](docs/bocchi/01-concept.md) |
-| 意思決定ログ | [docs/bocchi/decisions/](docs/bocchi/decisions/)（5件） |
+| 意思決定ログ | [docs/bocchi/decisions/](docs/bocchi/decisions/)（6件） |
 | 宿題の台本 | [docs/bocchi/fieldwork/](docs/bocchi/fieldwork/) |
 
-フォルダ名 `identity-rebirth` は仮です。本人がプロダクト名を決めたら付け替えます。
+フォルダ名 `identity-rebirth` は仮のままです（プロダクト名は「喪失と再生の物語」に決まった）。
 
 ## このサンプルで見てほしいところ
 

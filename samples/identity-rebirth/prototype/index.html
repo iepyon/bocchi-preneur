@@ -1,4 +1,4 @@
-<title>打ち明けの準備運動</title>
+<title>喪失と再生の物語</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -200,7 +200,7 @@ button { cursor: pointer; }
 
 <div class="app">
   <header class="bar">
-    <div class="brand">打ち明けの準備運動<small>試作品</small></div>
+    <div class="brand">喪失と再生の物語<small>試作品</small></div>
     <div class="aura" id="aura-bar" hidden title="いまここにいる、ほかの人の気配"><span class="lights" id="aura-lights"></span><span id="aura-text"></span></div>
     <div class="mtabs" role="tablist" aria-label="表示の切り替え">
       <button id="mt-chat" role="tab" aria-selected="true">対話</button>
@@ -466,7 +466,7 @@ button { cursor: pointer; }
   }
 
   // ---------- AI ----------
-  const ROLE = `あなたは「打ち明けの準備運動」というアプリの対話相手です。相手は、プロダクト開発に関わる仕事（アジャイルコーチ、スクラムマスター、エンジニア、PM、デザイナーなど）をしていて、AIが入ってきたことで、自分が仕事で大切にしていたことの出番を失った人です。ふりかえり・1on1・コミュニティ・飲み会などの場で、戸惑いを言葉にできなかった、その直後に来ています。
+  const ROLE = `あなたは「喪失と再生の物語」というアプリの対話相手です。このアプリは、打ち明ける前の準備運動の場です。相手は、プロダクト開発に関わる仕事（アジャイルコーチ、スクラムマスター、エンジニア、PM、デザイナーなど）をしていて、AIが入ってきたことで、自分が仕事で大切にしていたことの出番を失った人です。ふりかえり・1on1・コミュニティ・飲み会などの場で、戸惑いを言葉にできなかった、その直後に来ています。
 目的は、相手が喪失をその過程ごと受け入れ、防衛的なポジショントークから降り、自分を一歩引いて見て、次の場で誰かに話す準備ができることです。考えるとは自分自身との声のない対話だ、という考えに立ち、言葉はあくまで相手のものにします。
 
 あなたの役は「問い」と「言い換え」だけです。
@@ -547,7 +547,7 @@ button { cursor: pointer; }
     state.busy = true; updateTurnInfo();
     const thinking = addMsg("ai thinking", "あなたの言葉から、物語と下書きを組み立てています…");
     const place = state.place && state.place !== "その他" ? state.place : "次に話せそうな場";
-    const prompt = `あなたは「打ち明けの準備運動」というアプリで、ひとり対話を終えた人のために、2つの文章を組み立てます。
+    const prompt = `あなたは「喪失と再生の物語」というアプリで、ひとり対話を終えた人のために、2つの文章を組み立てます。
 材料は、下の対話の中の「相手」の言葉だけです。相手が言っていないこと、一般論、励まし、教訓、AIについての解説は足しません。相手の語彙と言い回しをできるだけそのまま使い、つなぎの言葉だけを補います。
 
 1. story：喪失と再生の物語。一人称（わたし）。失ったもの → そのときの戸惑いと防衛 → 受け止めたこと → これからの自分、の順。250〜400字。まだ語られていない部分は、無理に作らず「まだ言葉になっていない」と正直に書く。
