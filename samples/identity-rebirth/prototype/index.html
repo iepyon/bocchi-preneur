@@ -330,7 +330,7 @@ button { cursor: pointer; }
 
     <section class="about">
       <h2>再生は、いつもの場で話せること</h2>
-      <p>話すうちに、黒板に、あなたの言葉で喪失の地図が描かれていきます。失ったもの、戸惑いと防衛、受け止めたこと、これからの自分。自分を一歩引いて眺められたら、喪失と再生の物語と、次に話すための下書きを持ち帰れます。打ち明けるのは、この酒場の中ではありません。仕事中、ふりかえり、1on1、コミュニティ、飲み会。いつもの場に戻り、異なる他者のあいだで、もう一度ありのままに話し始めること。この酒場では、それを再生と呼んでいます。ここは、そのための準備運動の場所です。</p>
+      <p>話すうちに、黒板に、あなたの言葉で喪失の地図が描かれていきます。失ったもの、戸惑いと防衛、受け止めたこと、これからの自分。自分を一歩引いて眺められたら、喪失と再生の物語と、次に話すための下書きを持ち帰れます。打ち明けるのは、この酒場の中ではありません。開発中、新規の企画、ふりかえり、1on1、コミュニティ、飲み会。いつもの場に戻り、異なる他者のあいだで、もう一度ありのままに話し始めること。この酒場では、それを再生と呼んでいます。ここは、そのための準備運動の場所です。</p>
     </section>
 
     <section class="about">
@@ -367,10 +367,10 @@ button { cursor: pointer; }
 <script>
 (() => {
   const TOPICS = ["人間関係", "これからのキャリア", "仕事内容の悩み", "AIとこれからの役割", "前の強みが活きない", "新しく学ぶのにすくむ", "つい守ってしまう", "その他"];
-  const PLACES = ["仕事中", "新規の企画", "ふりかえり", "1on1", "コミュニティ", "飲み会", "その他"];
+  const PLACES = ["開発中", "新規の企画", "ふりかえり", "1on1", "コミュニティ", "飲み会", "その他"];
   const WHO = ["上司", "チームの仲間", "同じ職種の人", "ほかの職種の人", "社外の人", "その他"];
   const SCENES = [
-    { label: "仕事中", svg: '<svg viewBox="0 0 40 40"><rect x="8" y="9" width="24" height="15" rx="1.5"/><path d="M4 29 H36 L33 25 H7 Z"/><path d="M14 14 H22 M14 18 H26"/></svg>' },
+    { label: "開発中", svg: '<svg viewBox="0 0 40 40"><rect x="8" y="9" width="24" height="15" rx="1.5"/><path d="M4 29 H36 L33 25 H7 Z"/><path d="M14 14 H22 M14 18 H26"/></svg>' },
     { label: "新規の企画", svg: '<svg viewBox="0 0 40 40"><path d="M14 22 C10 19 10 11 15 8 C18 6 22 6 25 8 C30 11 30 19 26 22 C24.5 23.5 24 25 24 27 H16 C16 25 15.5 23.5 14 22 Z"/><path d="M16 30.5 H24 M17.5 34 H22.5"/><path d="M20 27 V19 M17.5 16.5 L20 19 L22.5 16.5"/><path d="M6 13 L3 12 M7 7 L5 5 M34 13 L37 12 M33 7 L35 5"/></svg>' },
     { label: "ふりかえり", svg: '<svg viewBox="0 0 40 40"><rect x="5" y="7" width="30" height="20" rx="1.5"/><rect x="9" y="11" width="6" height="5"/><rect x="17" y="11" width="6" height="5"/><rect x="25" y="11" width="6" height="5"/><rect x="13" y="19" width="6" height="5"/><path d="M14 27 L11 34 M26 27 L29 34"/></svg>' },
     { label: "1on1", svg: '<svg viewBox="0 0 40 40"><circle cx="11" cy="13" r="4"/><circle cx="29" cy="13" r="4"/><path d="M5 27 C5 21 17 21 17 27 M23 27 C23 21 35 21 35 27"/><path d="M8 31 H32"/></svg>' },
@@ -576,7 +576,7 @@ button { cursor: pointer; }
   function opening() {
     addMsg("ai", "いらっしゃい。ここは、言えなかったことを、ひとりで言葉にする酒場です。\nまず、今夜話せなかった場面を思い出してみましょう。それは、どんな場でしたか。", sceneCards((sc) => {
       state.place = sc.label; showTrigger();
-      $("draft-place").textContent = sc.label === "その他" ? "次の場" : sc.label === "仕事中" ? "仕事の中" : sc.label === "新規の企画" ? "次の企画の場" : "次の" + sc.label;
+      $("draft-place").textContent = sc.label === "その他" ? "次の場" : sc.label === "開発中" ? "開発の中" : sc.label === "新規の企画" ? "次の企画の場" : "次の" + sc.label;
       if (asked.who) return; asked.who = true;
       addMsg("ai", "その場には、誰がいましたか。当てはまるものを、いくつでも選んでください。", multiChipRow(WHO, (list) => {
         state.who = list.join("・"); state.whoList = list; showTrigger();
