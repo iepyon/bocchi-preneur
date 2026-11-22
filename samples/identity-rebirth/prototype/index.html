@@ -126,8 +126,19 @@ button { cursor: pointer; }
 @keyframes rise { from { transform: translateY(4px); opacity: .4; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .word { animation: none; } .dot { transition: none; } }
 
-.trigger { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
-.trigger b { color: var(--fg); font-weight: 500; }
+.scene-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.scene-card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); font-size: 13px; }
+.scene-card:hover { border-color: var(--accent); }
+.scene-card[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.scene-card svg, .scene-sketch svg { width: 40px; height: 40px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.scene-sketch { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; align-items: start; padding: 14px; border: 1px dashed rgba(232, 228, 218, .3); border-radius: var(--radius); color: var(--chalk); }
+.scene-sketch .pic { display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; border: 1px dashed rgba(232, 228, 218, .3); }
+.scene-sketch .pic svg { width: 44px; height: 44px; }
+.scene-rows { display: flex; flex-direction: column; gap: 4px; font-size: 13px; min-width: 0; }
+.scene-rows div { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 8px; }
+.scene-rows dt, .scene-rows span:first-child { color: var(--muted); }
+.scene-rows b { font-family: var(--font-story); font-weight: 500; overflow-wrap: anywhere; }
+.scene-rows .blank { color: var(--muted); opacity: .6; font-weight: 400; }
 
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .card label { font-size: 12px; letter-spacing: .08em; color: var(--muted); }
@@ -245,7 +256,18 @@ button { cursor: pointer; }
         </div>
 
         <div id="view-map" style="display:flex;flex-direction:column;gap:20px">
-          <div class="trigger" id="trigger" hidden><span>今夜のきっかけ</span><b id="trigger-place"></b></div>
+          <div>
+            <div class="section-title">黒板：今夜、話せなかった場面</div>
+          </div>
+          <div class="scene-sketch" id="scene-sketch">
+            <div class="pic" id="scene-pic" aria-hidden="true"></div>
+            <div class="scene-rows">
+              <div><span>場</span><b id="sc-place" class="blank">まだ</b></div>
+              <div><span>そこにいた</span><b id="sc-who" class="blank">まだ</b></div>
+              <div><span>話題</span><b id="sc-topic" class="blank">まだ</b></div>
+              <div><span>飲み込んだ</span><b id="sc-moment" class="blank">まだ</b></div>
+            </div>
+          </div>
           <div>
             <div class="section-title">黒板：あなたの言葉で描く、喪失の地図</div>
             <p class="note" id="map-empty">対話が進むと、あなたが使った言葉がここに置かれていきます。</p>
@@ -301,6 +323,14 @@ button { cursor: pointer; }
 (() => {
   const TOPICS = ["人間関係", "これからのキャリア", "仕事内容の悩み", "AIとこれからの役割", "前の強みが活きない", "新しく学ぶのにすくむ", "つい守ってしまう", "その他"];
   const PLACES = ["ふりかえり", "1on1", "コミュニティ", "飲み会", "その他"];
+  const WHO = ["上司", "チームの仲間", "同じ職種の人", "ほかの職種の人", "社外の人", "その他"];
+  const SCENES = [
+    { label: "ふりかえり", svg: '<svg viewBox="0 0 40 40"><rect x="5" y="7" width="30" height="20" rx="1.5"/><rect x="9" y="11" width="6" height="5"/><rect x="17" y="11" width="6" height="5"/><rect x="25" y="11" width="6" height="5"/><rect x="13" y="19" width="6" height="5"/><path d="M14 27 L11 34 M26 27 L29 34"/></svg>' },
+    { label: "1on1", svg: '<svg viewBox="0 0 40 40"><circle cx="11" cy="13" r="4"/><circle cx="29" cy="13" r="4"/><path d="M5 27 C5 21 17 21 17 27 M23 27 C23 21 35 21 35 27"/><path d="M8 31 H32"/></svg>' },
+    { label: "コミュニティ", svg: '<svg viewBox="0 0 40 40"><circle cx="20" cy="8" r="3"/><circle cx="32" cy="17" r="3"/><circle cx="27" cy="31" r="3"/><circle cx="13" cy="31" r="3"/><circle cx="8" cy="17" r="3"/><circle cx="20" cy="20" r="5" stroke-dasharray="2 2.5"/></svg>' },
+    { label: "飲み会", svg: '<svg viewBox="0 0 40 40"><path d="M8 9 H18 L16.5 22 C16 25 10 25 9.5 22 Z"/><path d="M13 25 V32 M10 32 H16"/><path d="M22 9 H32 L30.5 22 C30 25 24 25 23.5 22 Z"/><path d="M27 25 V32 M24 32 H30"/><path d="M19 5 L20 2 M16 6 L14 3 M22 6 L24 3"/></svg>' },
+    { label: "その他", svg: '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="13" stroke-dasharray="3 3"/><path d="M16 16 C16 12 24 12 24 16 C24 19 20 19 20 22"/><circle cx="20" cy="27" r=".8"/></svg>' },
+  ];
   const STATIONS = [
     { key: "lost", name: "失ったもの", hint: "出番がなくなったこと、大切にしていたこと" },
     { key: "confusion", name: "戸惑いと防衛", hint: "そのときの気持ち、守ろうとしたもの" },
@@ -406,7 +436,8 @@ button { cursor: pointer; }
       if (!days.includes(today())) days.push(today());
       next.days = days;
       for (const [k, v] of Object.entries(patch)) {
-        if (k === "triggerTopic") { const t = { ...(cur.triggerTopics || {}) }; t[v] = (t[v] || 0) + 1; next.triggerTopics = t; }
+        if (k === "triggerWho") { const t = { ...(cur.triggerWho || {}) }; t[v] = (t[v] || 0) + 1; next.triggerWho = t; }
+        else if (k === "triggerTopic") { const t = { ...(cur.triggerTopics || {}) }; t[v] = (t[v] || 0) + 1; next.triggerTopics = t; }
         else if (k === "triggerPlace") { const t = { ...(cur.triggerPlaces || {}) }; t[v] = (t[v] || 0) + 1; next.triggerPlaces = t; }
         else if (k === "confidedEntry") { next.confidedLog = [...(cur.confidedLog || []), v]; }
         else if (typeof v === "number") { next[k] = (cur[k] || 0) + v; }
@@ -454,21 +485,41 @@ button { cursor: pointer; }
     });
     return chips;
   }
-  function showTrigger() {
-    const parts = [state.topic, state.place && state.place !== "その他" ? state.place : null].filter(Boolean);
-    $("trigger").hidden = parts.length === 0; $("trigger-place").textContent = parts.join("・");
+  function sceneCards(onPick) {
+    const box = el("div", "scene-cards");
+    SCENES.forEach((sc) => {
+      const b = el("button", "scene-card");
+      b.setAttribute("aria-pressed", "false");
+      b.innerHTML = sc.svg;
+      b.appendChild(el("span", null, sc.label));
+      b.addEventListener("click", () => { box.querySelectorAll(".scene-card").forEach((c) => c.setAttribute("aria-pressed", String(c === b))); onPick(sc); });
+      box.appendChild(b);
+    });
+    return box;
   }
-  let placeAsked = false;
+  function setRow(id, v) { const n = $(id); if (v) { n.textContent = v; n.classList.remove("blank"); } else { n.textContent = "まだ"; n.classList.add("blank"); } }
+  function showTrigger() {
+    const sc = SCENES.find((x) => x.label === state.place);
+    $("scene-pic").innerHTML = sc ? sc.svg : SCENES[SCENES.length - 1].svg;
+    setRow("sc-place", state.place); setRow("sc-who", state.who); setRow("sc-topic", state.topic);
+    setRow("sc-moment", state.moment ? (state.moment.length > 40 ? state.moment.slice(0, 40) + "…" : state.moment) : null);
+  }
+  const asked = {};
   function opening() {
-    addMsg("ai", "いらっしゃい。ここは、言えなかったことを、ひとりで言葉にする酒場です。\n今夜、言葉にできなかったのは、どんなことでしたか。近いものを選んでください。", chipRow(TOPICS, (t) => {
-      state.topic = t; showTrigger();
-      if (placeAsked) { $("input").focus(); return; }
-      placeAsked = true;
-      addMsg("ai", "それは、どの場でのことでしたか。", chipRow(PLACES, (p) => {
-        state.place = p; showTrigger();
-        $("draft-place").textContent = p === "その他" ? "次の場" : "次の" + p;
-        if (!state.placeHinted) { state.placeHinted = true; addMsg("ai", "では、その場で言えなかったことを、下にそのまま書いてみてください。まとまっていなくて大丈夫です。"); }
-        $("input").focus();
+    addMsg("ai", "いらっしゃい。ここは、言えなかったことを、ひとりで言葉にする酒場です。\nまず、今夜話せなかった場面を思い出してみましょう。それは、どんな場でしたか。", sceneCards((sc) => {
+      state.place = sc.label; showTrigger();
+      $("draft-place").textContent = sc.label === "その他" ? "次の場" : "次の" + sc.label;
+      if (asked.who) return; asked.who = true;
+      addMsg("ai", "その場には、誰がいましたか。", chipRow(WHO, (w) => {
+        state.who = w; showTrigger();
+        if (asked.topic) return; asked.topic = true;
+        addMsg("ai", "何の話をしているときでしたか。近いものを選んでください。", chipRow(TOPICS, (t) => {
+          state.topic = t; showTrigger();
+          if (asked.moment) { $("input").focus(); return; } asked.moment = true;
+          addMsg("ai", "その話の中で、言葉を飲み込んだのは、どんな瞬間でしたか。誰が何を言ったとき、あなたは何を言いかけていましたか。下にそのまま書いてみてください。");
+          $("input").placeholder = "整えなくて大丈夫です。思い出した順に書いてください";
+          $("input").focus();
+        }));
       }));
     }));
   }
@@ -502,7 +553,7 @@ button { cursor: pointer; }
   }
 
   // ---------- AI ----------
-  const ROLE = `あなたは「喪失と再生の酒場」というアプリの、カウンターの向こうにいる寡黙なマスターです。このアプリは、打ち明ける前の準備運動の場です。口調は落ち着いた丁寧語で、短く。お酒を勧めたり、お酒の話をしたりはしない。相手は、プロダクト開発に関わる仕事（アジャイルコーチ、スクラムマスター、エンジニア、PM、デザイナーなど）をしていて、AIの登場や、それ以外の仕事の変化（人間関係、キャリア、仕事内容など）で、自分が仕事で大切にしていたことを失った人です。ふりかえり・1on1・コミュニティ・飲み会などの場で、戸惑いを言葉にできなかった、その直後に来ています。最初に、相手が選んだ「言えなかったことの種類」と「きっかけの場」が渡されます。それを決めつけず、相手の言葉から入ります。
+  const ROLE = `あなたは「喪失と再生の酒場」というアプリの、カウンターの向こうにいる寡黙なマスターです。このアプリは、打ち明ける前の準備運動の場です。口調は落ち着いた丁寧語で、短く。お酒を勧めたり、お酒の話をしたりはしない。相手は、プロダクト開発に関わる仕事（アジャイルコーチ、スクラムマスター、エンジニア、PM、デザイナーなど）をしていて、AIの登場や、それ以外の仕事の変化（人間関係、キャリア、仕事内容など）で、自分が仕事で大切にしていたことを失った人です。ふりかえり・1on1・コミュニティ・飲み会などの場で、戸惑いを言葉にできなかった、その直後に来ています。最初に、相手が思い出した「話せなかった場面」（場、そこにいた人、話題）が渡され、続けて相手が、言葉を飲み込んだ瞬間を書きます。最初の何往復かは、その場面を具体的に思い出す手伝いをする（そのとき誰が何を言ったか、自分は何を言いかけたか、体はどうなっていたか）。場面を決めつけず、相手の言葉から入ります。
 目的は、相手が喪失をその過程ごと受け入れ、防衛的なポジショントークから降り、自分を一歩引いて見て、次の場で誰かに話す準備ができることです。考えるとは自分自身との声のない対話だ、という考えに立ち、言葉はあくまで相手のものにします。
 
 あなたの役は「問い」と「言い換え」だけです。
@@ -552,10 +603,11 @@ button { cursor: pointer; }
     if (!sample) { addNotice("このページでAIと話すには、Claude にサインインした状態でページを開いてください。"); return; }
     input.value = ""; autoGrow();
     addMsg("me", text);
-    if (state.userTurns === 0 && (state.place || state.topic)) state.turns.push({ role: "user", content: `（言えなかったことの種類：${state.topic || "未選択"}／きっかけの場：${state.place || "未選択"}）` });
+    if (state.userTurns === 0 && (state.place || state.topic || state.who)) state.turns.push({ role: "user", content: `（話せなかった場面：場＝${state.place || "未選択"}／そこにいた人＝${state.who || "未選択"}／話題＝${state.topic || "未選択"}）` });
+    if (state.userTurns === 0) { state.moment = text; showTrigger(); }
     state.turns.push({ role: "user", content: text });
     state.userTurns++;
-    if (!state.sessionCounted) { state.sessionCounted = true; bumpUsage({ sessions: 1, ...(state.place ? { triggerPlace: state.place } : {}), ...(state.topic ? { triggerTopic: state.topic } : {}) }); leaveTrace("talk"); setStage("talking"); }
+    if (!state.sessionCounted) { state.sessionCounted = true; bumpUsage({ sessions: 1, ...(state.place ? { triggerPlace: state.place } : {}), ...(state.topic ? { triggerTopic: state.topic } : {}), ...(state.who ? { triggerWho: state.who } : {}) }); leaveTrace("talk"); setStage("talking"); }
     state.busy = true; updateTurnInfo();
     const thinking = addMsg("ai thinking", "考えています…");
     try {
@@ -741,7 +793,7 @@ ${transcript()}`;
   $("start").addEventListener("click", () => { $("intro").hidden = true; $("input").focus(); });
 
   // ---------- 起動 ----------
-  opening(); renderMap(); updateTurnInfo(); renderRecords([]); renderAura();
+  opening(); renderMap(); updateTurnInfo(); renderRecords([]); renderAura(); showTrigger();
 
   (async () => {
     const use = window.claude && window.claude.use;
