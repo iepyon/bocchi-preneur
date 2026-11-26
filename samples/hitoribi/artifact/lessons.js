@@ -211,7 +211,7 @@ const LESSONS = [
     body: '/bocchi-preneur:step で好きなステップへ移れます。飛ばしても止められません。何が起きやすいかを1行で伝えられ、「スキップ（理由）」として記録されます。ただし「誰の、どんな課題か」と「扱うデータの重さ」の2つは必ず埋めます。',
     try: '飛ばしたいステップがあれば、理由を自分の言葉で1行書いてから移ってください。',
     src: 'プラグイン SKILL.md「ステップを飛ばしたいと言われたら」、skills/step' },
-  { id: 'p-get-out', kind: 'plugin', steps: [1, 5], title: '/bocchi-preneur:get-out で現場の宿題',
+  { id: 'p-homework', kind: 'plugin', steps: [1, 5], title: '/bocchi-preneur:get-out で現場の宿題',
     body: 'チャットで分からないこと（顧客の課題、払う意思）は宿題になります。AIが10分の質問台本と記録シートを作り、本人が聞きに行きます。結果はメモを貼れば、AIが証拠のラベルを付けて整理します。',
     try: '「/bocchi-preneur:get-out」で、次に聞く相手向けの台本を作ってください。',
     src: 'プラグイン skills/get-out、references/interview-kit.md' },
