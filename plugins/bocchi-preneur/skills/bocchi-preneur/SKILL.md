@@ -57,7 +57,7 @@ AIによって、作るところは速くなった。一方で、次の3つは�
 |---|---|---|
 | `references/00-setup.md` | はじめの準備 | state.md がないとき |
 | `references/01-concept.md` 〜 `10-launch.md` | 各ステップ | そのステップに入るとき |
-| `references/interview-kit.md` | インタビューの型 | 現場の宿題を出す・受けるとき（ステップ1・5、`/bocchi-preneur:homework`） |
+| `references/interview-kit.md` | インタビューの型 | 現場の宿題を出す・受けるとき（ステップ1・5、`/bocchi-preneur:get-out`） |
 | `references/ux-layers.md` | UXの5レイヤー | ステップ2・3・8、層の矛盾を確かめるとき |
 | `references/disposable-html.md` | 使い捨てHTML | 案を並べて見せるとき（ステップ3・8） |
 | `references/explain-check.md` | 説明チェック | ゲートでAIが作ったものを受け入れるとき（ルール11） |
@@ -159,7 +159,7 @@ AIによって、作るところは速くなった。一方で、次の3つは�
 5. ゲートを満たしたら、AIが作ったものがあれば説明チェック（ルール11）をしてから、`docs/bocchi/NN-*.md` に書き出し、state.md を更新し、次を予告して止まる。
 
 ### ゲートを確かめて次へ進む（`/bocchi-preneur:next` もこれに従う）
-1. 現在のステップが「宿題待ち」なら、まず宿題の結果を聞く（`/bocchi-preneur:homework` で報告できることも伝える）。
+1. 現在のステップが「宿題待ち」なら、まず宿題の結果を聞く（`/bocchi-preneur:get-out` で報告できることも伝える）。
 2. 「説明待ち」なら、`references/explain-check.md` に従って、説明チェックの問いを1つ出す。
 3. ステップのゲートに満たしていない条件があれば、その条件を1つ挙げ、埋めるための問いを1つだけ出して止まる。
 4. すべて満たしていれば、成果物と state.md を更新する。工程の最後のステップなら、`references/phase-gates.md` で工程ゲートを確かめる。満たしていない条件があれば、1つ挙げて問いを1つだけ出して止まる。満たしていれば、共通条件にある記録（工程の判断・意思決定ログ・report.md）を済ませ、その工程で本人が決めたことを1〜2行で振り返ってから、次の工程に入ることを伝える。

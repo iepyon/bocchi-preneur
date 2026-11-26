@@ -73,11 +73,13 @@ v0.15.0 で名前が変わったため、旧い名前で入れたものは更新
 | `/bocchi-preneur:next` | ゲートを確認して次へ |
 | `/bocchi-preneur:status` | 進行状況・宿題・撤退基準を見る |
 | `/bocchi-preneur:step <番号>` | 指定ステップへ |
-| `/bocchi-preneur:homework [メモ]` | 現場の宿題の台本づくり／結果の記録 |
+| `/bocchi-preneur:get-out [メモ]` | Get out of the building。現場の宿題の台本づくり／結果の記録 |
 | `/bocchi-preneur:proposal [読み手]` | これまでの記録を企画書にまとめて書き出す（`docs/bocchi/proposal.md`） |
 | `/bocchi-preneur:review` | 厳しめのコードレビュー |
 | `/bocchi-preneur:pentest` | 自分のアプリへのペネトレーションテスト（AIの自己点検。専門家の診断の代わりにはならない。下の「注意」を参照） |
 | `/bocchi-preneur:rca <症状>` | 根本原因分析（実装はしない） |
+
+v0.20 までの `/bocchi-preneur:homework` は、v0.21 で `/bocchi-preneur:get-out` に名前が変わった。台本づくり・結果の記録の動きは同じ。
 
 ## 構成
 ```
@@ -88,7 +90,7 @@ skills/
     SKILL.md         思想・絶対ルール・分岐・進め方・references の一覧（どのステップで何を読むか）
     references/      ステップ別の詳細、phase-gates（工程ゲート）、explain-check（説明チェック）、decision-log（意思決定ログ）、manager-report（読み手への要約）、proposal（企画書）、ux-layers（UXの5レイヤー）、interview-kit、disposable-html、track-distribution、research-basis、migrations（旧い版の付け替え）
     templates/       state.md、decision.md（意思決定ログ）、report.md（読み手への要約）、proposal.md（企画書）
-  start/ next/ status/ step/ homework/ proposal/
+  start/ next/ status/ step/ get-out/ proposal/
                      / で呼び出す入口。本体の SKILL.md を ${CLAUDE_PLUGIN_ROOT} から読み込み、その手順に従う
   review/ pentest/ rca/
                      / で呼び出す入口。エージェントに任せる
@@ -99,6 +101,7 @@ skills/
 シミュレーション記録と回帰テスト用シナリオは、利用者の環境に入らないようリポジトリ直下の `simulations/` に置いている。
 
 ## 変更履歴
+- v0.21.0：現場の宿題のスキル `/bocchi-preneur:homework` を `/bocchi-preneur:get-out` に改名した。顧客開発の合言葉 “Get out of the building”（答えは社内にない。外に出て顧客に会え）から取り、「建物の外に出て聞く」ことを名前で強調する。呼び出すコマンドが変わる（`/bocchi-preneur:homework` は使えなくなる）。台本づくり・結果の記録の動きは変わらない（skills/get-out、SKILL.md、README、tutorial、samples/hitoribi の lessons.js、plugin.json）
 - v0.20.0：本番の「標準のシンプル構成」を決めた（方針は `samples/bocchi-preneur/decisions/07`）。画面とサーバーの処理を1つにまとめたアプリ、自分で管理しなくてよいデータベース（日本のリージョン、読み書きの決まりをデータベースの側で決める）とその認証、サーバーからのAI呼び出し、決済代行、公開の場所。サービスの名前は書かず、条件を満たすものをAIが1つずつ選ぶ。本人に決めてもらうのは、どこに置くか（社内向けは情シスの確認を宿題にする）と、有料プランにいつ切り替えるかの2つだけ。標準から外れたいときは、理由を意思決定ログに残して進む。社内ツールで、全員が同じ Claude の組織にいて、データが軽・中で決済がなく、情シスがよいと言ったときだけ、アーティファクトのまま正式に導入してよい。Web で試作するときも同じ構成にし、価格設計の試算と、攻撃テストでの読み書きの決まりの確認にもつなげた（`07-build.md`、`04-prototype.md`、`06-pricing.md`、`09-security.md`）
 - v0.19.1：v0.19 の動作確認（`simulations/v0.19-check.md`）で見つかった2点を直した。(1) 試作を Web にすると勧めるとき、面談で見せるだけのデモならアーティファクトでもよいことを必ず1行添える。(2) アーティファクトで作るとき、持ち主や編集者が何を読めるかを、試してもらう前に参加者にも伝える文面を用意する（`04-prototype.md`）
 - v0.19.0：試作（ステップ4）は、まず Claude のアーティファクトで「動くアプリ」として作ることを勧め、だめなら Web にするようにした（方針は `samples/bocchi-preneur/decisions/06`）。社外向けでも先にアーティファクトを勧める。選ぶ前に、参加者が Claude を使っているか、記録を書き込める立場で招けるか、本物のお金を受け取るか・不特定の人に公開するかを確かめる。アーティファクトの機能は、仮説検証で【行動】と【コミット】を記録する役目から選び直した（原則いつも：記録が残る・誰が使ったか分かる。場面に応じて：AIと話せる・今いる人とやりとりできる・画面に感想を書き込める・いつもの道具のデータを使う、など）。試作品の中のAIは使う人の Claude の利用枠を使うので、呼び出した回数を記録してステップ6の試算に回す。価値検証ではAIが試作品の記録を直接読んで集計し、本番実装では Web に作り直すときの置き換えと記録の引き継ぎを決めた。画面設計では、使い捨てHTMLを標準のまま、アーティファクトの種類「Design」を選択肢に加えた（`04-prototype.md`、`02-spec.md`、`03-wireframe.md`、`05-value-test.md`、`07-build.md`、SKILL.md、`research-basis.md`）
