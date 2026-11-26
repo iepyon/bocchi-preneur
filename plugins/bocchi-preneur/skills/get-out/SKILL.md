@@ -1,6 +1,6 @@
 ---
-name: homework
-description: 現場の宿題（顧客インタビュー・価値検証の面談）の台本を作る、または結果を報告して記録する
+name: get-out
+description: Get out of the building（建物の外に出よう）。現場の宿題（顧客インタビュー・価値検証の面談）の台本を作る、または外で聞いてきた結果を報告して記録する
 argument-hint: "[結果のメモを貼り付け（任意）]"
 disable-model-invocation: true
 ---
